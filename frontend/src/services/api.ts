@@ -14,4 +14,9 @@ export const healthCheck = async () => {
   return response.data;
 };
 
+export const getHousehold = async () => {
+  const response = await api.get("/api/household");
+  return response.data;
+};
+
 export default api;
