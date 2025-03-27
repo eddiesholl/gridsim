@@ -1,0 +1,23 @@
+[project]
+name = "gridsim-backend"
+version = "0.1.0"
+description = "Backend API for GridSim application"
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "mangum>=0.17.0",
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.4.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["gridsim_backend"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39" 
