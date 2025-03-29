@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 with open('../data/opennem-energy-fueltech_group-5m-20250301-20250308.json', 'r') as f:
     original_json = json.load(f)
@@ -23,9 +24,29 @@ entries = []
 i = 0
 for fueltech in results:
     print(fueltech['columns']['fueltech_group'])
+    intervals = {}
+    for sample in fueltech['data']:
+        t = sample[0]
+        y = sample[1]
+        dt = datetime.fromisoformat(t)
+        # get the total minutes of the day ie 0-1440
+        i = dt.hour * 60 + dt.minute
+        if i not in intervals:
+            intervals[i] = [y]
+        else:
+            intervals[i].append(y)
+
+    y = []
+    for xval in x:
+        points = intervals.get(xval, [])
+        if len(points) > 0:
+            y.append(sum(points) / len(points))
+        else:
+            y.append(0)
+
     entry = {
         'name': fueltech['columns']['fueltech_group'],
-        'y': [i for _ in range(0, 24*12)]
+        'y': y
     }
     i=i+1
     entries.append(entry)

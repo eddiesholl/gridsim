@@ -63,8 +63,8 @@ colours = {
     'coal': 'rgb(10, 10, 10)',
     'distillate': 'rgb(50, 10, 10)',
     'gas': 'rgb(200, 40, 40)',
-    'hydro': 'rgb(10, 10, 241)',
-    'pumps': 'rgb(10, 10, 221)',
+    'hydro': 'rgb(10, 10, 201)',
+    'pumps': 'rgb(50, 50, 251)',
     'solar': 'rgb(255, 255, 0)',
     'wind': 'rgb(200, 200, 20)',
 }
