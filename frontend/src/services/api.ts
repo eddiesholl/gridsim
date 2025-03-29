@@ -19,4 +19,9 @@ export const getHousehold = async () => {
   return response.data;
 };
 
+export const getNem = async () => {
+  const response = await api.get("/api/nem");
+  return response.data;
+};
+
 export default api;

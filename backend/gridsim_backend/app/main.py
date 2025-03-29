@@ -7,6 +7,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import numpy as np
+import json
 
 import pypsa
 
@@ -54,6 +55,60 @@ async def root():
 @app.get("/api/health")
 async def health_check():
     return {"status": "healthy"}
+
+colours = {
+    'battery_charging': 'rgb(200, 200, 200)',
+    'battery_discharging': 'rgb(250, 250, 250)',
+    'bioenergy': 'rgb(60, 125, 40)',
+    'coal': 'rgb(10, 10, 10)',
+    'distillate': 'rgb(50, 10, 10)',
+    'gas': 'rgb(200, 40, 40)',
+    'hydro': 'rgb(10, 10, 241)',
+    'pumps': 'rgb(10, 10, 221)',
+    'solar': 'rgb(255, 255, 0)',
+    'wind': 'rgb(200, 200, 20)',
+}
+
+@app.get("/api/nem")
+async def get_nem():
+    # Read and parse the OpenNEM JSON file
+    with open('../data/daily-summary.json', 'r') as f:
+        daily_summary = json.load(f)
+    
+    # print(data)  # Let's see the structure of the first item
+    
+
+    # Create Plotly figure
+    fig = go.Figure()
+
+    x = daily_summary['x']
+    for entry in daily_summary['entries']:
+        name = entry['name']
+        fig.add_trace(go.Scatter(
+            x=x, y=entry['y'],
+            hoverinfo='x+y',
+            mode='lines',
+            line=dict(width=0.5, color=colours[name]),
+            stackgroup='one', # define stack group
+            name=name
+        ))
+    
+    # Update layout
+    fig.update_layout(
+        # yaxis_range=(0, 100),
+        showlegend=True,
+        title='NEM Generation Data',
+        xaxis_title='Time',
+        yaxis_title='Power (MW)',
+        template='plotly_white',
+        height=600,
+        width=800
+    )
+
+    print(fig)
+    
+    # Convert to dict and return as JSONResponse
+    return JSONResponse(content=fig.to_dict())
 
 @app.get("/api/household")
 async def get_household():
