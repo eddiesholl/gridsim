@@ -5,6 +5,7 @@ with open('../data/opennem-energy-fueltech_group-5m-20250301-20250308.json', 'r'
     original_json = json.load(f)
 
 # print(data)  # Let's see the structure of the first item
+loads = ['battery_charging', 'pumps']
 
 data = original_json['data']
 meta = data[0]
@@ -23,11 +24,13 @@ x = [5 * t for t in range(0, 24*12)]
 entries = []
 i = 0
 for fueltech in results:
-    print(fueltech['columns']['fueltech_group'])
+    name = fueltech['columns']['fueltech_group']
+    print(name)
     intervals = {}
+    is_load = name in loads
     for sample in fueltech['data']:
         t = sample[0]
-        y = sample[1]
+        y = -sample[1] if is_load else sample[1]
         dt = datetime.fromisoformat(t)
         # get the total minutes of the day ie 0-1440
         i = dt.hour * 60 + dt.minute
@@ -45,7 +48,7 @@ for fueltech in results:
             y.append(0)
 
     entry = {
-        'name': fueltech['columns']['fueltech_group'],
+        'name': name,
         'y': y
     }
     i=i+1

@@ -106,7 +106,7 @@ def getcolour_for(name: str) -> str:
 @app.get("/api/nem")
 async def get_nem():
     # Read and parse the OpenNEM JSON file
-    with open('../data/solar-daily-summary.json', 'r') as f:
+    with open('../data/daily-summary.json', 'r') as f:
         daily_summary = json.load(f)
     
     # print(data)  # Let's see the structure of the first item
