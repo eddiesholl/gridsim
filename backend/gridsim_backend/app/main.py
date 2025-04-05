@@ -10,6 +10,7 @@ import numpy as np
 import json
 import hashlib
 import pypsa
+from . import network
 
 app = FastAPI(title="GridSim API")
 
@@ -139,7 +140,12 @@ async def get_nem():
         width=800
     )
 
-    print(fig)
+    # print(fig)
+
+    nw = network.get_single_node_network()
+    nw.optimize()
+    print('objective', nw.objective)
+    print('statistics', nw.statistics())
     
     # Convert to dict and return as JSONResponse
     return JSONResponse(content=fig.to_dict())
