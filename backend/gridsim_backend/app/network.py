@@ -11,6 +11,10 @@ def get_single_node_network():
     # Create hourly index first (timezone-naive)
     hourly_index = pd.date_range("2025-03-01 00:00", "2025-03-01 23:00", freq="h")
     five_minute_index = pd.date_range("2025-03-01 00:00", "2025-03-01 23:55", freq="5min")
+
+    number_of_bevs = 1
+    bev_capacity_mwh = 0.1
+    total_bev_capacity = number_of_bevs * bev_capacity_mwh
     
     # Create hourly data
     bev_usage = pd.Series([0.0] * 7 * 12 + [9.0] * 2 * 12 + [0.0] * 8 * 12 + [9.0] * 2 * 12 + [0.0] * 5 * 12, five_minute_index)
@@ -66,7 +70,7 @@ def get_single_node_network():
         "work charger",
         bus0="place of work",
         bus1="battery",
-        p_nom=22,
+        p_nom=(11 * number_of_bevs) / 1000,
         p_max_pu=work_charger_p_max_pu,
         efficiency=0.9,
     )
@@ -76,7 +80,7 @@ def get_single_node_network():
         "home charger",
         bus0="home",
         bus1="battery",
-        p_nom=22,
+        p_nom=(11 * number_of_bevs) / 1000,
         p_max_pu=home_charger_p_max_pu,
         efficiency=0.9,
     )
@@ -87,7 +91,9 @@ def get_single_node_network():
         [np.nan] * 16 * 12,
         five_minute_index)
 
-    network.add("Store", "battery storage", bus="battery", e_cyclic=False, e_nom=100.0, state_of_charge_set=battery_state_of_charge)
+    network.add("Store", "battery storage", bus="battery",
+                e_initial=total_bev_capacity * 0.5, e_cyclic=False, e_nom=total_bev_capacity,
+                state_of_charge_set=battery_state_of_charge)
 
     
     
