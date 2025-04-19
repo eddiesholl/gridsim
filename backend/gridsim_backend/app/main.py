@@ -162,14 +162,34 @@ async def get_primitive():
     generator_data = {}
     for gen in ['Gas', 'Coal', 'PV']:
         # Convert the series to a list of values
-        generator_data[gen] = nw.generators_t.p[gen].tolist()
-    
+        for d in ['p']:
+            if generator_data.get(d) is None:
+                generator_data[d] = {}
+            generator_data[d][gen] = nw.generators_t[d][gen].tolist()
+
+    load_data = {}
+    for load in ['demand', 'driving']:
+        for d in ['p']:
+            if load_data.get(d) is None:
+                load_data[d] = {}
+            load_data[d][load] = nw.loads_t[d][load].tolist()
+
+    store_data = {}
+    for store in ['battery storage']:
+        for d in ['p', 'e']:
+            if store_data.get(d) is None:
+                store_data[d] = {}
+            store_data[d][store] = nw.stores_t[d][store].tolist()
+
+    # print(dir(nw.loads_t.p))
+    print(nw.loads_t.p.columns)
     result = {
         'index': timestamps,
-        'generators': {
-            'p': generator_data
-        }
+        'generators': generator_data,
+        'loads': load_data,
+        'stores': store_data
     }
+    print(result)
         
     return JSONResponse(content=result)
 
