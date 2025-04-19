@@ -1,13 +1,19 @@
 import { useState } from "react";
 import Plot from "react-plotly.js";
 import "./App.css";
-import { getHousehold, getNem, healthCheck } from "./services/api";
+import {
+  getHousehold,
+  getNem,
+  getPrimitive,
+  healthCheck,
+} from "./services/api";
 
 function App() {
   const [status, setStatus] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [householdData, setHouseholdData] = useState<any>(null);
   const [nemData, setNemData] = useState<any>(null);
+  const [primitiveData, setPrimitiveData] = useState<any>(null);
   const checkHealth = async () => {
     try {
       const response = await healthCheck();
@@ -40,6 +46,37 @@ function App() {
       setStatus("");
     }
   };
+
+  const getPrimitiveData = async () => {
+    try {
+      const response = await getPrimitive();
+      // Transform the data into plotly format
+      const plotData = {
+        data: Object.entries(response.generators.p).map(([name, values]) => ({
+          type: "scatter",
+          mode: "lines",
+          name: name,
+          x: response.index,
+          y: values,
+          line: { shape: "linear" },
+        })),
+        layout: {
+          title: "Generator Output Over Time",
+          xaxis: {
+            title: "Time",
+          },
+          yaxis: {
+            title: "Power (MW)",
+          },
+        },
+      };
+      setPrimitiveData(plotData);
+    } catch {
+      setError("Failed to get primitive data");
+      setStatus("");
+    }
+  };
+
   return (
     <div className="App">
       <h1>GridSim</h1>
@@ -49,10 +86,17 @@ function App() {
         {error && <p className="error">{error}</p>}
       </div>
       <div className="card">
-        <button onClick={getNemData}>Get NEM data</button>
-        {/* {nemData && <p>NEM data: {JSON.stringify(nemData)}</p>} */}
+        <button onClick={getPrimitiveData}>Get primitive data</button>
+        {/* primitiveData && (
+          <p>Primitive data: {JSON.stringify(primitiveData)}</p>
+        ) */}
         {error && <p className="error">{error}</p>}
       </div>
+      {/* <div className="card">
+        <button onClick={getNemData}>Get NEM data</button>
+         {nemData && <p>NEM data: {JSON.stringify(nemData)}</p>} 
+        {error && <p className="error">{error}</p>}
+      </div> */}
       {/* <div className="card">
         <button onClick={getHouseholdData}>Get household data</button>
         {householdData && (
@@ -60,13 +104,20 @@ function App() {
         )}
         {error && <p className="error">{error}</p>}
       </div> */}
-      {nemData && (
+      {primitiveData && (
+        <Plot
+          data={primitiveData.data}
+          layout={primitiveData.layout}
+          style={{ width: "100%", height: "100%" }}
+        />
+      )}
+      {/* {nemData && (
         <Plot
           data={nemData.data}
           layout={nemData.layout}
           style={{ width: "100%", height: "100%" }}
         />
-      )}
+      )} */}
     </div>
   );
 }

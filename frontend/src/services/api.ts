@@ -24,4 +24,9 @@ export const getNem = async () => {
   return response.data;
 };
 
+export const getPrimitive = async () => {
+  const response = await api.get("/api/primitive");
+  return response.data;
+};
+
 export default api;

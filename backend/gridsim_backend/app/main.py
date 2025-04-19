@@ -150,6 +150,29 @@ async def get_nem():
     # Convert to dict and return as JSONResponse
     return JSONResponse(content=fig.to_dict())
 
+@app.get("/api/primitive")
+async def get_primitive():
+    nw = network.get_primitive_network()
+    nw.optimize()
+
+    # Convert timestamps to strings for JSON serialization
+    timestamps = nw.generators_t.p.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
+    
+    # Convert generator data to a format that can be serialized
+    generator_data = {}
+    for gen in ['Gas', 'Coal', 'PV']:
+        # Convert the series to a list of values
+        generator_data[gen] = nw.generators_t.p[gen].tolist()
+    
+    result = {
+        'index': timestamps,
+        'generators': {
+            'p': generator_data
+        }
+    }
+        
+    return JSONResponse(content=result)
+
 @app.get("/api/household")
 async def get_household():
     # Create sample data
