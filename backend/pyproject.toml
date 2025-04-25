@@ -2,7 +2,7 @@
 name = "gridsim-backend"
 version = "0.1.0"
 description = "Backend API for GridSim application"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.104.0",
     "uvicorn>=0.24.0",
@@ -12,8 +12,6 @@ dependencies = [
     "pandas>=2.1.0",
     "pypsa>=0.27.0",
     "plotly>=5.18.0",
-    "ipykernel>=6.0.0",
-    "nbformat>=5.0.0"
 ]
 
 [build-system]
@@ -25,4 +23,4 @@ packages = ["gridsim_backend"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py39" 
+target-version = "py311" 

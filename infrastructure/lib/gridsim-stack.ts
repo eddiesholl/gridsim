@@ -11,11 +11,41 @@ export class GridsimStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // Create Lambda layer for dependencies
+    const dependenciesLayer = new lambda.LayerVersion(
+      this,
+      "DependenciesLayer",
+      {
+        code: lambda.Code.fromAsset(path.join(__dirname, "../../backend"), {
+          bundling: {
+            image: lambda.Runtime.PYTHON_3_10.bundlingImage,
+            command: [
+              "bash",
+              "-c",
+              [
+                "python -m pip install --no-cache-dir pip-tools",
+                "python -m pip-compile pyproject.toml --output-file requirements.txt",
+                "python -m pip install --no-cache-dir -t /asset-output/python -r requirements.txt",
+                "rm -rf /asset-output/python/.venv",
+                "rm -rf /asset-output/python/__pycache__",
+                "find /asset-output/python -name '*.pyc' -delete",
+              ].join(" && "),
+            ],
+          },
+        }),
+        compatibleRuntimes: [lambda.Runtime.PYTHON_3_10],
+        description: "Dependencies for GridSim API",
+      }
+    );
+
     // Create Lambda function for the API
     const apiHandler = new lambda.Function(this, "ApiHandler", {
-      runtime: lambda.Runtime.PYTHON_3_9,
+      runtime: lambda.Runtime.PYTHON_3_10,
       handler: "app.main.handler",
-      code: lambda.Code.fromAsset(path.join(__dirname, "../../backend")),
+      code: lambda.Code.fromAsset(path.join(__dirname, "../../backend"), {
+        exclude: [".lambdaignore"],
+      }),
+      layers: [dependenciesLayer],
       environment: {
         STAGE: "prod",
       },
@@ -44,6 +74,7 @@ export class GridsimStack extends cdk.Stack {
       websiteIndexDocument: "index.html",
       websiteErrorDocument: "index.html",
       publicReadAccess: true,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
@@ -71,8 +102,9 @@ export class GridsimStack extends cdk.Stack {
 
     // Output the CloudFront URL
     new cdk.CfnOutput(this, "FrontendUrl", {
-      value: distribution.distributionDomainName,
-      description: "Frontend URL",
+      value: `https://${distribution.distributionDomainName}`,
+      description: "URL of the deployed frontend application",
+      exportName: `${this.stackName}-FrontendUrl`,
     });
 
     // Output the API URL
