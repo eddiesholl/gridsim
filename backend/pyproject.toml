@@ -10,8 +10,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "pydantic>=2.4.2",
     "pandas>=2.1.0",
-    "pypsa>=0.27.0",
-    "plotly>=5.18.0",
+    "pypsa>=0.27.0"
 ]
 
 [build-system]

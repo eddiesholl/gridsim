@@ -59,8 +59,6 @@ matplotlib==3.10.1
     # via
     #   pypsa
     #   seaborn
-narwhals==1.35.0
-    # via plotly
 netcdf4==1.7.2
     # via pypsa
 networkx==3.4.2
@@ -91,7 +89,6 @@ packaging==25.0
     #   deprecation
     #   geopandas
     #   matplotlib
-    #   plotly
     #   pyogrio
     #   xarray
 pandas==2.2.3
@@ -105,8 +102,6 @@ partd==1.4.2
     # via dask
 pillow==11.2.1
     # via matplotlib
-plotly==6.0.1
-    # via gridsim-backend (pyproject.toml)
 polars==1.27.1
     # via linopy
 pydantic==2.11.3
