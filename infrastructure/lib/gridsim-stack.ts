@@ -16,31 +16,24 @@ export class GridsimStack extends cdk.Stack {
       this,
       "DependenciesLayer",
       {
-        code: lambda.Code.fromAsset(path.join(__dirname, "../../backend"), {
-          bundling: {
-            image: lambda.Runtime.PYTHON_3_10.bundlingImage,
-            command: [
-              "bash",
-              "-c",
-              [
-                "python -m pip install --no-cache-dir pip-tools",
-                "python -m pip-compile pyproject.toml --output-file requirements.txt",
-                "python -m pip install --no-cache-dir -t /asset-output/python -r requirements.txt",
-                "rm -rf /asset-output/python/.venv",
-                "rm -rf /asset-output/python/__pycache__",
-                "find /asset-output/python -name '*.pyc' -delete",
-              ].join(" && "),
-            ],
-          },
-        }),
-        compatibleRuntimes: [lambda.Runtime.PYTHON_3_10],
+        code: lambda.Code.fromDockerBuild(
+          path.join(__dirname, "../../backend"),
+          {
+            file: "Dockerfile",
+            buildArgs: {
+              PYTHON_VERSION: "3.11",
+            },
+            platform: "linux/amd64",
+          }
+        ),
+        compatibleRuntimes: [lambda.Runtime.PYTHON_3_11],
         description: "Dependencies for GridSim API",
       }
     );
 
     // Create Lambda function for the API
     const apiHandler = new lambda.Function(this, "ApiHandler", {
-      runtime: lambda.Runtime.PYTHON_3_10,
+      runtime: lambda.Runtime.PYTHON_3_11,
       handler: "app.main.handler",
       code: lambda.Code.fromAsset(path.join(__dirname, "../../backend"), {
         exclude: [".lambdaignore"],
