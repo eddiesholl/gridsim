@@ -1,18 +1,11 @@
 import { useState } from "react";
 import Plot from "react-plotly.js";
 import "./App.css";
-import {
-  getHousehold,
-  getNem,
-  getPrimitive,
-  healthCheck,
-} from "./services/api";
+import { getPrimitive, healthCheck } from "./services/api";
 
 function App() {
   const [status, setStatus] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const [householdData, setHouseholdData] = useState<any>(null);
-  const [nemData, setNemData] = useState<any>(null);
   const [primitiveData, setPrimitiveData] = useState<any>(null);
   const checkHealth = async () => {
     try {
@@ -21,28 +14,6 @@ function App() {
       setError("");
     } catch {
       setError("Failed to connect to API");
-      setStatus("");
-    }
-  };
-
-  const getHouseholdData = async () => {
-    try {
-      const response = await getHousehold();
-      setHouseholdData(response.data);
-      setError("");
-    } catch {
-      setError("Failed to get household data");
-      setStatus("");
-    }
-  };
-
-  const getNemData = async () => {
-    try {
-      const response = await getNem();
-      console.log(response);
-      setNemData(response);
-    } catch {
-      setError("Failed to get NEM data");
       setStatus("");
     }
   };

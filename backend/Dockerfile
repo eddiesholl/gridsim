@@ -9,42 +9,28 @@ ENV PKG_CONFIG_PATH="/usr/lib/pkgconfig:/usr/local/lib/pkgconfig:${PKG_CONFIG_PA
 # Set working directory
 WORKDIR ${LAMBDA_TASK_ROOT}
 
-# Install system dependencies and Python packages
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
+    python3-venv \
     build-essential \
     pkg-config \
-    python3-dev
-# py3-setuptools \
-# py3-wheel
-# hdf5-dev \
-# netcdf-dev \
-# geos-dev \
-# geos
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# RUN apk add --no-cache \
-#     curl && \
-#     apk add --upgrade curl curl-dev
+# Create and activate virtual environment
+RUN python3 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# ENV RUSTUP_HOME=/usr/local/rustup \
-#     CARGO_HOME=/usr/local/cargo \
-#     PATH=/usr/local/cargo/bin:$PATH
+# Copy requirements file
+COPY requirements.txt .
 
-# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.71.0
-
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy function code
-# COPY ./gridsim_backend ${LAMBDA_TASK_ROOT}
+COPY ./gridsim_backend ${LAMBDA_TASK_ROOT}/gridsim_backend
 
-# Install the function's dependencies using file requirements.txt
-# from your project folder.
-# COPY requirements.txt ${LAMBDA_TASK_ROOT}
-# RUN pip3 install --no-cache-dir --timeout 100 -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
-
-RUN mkdir -p /.local && chmod 777 /.local
-# RUN useradd -m -s /bin/bash appuser
-# USER appuser
-
-# Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
-CMD [ "python3", "-m", "awslambdaric", "gridsim_backend.app.handler" ]
+# Set the CMD to your handler
+CMD [ "python3", "-m", "awslambdaric", "gridsim_backend.app.main.handler" ]
