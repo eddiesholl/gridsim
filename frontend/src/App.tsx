@@ -1,12 +1,18 @@
+import { Data, Layout } from "plotly.js";
 import { useState } from "react";
 import Plot from "react-plotly.js";
 import "./App.css";
 import { getPrimitive, healthCheck } from "./services/api";
 
+type PlotlyData = {
+  data: Data[];
+  layout: Layout;
+};
+
 function App() {
   const [status, setStatus] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const [primitiveData, setPrimitiveData] = useState<any>(null);
+  const [primitiveData, setPrimitiveData] = useState<PlotlyData | null>(null);
   const checkHealth = async () => {
     try {
       const response = await healthCheck();
@@ -46,7 +52,7 @@ function App() {
             title: "Power (MW)",
           },
         },
-      };
+      } as PlotlyData;
       setPrimitiveData(plotData);
     } catch {
       setError("Failed to get primitive data");
@@ -64,23 +70,10 @@ function App() {
       </div>
       <div className="card">
         <button onClick={getPrimitiveData}>Get primitive data</button>
-        {/* primitiveData && (
-          <p>Primitive data: {JSON.stringify(primitiveData)}</p>
-        ) */}
+
         {error && <p className="error">{error}</p>}
       </div>
-      {/* <div className="card">
-        <button onClick={getNemData}>Get NEM data</button>
-         {nemData && <p>NEM data: {JSON.stringify(nemData)}</p>} 
-        {error && <p className="error">{error}</p>}
-      </div> */}
-      {/* <div className="card">
-        <button onClick={getHouseholdData}>Get household data</button>
-        {householdData && (
-          <p>Household data: {JSON.stringify(householdData)}</p>
-        )}
-        {error && <p className="error">{error}</p>}
-      </div> */}
+
       {primitiveData && (
         <Plot
           data={primitiveData.data}
@@ -88,13 +81,6 @@ function App() {
           style={{ width: 800, height: 600 }}
         />
       )}
-      {/* {nemData && (
-        <Plot
-          data={nemData.data}
-          layout={nemData.layout}
-          style={{ width: "100%", height: "100%" }}
-        />
-      )} */}
     </div>
   );
 }

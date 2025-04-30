@@ -96,10 +96,6 @@ def get_single_node_network():
                 state_of_charge_initial=total_bev_capacity * 0.5, cyclic_state_of_charge=False, p_nom=total_bev_capacity, max_hours=1,
                 )
 
-    
-    
-    
-    
     return network
 
 def get_primitive_network():
