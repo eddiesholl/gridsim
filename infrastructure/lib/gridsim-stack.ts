@@ -20,6 +20,17 @@ export class GridsimStack extends cdk.Stack {
       domainName: "eddit.io",
     });
 
+    // Create the CloudFront certificate in us-east-1
+    const frontendCertificate = new acm.DnsValidatedCertificate(
+      this,
+      "FrontendCertificate",
+      {
+        domainName: "gridsim.eddit.io",
+        hostedZone,
+        region: "us-east-1", // CloudFront requires certificates in us-east-1
+      }
+    );
+
     // Create Lambda function for the API
     const apiHandler = new lambda.DockerImageFunction(this, "ApiHandler", {
       code: lambda.DockerImageCode.fromImageAsset(
@@ -36,10 +47,9 @@ export class GridsimStack extends cdk.Stack {
       environment: {
         STAGE: "prod",
       },
-      memorySize: 1024, // Adjust based on your needs
-      timeout: cdk.Duration.seconds(30), // Adjust based on your needs
-      ephemeralStorageSize: cdk.Size.mebibytes(1024), // Adjust if needed
-      // reservedConcurrentExecutions: 20, // Limit concurrent executions
+      memorySize: 1024,
+      timeout: cdk.Duration.seconds(30),
+      ephemeralStorageSize: cdk.Size.mebibytes(1024),
     });
 
     // Create API Gateway
@@ -115,8 +125,19 @@ export class GridsimStack extends cdk.Stack {
             responsePagePath: "/index.html",
           },
         ],
+        domainNames: ["gridsim.eddit.io"],
+        certificate: frontendCertificate,
       }
     );
+
+    // Create DNS record for the frontend
+    new route53.ARecord(this, "FrontendAliasRecord", {
+      zone: hostedZone,
+      target: route53.RecordTarget.fromAlias(
+        new route53Targets.CloudFrontTarget(distribution)
+      ),
+      recordName: "gridsim",
+    });
 
     // Upload frontend assets to S3
     new s3deploy.BucketDeployment(this, "FrontendDeployment", {
@@ -124,7 +145,7 @@ export class GridsimStack extends cdk.Stack {
         s3deploy.Source.asset(path.join(__dirname, "../../frontend/dist")),
       ],
       destinationBucket: frontendBucket,
-      distribution, // Invalidate CloudFront cache after deployment
+      distribution,
       distributionPaths: ["/*"],
     });
 

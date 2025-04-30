@@ -8,8 +8,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "deploy": "cdk deploy --no-strict -y",
-    "deploy:prod": "cdk deploy -y",
+    "deploy": "cdk deploy --no-strict --ci",
+    "deploy:prod": "cdk deploy --ci",
     "rollback": "cdk rollback",
     "destroy": "cdk destroy",
     "bootstrap": "cdk bootstrap"
