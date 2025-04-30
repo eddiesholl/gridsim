@@ -94,7 +94,6 @@ def get_single_node_network():
 
     network.add("StorageUnit", "battery storage", bus="battery",
                 state_of_charge_initial=total_bev_capacity * 0.5, cyclic_state_of_charge=False, p_nom=total_bev_capacity, max_hours=1,
-                # state_of_charge_set=battery_state_of_charge
                 )
 
     
@@ -165,7 +164,6 @@ def get_primitive_network():
         p_nom=120,  # super-charger with 120 kW
         p_max_pu=charger_p_max_pu,
         p_min_pu=charger_p_min_pu,
-        # p_min_pu=-100,
         efficiency=0.9,
     )
 
