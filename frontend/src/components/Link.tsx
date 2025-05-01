@@ -3,9 +3,7 @@ import { createLink, LinkComponent } from "@tanstack/react-router";
 import * as React from "react";
 import classes from "./styles.module.css";
 
-interface MantineAnchorProps extends Omit<UnstyledButtonProps, "href"> {
-  // Add any additional props you want to pass to the anchor
-}
+type MantineAnchorProps = Omit<UnstyledButtonProps, "href">;
 
 const MantineLinkComponent = React.forwardRef<
   HTMLButtonElement,

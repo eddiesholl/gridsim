@@ -2,7 +2,7 @@ import { Data, Layout } from "plotly.js";
 import { useState } from "react";
 import Plot from "react-plotly.js";
 import { getPrimitive, healthCheck } from "../../services/api";
-// import "./App.css";
+import "./App.css";
 
 type PlotlyData = {
   data: Data[];

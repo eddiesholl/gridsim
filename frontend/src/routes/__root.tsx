@@ -1,9 +1,29 @@
-import { AppShell, Burger, Group, UnstyledButton } from "@mantine/core";
+import { AppShell, Burger, Group } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import {
+  createRootRoute,
+  FileRouteTypes,
+  Outlet,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { MTLink } from "../components/Link";
-import classes from "./__root.module.css";
+
+// Define the type for each path object
+interface PathConfig {
+  path: FileRouteTypes["to"];
+  label: string;
+}
+
+const paths: PathConfig[] = [
+  {
+    path: "/",
+    label: "Home",
+  },
+  {
+    path: "/about",
+    label: "About",
+  },
+];
 
 function RootComponent() {
   const [opened, { toggle }] = useDisclosure();
@@ -30,18 +50,22 @@ function RootComponent() {
             <Group justify="flex-end" style={{ flex: 1 }}>
               {/* <MantineLogo size={30} /> */}
               <Group ml="xl" gap={0} visibleFrom="sm">
-                <MTLink to="/">Home</MTLink>
-                <MTLink to="/about">About</MTLink>
+                {paths.map(({ path, label }) => (
+                  <MTLink key={path} to={path}>
+                    {label}
+                  </MTLink>
+                ))}
               </Group>
             </Group>
           </Group>
         </AppShell.Header>
 
         <AppShell.Navbar py="md" px={4}>
-          <UnstyledButton className={classes.control}>Home</UnstyledButton>
-          <UnstyledButton className={classes.control}>Blog</UnstyledButton>
-          <UnstyledButton className={classes.control}>Contacts</UnstyledButton>
-          <UnstyledButton className={classes.control}>Support</UnstyledButton>
+          {paths.map(({ path, label }) => (
+            <MTLink key={path} to={path}>
+              {label}
+            </MTLink>
+          ))}
         </AppShell.Navbar>
 
         <AppShell.Main>
