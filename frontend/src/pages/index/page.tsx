@@ -1,15 +1,15 @@
 import { Data, Layout } from "plotly.js";
 import { useState } from "react";
 import Plot from "react-plotly.js";
+import { getPrimitive, healthCheck } from "../../services/api";
 import "./App.css";
-import { getPrimitive, healthCheck } from "./services/api";
 
 type PlotlyData = {
   data: Data[];
   layout: Layout;
 };
 
-function App() {
+export function IndexPage() {
   const [status, setStatus] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [primitiveData, setPrimitiveData] = useState<PlotlyData | null>(null);
@@ -84,5 +84,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
