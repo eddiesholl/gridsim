@@ -1,7 +1,7 @@
 import { Data, Layout } from "plotly.js";
 import { useState } from "react";
 import Plot from "react-plotly.js";
-import { getPrimitive, healthCheck } from "../../services/api";
+import { getPrimitive } from "../../services/api";
 import "./App.css";
 
 type PlotlyData = {
@@ -10,29 +10,15 @@ type PlotlyData = {
 };
 
 export function IndexPage() {
-  const [status, setStatus] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [primitiveData, setPrimitiveData] = useState<PlotlyData | null>(null);
-  const checkHealth = async () => {
-    try {
-      const response = await healthCheck();
-      setStatus(response.status);
-      setError("");
-    } catch {
-      setError("Failed to connect to API");
-      setStatus("");
-    }
-  };
 
   const getPrimitiveData = async () => {
     try {
       const response = await getPrimitive();
       // Transform the data into plotly format
       const plotData = {
-        data: Object.entries(
-          response.generators.p
-          // .concat(response.stores.e)
-        )
+        data: Object.entries(response.generators.p)
           .concat(Object.entries(response.loads.p))
           .concat(Object.entries(response.stores.e))
           .map(([name, values]) => ({
@@ -55,8 +41,7 @@ export function IndexPage() {
       } as PlotlyData;
       setPrimitiveData(plotData);
     } catch {
-      setError("Failed to get primitive data");
-      setStatus("");
+      setError("Failed to get basic scenario");
     }
   };
 
@@ -64,12 +49,7 @@ export function IndexPage() {
     <div className="App">
       <h1>GridSim</h1>
       <div className="card">
-        <button onClick={checkHealth}>Check API Health</button>
-        {status && <p>API Status: {status}</p>}
-        {error && <p className="error">{error}</p>}
-      </div>
-      <div className="card">
-        <button onClick={getPrimitiveData}>Get primitive data</button>
+        <button onClick={getPrimitiveData}>Fetch basic scenario</button>
 
         {error && <p className="error">{error}</p>}
       </div>
