@@ -1,3 +1,4 @@
+import { Button, Card, Text } from "@mantine/core";
 import { Data, Layout } from "plotly.js";
 import { useState } from "react";
 import Plot from "react-plotly.js";
@@ -47,20 +48,26 @@ export function IndexPage() {
 
   return (
     <div className="App">
-      <h1>GridSim</h1>
+      <Card>
+        <h1>GridSim</h1>
+      </Card>
       <div className="card">
-        <button onClick={getPrimitiveData}>Fetch basic scenario</button>
+        <Button onClick={getPrimitiveData}>Fetch basic scenario</Button>
 
         {error && <p className="error">{error}</p>}
       </div>
 
-      {primitiveData && (
-        <Plot
-          data={primitiveData.data}
-          layout={primitiveData.layout}
-          style={{ width: 800, height: 600 }}
-        />
-      )}
+      <Card>
+        {primitiveData ? (
+          <Plot
+            data={primitiveData.data}
+            layout={primitiveData.layout}
+            style={{ width: 800, height: 600 }}
+          />
+        ) : (
+          <Text fs="italic">Your simulation results will appear here...</Text>
+        )}
+      </Card>
     </div>
   );
 }
