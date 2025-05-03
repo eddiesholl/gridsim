@@ -65,13 +65,9 @@ export function IndexPage() {
         {error && <p className="error">{error}</p>}
       </div>
 
-      <Card style={{ width: 800, height: 600 }}>
+      <Card>
         {primitiveData ? (
-          <Plot
-            data={primitiveData.data}
-            layout={primitiveData.layout}
-            style={{ width: 800, height: 600 }}
-          />
+          <Plot data={primitiveData.data} layout={primitiveData.layout} />
         ) : (
           <Text fs="italic">Your simulation results will appear here...</Text>
         )}
