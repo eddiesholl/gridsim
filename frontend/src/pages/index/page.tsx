@@ -1,4 +1,4 @@
-import { Button, Card, Text } from "@mantine/core";
+import { Button, Card, LoadingOverlay, Text } from "@mantine/core";
 import { Data, Layout } from "plotly.js";
 import { useState } from "react";
 import Plot from "react-plotly.js";
@@ -10,12 +10,16 @@ type PlotlyData = {
   layout: Layout;
 };
 
+type LoadState = "initial" | "loading" | "error" | "success";
+
 export function IndexPage() {
+  const [loadState, setLoadState] = useState<LoadState>("initial");
   const [error, setError] = useState<string>("");
   const [primitiveData, setPrimitiveData] = useState<PlotlyData | null>(null);
 
   const getPrimitiveData = async () => {
     try {
+      setLoadState("loading");
       const response = await getPrimitive();
       // Transform the data into plotly format
       const plotData = {
@@ -41,7 +45,9 @@ export function IndexPage() {
         },
       } as PlotlyData;
       setPrimitiveData(plotData);
+      setLoadState("success");
     } catch {
+      setLoadState("error");
       setError("Failed to get basic scenario");
     }
   };
@@ -52,12 +58,14 @@ export function IndexPage() {
         <h1>GridSim</h1>
       </Card>
       <div className="card">
-        <Button onClick={getPrimitiveData}>Fetch basic scenario</Button>
+        <Button loading={loadState === "loading"} onClick={getPrimitiveData}>
+          Fetch basic scenario
+        </Button>
 
         {error && <p className="error">{error}</p>}
       </div>
 
-      <Card>
+      <Card style={{ width: 800, height: 600 }}>
         {primitiveData ? (
           <Plot
             data={primitiveData.data}
@@ -67,6 +75,10 @@ export function IndexPage() {
         ) : (
           <Text fs="italic">Your simulation results will appear here...</Text>
         )}
+        <LoadingOverlay
+          visible={loadState === "loading"}
+          transitionProps={{ transition: "fade", duration: 500 }}
+        />
       </Card>
     </div>
   );
