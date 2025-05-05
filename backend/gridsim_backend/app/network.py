@@ -133,7 +133,7 @@ def get_primitive_network():
         bus="grid",
         # p_nom_extendable=True,
         p_nom=1,
-        p_max_pu=15,
+        p_max_pu=16,
         marginal_cost=80)
 
     network.add("Generator", "PV", bus="grid", p_nom=1, p_max_pu=solar_pv, marginal_cost=20)
@@ -144,26 +144,46 @@ def get_primitive_network():
 
     network.add("Bus", "battery", carrier="AC")
 
-    network.add("Link", "street", p_nom=1, bus0="grid", bus1="home", p_min_pu=-1, p_max_pu=1)
+    network.add("Link", "street", p_nom=1 * 100000, bus0="grid", bus1="home", p_min_pu=-1, p_max_pu=1)
 
-    bev_hourly_load = 0.009
-    bev_usage = pd.Series([0.0] * 7 + [bev_hourly_load] * 2 + [0.0] * 8 + [bev_hourly_load] * 2 + [0.0] * 5, index)
+    number_of_evs = 100
+    hourly_load_per_ev = 0.007
+    ev_battery_size_mwh = 0.08
+    initial_battery_soc = 0.8
+    home_charger_p_nom_kw = 0.022
+    max_discharge_factor = -0.2
+
+    bev_load = hourly_load_per_ev * number_of_evs
+    bev_usage = pd.Series([0.0] * 7 + [bev_load] * 2 + [0.0] * 8 + [bev_load] * 2 + [0.0] * 5, index)
     network.add("Load", "driving", bus="battery", p_set=bev_usage)
 
+
+    total_ev_capacity_mwh = number_of_evs * ev_battery_size_mwh
+    initial_ev_storage = total_ev_capacity_mwh * initial_battery_soc
+
     charger_p_max_pu = pd.Series([1.0] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [1.0] * 5, index)
-    charger_p_min_pu = pd.Series([-1.0] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [-1.0] * 5, index)
+    charger_p_min_pu = pd.Series([max_discharge_factor] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [max_discharge_factor] * 5, index)
     network.add(
         "Link",
         "charger",
         bus0="home",
         bus1="battery",
-        p_nom=120,  # super-charger with 120 kW
+        p_nom=home_charger_p_nom_kw * number_of_evs,  # super-charger with 120 kW
         p_max_pu=charger_p_max_pu,
         p_min_pu=charger_p_min_pu,
-        efficiency=0.9,
+        efficiency=0.9
     )
 
-    battery_e_min_pu = pd.Series([0] * 23 + [1], index)
-    network.add("Store", "battery storage", bus="battery", e_cyclic=False, e_initial=0.1, e_nom=0.1, e_min_pu=battery_e_min_pu)
+
+
+    battery_e_min_pu = pd.Series([0] * 6 + [0.8] * 1 + [0.2] * 2 + [0.0] * 8 + [0.2] * 2 + [0.2] * 4 + [0.8], index)
+    network.add(
+        "Store",
+        "battery storage",
+        bus="battery",
+        e_cyclic=False,
+        e_initial=initial_ev_storage,
+        e_nom=total_ev_capacity_mwh,
+        e_min_pu=battery_e_min_pu)
 
     return network

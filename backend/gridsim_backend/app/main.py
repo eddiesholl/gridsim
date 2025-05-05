@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from mangum import Mangum
@@ -50,7 +50,13 @@ async def health_check():
 @app.get("/api/primitive", response_model=PrimitiveResponse)
 async def get_primitive():
     nw = network.get_primitive_network()
-    nw.optimize()
+    status, message = nw.optimize()
+    
+    if status == 'warning' and message == 'infeasible':
+        raise HTTPException(status_code=400, detail="Optimization problem is infeasible")
+    
+    # Debug: Print available generator names
+    print("Available generators:", nw.generators_t.p.columns.tolist())
 
     # Convert timestamps to strings for JSON serialization
     timestamps = nw.generators_t.p.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
@@ -59,20 +65,20 @@ async def get_primitive():
     generator_data = {
         'p': {
             gen: nw.generators_t['p'][gen].tolist()
-            for gen in ['Gas', 'Coal', 'PV']
+            for gen in nw.generators_t.p.columns  # Use actual column names instead of hardcoded list
         }
     }
 
     load_data = {
         'p': {
             load: nw.loads_t['p'][load].tolist()
-            for load in ['demand', 'driving']
+            for load in nw.loads_t.p.columns  # Use actual column names
         }
     }
 
     store_data = {
-        'p': {store: nw.stores_t['p'][store].tolist() for store in ['battery storage']},
-        'e': {store: nw.stores_t['e'][store].tolist() for store in ['battery storage']}
+        'p': {store: nw.stores_t['p'][store].tolist() for store in nw.stores_t.p.columns},
+        'e': {store: nw.stores_t['e'][store].tolist() for store in nw.stores_t.e.columns}
     }
 
     return PrimitiveResponse(

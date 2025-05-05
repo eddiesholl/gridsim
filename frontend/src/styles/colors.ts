@@ -81,6 +81,7 @@ const chartColors = {
   "yellow-green": "8ac926",
   "steel-blue": "1982c4",
   "ultra-violet": "6a4c93",
+  "light-blue": "90e0ef",
 };
 
 export const chartColorArray = [
@@ -90,4 +91,5 @@ export const chartColorArray = [
   chartColors["yellow-green"],
   chartColors["steel-blue"],
   chartColors["ultra-violet"],
+  chartColors["light-blue"],
 ];

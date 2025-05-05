@@ -26,7 +26,18 @@ export function IndexPage() {
       const plotData = {
         data: Object.entries(data.generators.p)
           .concat(Object.entries(data.loads.p))
-          .concat(Object.entries(data.stores.e))
+          .concat(
+            Object.entries(data.stores.e).map(([name, values]) => [
+              `${name} (mwh stored)`,
+              values,
+            ])
+          )
+          .concat(
+            Object.entries(data.stores.p).map(([name, values]) => [
+              `${name} (output)`,
+              values,
+            ])
+          )
           .map(([name, values], index) => ({
             type: "scatter",
             mode: "lines",
@@ -41,7 +52,7 @@ export function IndexPage() {
           })),
         layout: {
           title: {
-            text: "Generator Output Over Time",
+            text: "Daily Load Profile",
             font: {
               family: "Roboto, sans-serif",
               size: 24,
@@ -102,9 +113,6 @@ export function IndexPage() {
 
   return (
     <div className="App">
-      <Card>
-        <h1>GridSim</h1>
-      </Card>
       <div className="card">
         <Button loading={loadState === "loading"} onClick={getPrimitiveData}>
           Fetch basic scenario
