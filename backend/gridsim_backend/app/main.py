@@ -3,8 +3,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from mangum import Mangum
 from . import network
+from pydantic import BaseModel
+from typing import Dict, List, Optional
+from datetime import datetime
 
-app = FastAPI(title="GridSim API")
+app = FastAPI(title="GridSim API",
+              version="0.1.0",
+              openapi_url="/openapi.json",
+              docs_url="/docs",
+              redoc_url="/redoc")
 
 # Configure CORS
 app.add_middleware(
@@ -15,6 +22,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Define response models
+class GeneratorData(BaseModel):
+    p: Dict[str, List[float]]
+
+class LoadData(BaseModel):
+    p: Dict[str, List[float]]
+
+class StoreData(BaseModel):
+    p: Dict[str, List[float]]
+    e: Dict[str, List[float]]
+
+class PrimitiveResponse(BaseModel):
+    index: List[str]  # datetime strings
+    generators: GeneratorData
+    loads: LoadData
+    stores: StoreData
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to GridSim API"}
@@ -23,7 +47,7 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
-@app.get("/api/primitive")
+@app.get("/api/primitive", response_model=PrimitiveResponse)
 async def get_primitive():
     nw = network.get_primitive_network()
     nw.optimize()
@@ -32,39 +56,31 @@ async def get_primitive():
     timestamps = nw.generators_t.p.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
     
     # Convert generator data to a format that can be serialized
-    generator_data = {}
-    for gen in ['Gas', 'Coal', 'PV']:
-        # Convert the series to a list of values
-        for d in ['p']:
-            if generator_data.get(d) is None:
-                generator_data[d] = {}
-            generator_data[d][gen] = nw.generators_t[d][gen].tolist()
-
-    load_data = {}
-    for load in ['demand', 'driving']:
-        for d in ['p']:
-            if load_data.get(d) is None:
-                load_data[d] = {}
-            load_data[d][load] = nw.loads_t[d][load].tolist()
-
-    store_data = {}
-    for store in ['battery storage']:
-        for d in ['p', 'e']:
-            if store_data.get(d) is None:
-                store_data[d] = {}
-            store_data[d][store] = nw.stores_t[d][store].tolist()
-
-    # print(dir(nw.loads_t.p))
-    print(nw.loads_t.p.columns)
-    result = {
-        'index': timestamps,
-        'generators': generator_data,
-        'loads': load_data,
-        'stores': store_data
+    generator_data = {
+        'p': {
+            gen: nw.generators_t['p'][gen].tolist()
+            for gen in ['Gas', 'Coal', 'PV']
+        }
     }
-    print(result)
-        
-    return JSONResponse(content=result)
+
+    load_data = {
+        'p': {
+            load: nw.loads_t['p'][load].tolist()
+            for load in ['demand', 'driving']
+        }
+    }
+
+    store_data = {
+        'p': {store: nw.stores_t['p'][store].tolist() for store in ['battery storage']},
+        'e': {store: nw.stores_t['e'][store].tolist() for store in ['battery storage']}
+    }
+
+    return PrimitiveResponse(
+        index=timestamps,
+        generators=GeneratorData(**generator_data),
+        loads=LoadData(**load_data),
+        stores=StoreData(**store_data)
+    )
 
 # Create handler for AWS Lambda
 handler = Mangum(app) 

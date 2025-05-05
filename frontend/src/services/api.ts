@@ -1,4 +1,5 @@
 import axios from "axios";
+import { fetcher } from "./api-client";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 console.log(API_BASE_URL);
@@ -26,9 +27,9 @@ export const getNem = async () => {
   return response.data;
 };
 
-export const getPrimitive = async () => {
-  const response = await api.get("/api/primitive");
-  return response.data;
-};
+export const getPrimitive = fetcher
+  .path("/api/primitive")
+  .method("get")
+  .create();
 
 export default api;

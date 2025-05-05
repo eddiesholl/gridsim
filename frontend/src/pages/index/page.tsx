@@ -21,17 +21,17 @@ export function IndexPage() {
   const getPrimitiveData = async () => {
     try {
       setLoadState("loading");
-      const response = await getPrimitive();
+      const { data } = await getPrimitive(undefined);
       // Transform the data into plotly format
       const plotData = {
-        data: Object.entries(response.generators.p)
-          .concat(Object.entries(response.loads.p))
-          .concat(Object.entries(response.stores.e))
+        data: Object.entries(data.generators.p)
+          .concat(Object.entries(data.loads.p))
+          .concat(Object.entries(data.stores.e))
           .map(([name, values], index) => ({
             type: "scatter",
             mode: "lines",
             name: name,
-            x: response.index,
+            x: data.index,
             y: values,
             line: {
               shape: "linear",

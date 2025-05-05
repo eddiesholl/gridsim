@@ -10,7 +10,8 @@
     "build": "tsc -b && vite build",
     "build:prod": "tsc -b && vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-api-types": "openapi-typescript http://127.0.0.1:8000/openapi.json -o src/generated/api.ts",
   },
   "dependencies": {
     "@mantine/core": "^7.17.5",
@@ -19,6 +20,7 @@
     "@tanstack/react-router-devtools": "^1.119.1",
     "@types/axios": "^0.14.4",
     "axios": "^1.8.4",
+    "openapi-typescript-fetch": "^2.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-plotly.js": "^2.6.0",
@@ -35,6 +37,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
+    "openapi-typescript": "^7.7.1",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0"
