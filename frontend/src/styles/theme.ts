@@ -7,6 +7,7 @@ import {
   rem,
   Select,
 } from "@mantine/core";
+import { colorRanges } from "./colors";
 
 const CONTAINER_SIZES: Record<string, string> = {
   xxs: rem("200px"),
@@ -20,6 +21,7 @@ const CONTAINER_SIZES: Record<string, string> = {
 
 export const mantineTheme: MantineThemeOverride = createTheme({
   /** Put your mantine theme override here */
+  colors: colorRanges,
   fontSizes: {
     xs: rem("12px"),
     sm: rem("14px"),
@@ -42,7 +44,7 @@ export const mantineTheme: MantineThemeOverride = createTheme({
     "2xl": rem("28px"),
     "3xl": rem("32px"),
   },
-  primaryColor: "indigo",
+  primaryColor: "blush",
   components: {
     /** Put your mantine component override here */
     Container: Container.extend({

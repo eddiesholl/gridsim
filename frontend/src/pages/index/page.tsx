@@ -3,6 +3,7 @@ import { Data, Layout } from "plotly.js";
 import { useState } from "react";
 import Plot from "react-plotly.js";
 import { getPrimitive } from "../../services/api";
+import { chartColorArray } from "../../styles/colors";
 import "./App.css";
 
 type PlotlyData = {
@@ -26,21 +27,68 @@ export function IndexPage() {
         data: Object.entries(response.generators.p)
           .concat(Object.entries(response.loads.p))
           .concat(Object.entries(response.stores.e))
-          .map(([name, values]) => ({
+          .map(([name, values], index) => ({
             type: "scatter",
             mode: "lines",
             name: name,
             x: response.index,
             y: values,
-            line: { shape: "linear" },
+            line: {
+              shape: "linear",
+              color: chartColorArray[index % chartColorArray.length], // colorPalette[index % colorPalette.length],
+              width: 3,
+            },
           })),
         layout: {
-          title: "Generator Output Over Time",
+          title: {
+            text: "Generator Output Over Time",
+            font: {
+              family: "Roboto, sans-serif",
+              size: 24,
+              color: "var(--mantine-color-dark-9)",
+            },
+          },
+          font: {
+            family: "Roboto, sans-serif",
+            size: 14,
+            color: "var(--mantine-color-dark-9)",
+          },
           xaxis: {
-            title: "Time",
+            title: {
+              text: "Time",
+              font: {
+                family: "Roboto, sans-serif",
+                size: 16,
+                color: "var(--mantine-color-dark-9)",
+              },
+            },
+            tickfont: {
+              family: "Roboto, sans-serif",
+              size: 12,
+              color: "var(--mantine-color-dark-7)",
+            },
           },
           yaxis: {
-            title: "Power (MW)",
+            title: {
+              text: "Power (MW)",
+              font: {
+                family: "Roboto, sans-serif",
+                size: 16,
+                color: "var(--mantine-color-dark-9)",
+              },
+            },
+            tickfont: {
+              family: "Roboto, sans-serif",
+              size: 12,
+              color: "var(--mantine-color-dark-7)",
+            },
+          },
+          legend: {
+            font: {
+              family: "Roboto, sans-serif",
+              size: 12,
+              color: "var(--mantine-color-dark-9)",
+            },
           },
         },
       } as PlotlyData;

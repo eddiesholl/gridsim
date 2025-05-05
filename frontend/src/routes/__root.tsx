@@ -1,4 +1,4 @@
-import { AppShell, Burger, Group } from "@mantine/core";
+import { AppShell, Burger, Group, Title } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   createRootRoute,
@@ -43,7 +43,7 @@ function RootComponent() {
         }}
         padding="md"
       >
-        <AppShell.Header>
+        <AppShell.Header bg="moonstone.3">
           <Group h="100%" px="md">
             <Burger
               opened={opened}
@@ -51,6 +51,7 @@ function RootComponent() {
               hiddenFrom="sm"
               size="sm"
             />
+            <Title order={1}>GridSim</Title>
             <Group justify="flex-end" style={{ flex: 1 }}>
               {/* <MantineLogo size={30} /> */}
               <Group ml="xl" gap={0} visibleFrom="sm">

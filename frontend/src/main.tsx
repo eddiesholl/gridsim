@@ -4,7 +4,7 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 // import "./index.css";
 import "@mantine/core/styles.css";
-import { mantineTheme } from "./theme";
+import { mantineTheme } from "./styles/theme";
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 
