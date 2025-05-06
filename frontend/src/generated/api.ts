@@ -3,162 +3,144 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
-    "/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Root */
-        get: operations["root__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Health Check */
-        get: operations["health_check_api_health_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/primitive": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get Primitive */
-        get: operations["get_primitive_api_primitive_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+  "/": {
+    /** Root */
+    get: operations["root__get"];
+  };
+  "/api/health": {
+    /** Health Check */
+    get: operations["health_check_api_health_get"];
+  };
+  "/api/daily": {
+    /** Get Daily */
+    get: operations["get_daily_api_daily_get"];
+  };
 }
+
 export type webhooks = Record<string, never>;
+
 export interface components {
-    schemas: {
-        /** GeneratorData */
-        GeneratorData: {
-            /** P */
-            p: {
-                [key: string]: number[];
-            };
-        };
-        /** LoadData */
-        LoadData: {
-            /** P */
-            p: {
-                [key: string]: number[];
-            };
-        };
-        /** PrimitiveResponse */
-        PrimitiveResponse: {
-            /** Index */
-            index: string[];
-            generators: components["schemas"]["GeneratorData"];
-            loads: components["schemas"]["LoadData"];
-            stores: components["schemas"]["StoreData"];
-        };
-        /** StoreData */
-        StoreData: {
-            /** P */
-            p: {
-                [key: string]: number[];
-            };
-            /** E */
-            e: {
-                [key: string]: number[];
-            };
-        };
+  schemas: {
+    /** DailyResponse */
+    DailyResponse: {
+      /** Index */
+      index: string[];
+      generators: components["schemas"]["GeneratorData"];
+      loads: components["schemas"]["LoadData"];
+      stores: components["schemas"]["StoreData"];
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    /** GeneratorData */
+    GeneratorData: {
+      /** P */
+      p: {
+        [key: string]: number[];
+      };
+    };
+    /** HTTPValidationError */
+    HTTPValidationError: {
+      /** Detail */
+      detail?: components["schemas"]["ValidationError"][];
+    };
+    /** HealthResponse */
+    HealthResponse: {
+      /** Status */
+      status: string;
+    };
+    /** LoadData */
+    LoadData: {
+      /** P */
+      p: {
+        [key: string]: number[];
+      };
+    };
+    /** RootResponse */
+    RootResponse: {
+      /** Message */
+      message: string;
+    };
+    /** StoreData */
+    StoreData: {
+      /** P */
+      p: {
+        [key: string]: number[];
+      };
+      /** E */
+      e: {
+        [key: string]: number[];
+      };
+    };
+    /** ValidationError */
+    ValidationError: {
+      /** Location */
+      loc: (string | number)[];
+      /** Message */
+      msg: string;
+      /** Error Type */
+      type: string;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
+
 export type $defs = Record<string, never>;
+
+export type external = Record<string, never>;
+
 export interface operations {
-    root__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+
+  /** Root */
+  root__get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["RootResponse"];
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
+      };
     };
-    health_check_api_health_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+  };
+  /** Health Check */
+  health_check_api_health_get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["HealthResponse"];
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
+      };
     };
-    get_primitive_api_primitive_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["PrimitiveResponse"];
-                };
-            };
-        };
+  };
+  /** Get Daily */
+  get_daily_api_daily_get: {
+    parameters: {
+      query?: {
+        number_of_evs?: number | null;
+        hourly_load_per_ev?: number | null;
+        ev_battery_size_mwh?: number | null;
+        initial_battery_soc?: number | null;
+        home_charger_p_nom_kw?: number | null;
+        max_discharge_factor?: number | null;
+      };
     };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["DailyResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
 }

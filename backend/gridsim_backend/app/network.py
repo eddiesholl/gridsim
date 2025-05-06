@@ -2,6 +2,8 @@ import pypsa
 import pandas as pd
 import numpy as np
 from . import indices
+from pydantic import BaseModel, Field   
+from typing import Dict, List, Optional
 
 def get_single_node_network():
     """
@@ -98,7 +100,54 @@ def get_single_node_network():
 
     return network
 
-def get_primitive_network():
+class DailyParameters(BaseModel):
+    number_of_evs: Optional[int] = Field(
+        default=100,
+        gt=0,
+        le=200,
+        description="Number of electric vehicles"
+    )
+    hourly_load_per_ev: Optional[float] = Field(
+        default=0.007,
+        gt=0,
+        le=0.01,
+        description="Hourly load per EV in MWh"
+    )
+    ev_battery_size_mwh: Optional[float] = Field(
+        default=0.08,
+        gt=0,
+        le=0.1,
+        description="EV battery size in MWh"
+    )
+    initial_battery_soc: Optional[float] = Field(
+        default=0.8,
+        ge=0,
+        le=1,
+        description="Initial battery state of charge (0-1)"
+    )
+    home_charger_p_nom_kw: Optional[float] = Field(
+        default=0.022,
+        gt=0,
+        le=0.1,
+        description="Home charger nominal power in kW"
+    )
+    max_discharge_factor: Optional[float] = Field(
+        default=-0.2,
+        le=0,
+        ge=-1,
+        description="Maximum discharge factor (negative value)"
+    )
+    percent_of_evs_in_vpp: Optional[float] = Field(
+        default=0.5,
+        ge=0,
+        le=1,
+        description="Percentage of EVs in VPP"
+    )
+
+    class Config:
+        from_attributes = True
+
+def get_daily_network(params: DailyParameters):
     index = indices.single_day_hourly
     demand = pd.Series([
         21, 20, 20, 19,
@@ -146,13 +195,14 @@ def get_primitive_network():
 
     network.add("Link", "street", p_nom=1 * 100000, bus0="grid", bus1="home", p_min_pu=-1, p_max_pu=1)
 
-    number_of_evs = 100
-    hourly_load_per_ev = 0.007
-    ev_battery_size_mwh = 0.08
-    initial_battery_soc = 0.8
-    home_charger_p_nom_kw = 0.022
-    max_discharge_factor = -0.2
+    number_of_evs = params.number_of_evs
+    hourly_load_per_ev = params.hourly_load_per_ev
+    ev_battery_size_mwh = params.ev_battery_size_mwh
+    initial_battery_soc = params.initial_battery_soc
+    home_charger_p_nom_kw = params.home_charger_p_nom_kw
+    max_discharge_factor = params.max_discharge_factor
 
+    # define the load that driving EVs draw from their batteries
     bev_load = hourly_load_per_ev * number_of_evs
     bev_usage = pd.Series([0.0] * 7 + [bev_load] * 2 + [0.0] * 8 + [bev_load] * 2 + [0.0] * 5, index)
     network.add("Load", "driving", bus="battery", p_set=bev_usage)
@@ -161,6 +211,7 @@ def get_primitive_network():
     total_ev_capacity_mwh = number_of_evs * ev_battery_size_mwh
     initial_ev_storage = total_ev_capacity_mwh * initial_battery_soc
 
+    # define the times that the hoem charger is able to charge and discharge the battery
     charger_p_max_pu = pd.Series([1.0] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [1.0] * 5, index)
     charger_p_min_pu = pd.Series([max_discharge_factor] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [max_discharge_factor] * 5, index)
     network.add(
@@ -174,9 +225,10 @@ def get_primitive_network():
         efficiency=0.9
     )
 
-
-
+    # define the minimum state of charge of the battery through the day
     battery_e_min_pu = pd.Series([0] * 6 + [0.8] * 1 + [0.2] * 2 + [0.0] * 8 + [0.2] * 2 + [0.2] * 4 + [0.8], index)
+
+    # implement the actual battery storage
     network.add(
         "Store",
         "battery storage",

@@ -27,9 +27,6 @@ export const getNem = async () => {
   return response.data;
 };
 
-export const getPrimitive = fetcher
-  .path("/api/primitive")
-  .method("get")
-  .create();
+export const getDaily = fetcher.path("/api/daily").method("get").create();
 
 export default api;

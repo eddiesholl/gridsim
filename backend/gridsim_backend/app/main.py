@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from mangum import Mangum
 from . import network
 from pydantic import BaseModel
-from typing import Dict, List, Optional
+from typing import Dict, List
 from datetime import datetime
 
 app = FastAPI(title="GridSim API",
@@ -33,23 +33,31 @@ class StoreData(BaseModel):
     p: Dict[str, List[float]]
     e: Dict[str, List[float]]
 
-class PrimitiveResponse(BaseModel):
+class DailyResponse(BaseModel):
     index: List[str]  # datetime strings
     generators: GeneratorData
     loads: LoadData
     stores: StoreData
 
-@app.get("/")
+class RootResponse(BaseModel):
+    message: str
+
+class HealthResponse(BaseModel):
+    status: str
+
+
+
+@app.get("/", response_model=RootResponse)
 async def root():
     return {"message": "Welcome to GridSim API"}
 
-@app.get("/api/health")
+@app.get("/api/health", response_model=HealthResponse)
 async def health_check():
     return {"status": "healthy"}
 
-@app.get("/api/primitive", response_model=PrimitiveResponse)
-async def get_primitive():
-    nw = network.get_primitive_network()
+@app.get("/api/daily", response_model=DailyResponse)
+async def get_daily(params: network.DailyParameters = Depends()):
+    nw = network.get_daily_network(params)
     status, message = nw.optimize()
     
     if status == 'warning' and message == 'infeasible':
@@ -65,14 +73,14 @@ async def get_primitive():
     generator_data = {
         'p': {
             gen: nw.generators_t['p'][gen].tolist()
-            for gen in nw.generators_t.p.columns  # Use actual column names instead of hardcoded list
+            for gen in nw.generators_t.p.columns
         }
     }
 
     load_data = {
         'p': {
             load: nw.loads_t['p'][load].tolist()
-            for load in nw.loads_t.p.columns  # Use actual column names
+            for load in nw.loads_t.p.columns
         }
     }
 
@@ -81,7 +89,7 @@ async def get_primitive():
         'e': {store: nw.stores_t['e'][store].tolist() for store in nw.stores_t.e.columns}
     }
 
-    return PrimitiveResponse(
+    return DailyResponse(
         index=timestamps,
         generators=GeneratorData(**generator_data),
         loads=LoadData(**load_data),

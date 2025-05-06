@@ -2,7 +2,7 @@ import { Button, Card, LoadingOverlay, Text } from "@mantine/core";
 import { Data, Layout } from "plotly.js";
 import { useState } from "react";
 import Plot from "react-plotly.js";
-import { getPrimitive } from "../../services/api";
+import { getDaily } from "../../services/api";
 import { chartColorArray } from "../../styles/colors";
 import "./App.css";
 
@@ -13,15 +13,17 @@ type PlotlyData = {
 
 type LoadState = "initial" | "loading" | "error" | "success";
 
+type GetDailyParams = Parameters<typeof getDaily>;
+
 export function IndexPage() {
   const [loadState, setLoadState] = useState<LoadState>("initial");
   const [error, setError] = useState<string>("");
-  const [primitiveData, setPrimitiveData] = useState<PlotlyData | null>(null);
+  const [dailyData, setDailyData] = useState<PlotlyData | null>(null);
 
-  const getPrimitiveData = async () => {
+  const getDailyData = async (...getDailyParams: GetDailyParams) => {
     try {
       setLoadState("loading");
-      const { data } = await getPrimitive(undefined);
+      const { data } = await getDaily(...getDailyParams);
       // Transform the data into plotly format
       const plotData = {
         data: Object.entries(data.generators.p)
@@ -103,27 +105,30 @@ export function IndexPage() {
           },
         },
       } as PlotlyData;
-      setPrimitiveData(plotData);
+      setDailyData(plotData);
       setLoadState("success");
     } catch {
       setLoadState("error");
-      setError("Failed to get basic scenario");
+      setError("Failed to get daily scenario");
     }
   };
 
   return (
     <div className="App">
       <div className="card">
-        <Button loading={loadState === "loading"} onClick={getPrimitiveData}>
-          Fetch basic scenario
+        <Button
+          loading={loadState === "loading"}
+          onClick={() => getDailyData({})}
+        >
+          Fetch daily scenario
         </Button>
 
         {error && <p className="error">{error}</p>}
       </div>
 
       <Card>
-        {primitiveData ? (
-          <Plot data={primitiveData.data} layout={primitiveData.layout} />
+        {dailyData ? (
+          <Plot data={dailyData.data} layout={dailyData.layout} />
         ) : (
           <Text fs="italic">Your simulation results will appear here...</Text>
         )}
