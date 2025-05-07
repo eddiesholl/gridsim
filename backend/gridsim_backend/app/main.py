@@ -33,11 +33,19 @@ class StoreData(BaseModel):
     p: Dict[str, List[float]]
     e: Dict[str, List[float]]
 
+class LinkData(BaseModel):
+    p0: Dict[str, List[float]]
+    p1: Dict[str, List[float]]
+
+class BusData(BaseModel):
+    p: Dict[str, List[float]]
 class DailyResponse(BaseModel):
     index: List[str]  # datetime strings
     generators: GeneratorData
     loads: LoadData
     stores: StoreData
+    links: LinkData
+    buses: BusData
 
 class RootResponse(BaseModel):
     message: str
@@ -64,7 +72,8 @@ async def get_daily(params: network.DailyParameters = Depends()):
         raise HTTPException(status_code=400, detail="Optimization problem is infeasible")
     
     # Debug: Print available generator names
-    print("Available generators:", nw.generators_t.p.columns.tolist())
+    print("Available links:", nw.links_t.p0)
+    print("Available buses:", nw.buses_t.p)
 
     # Convert timestamps to strings for JSON serialization
     timestamps = nw.generators_t.p.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
@@ -89,11 +98,22 @@ async def get_daily(params: network.DailyParameters = Depends()):
         'e': {store: nw.stores_t['e'][store].tolist() for store in nw.stores_t.e.columns}
     }
 
+    link_data = {
+        'p0': {link: nw.links_t['p0'][link].tolist() for link in nw.links_t.p0.columns},
+        'p1': {link: nw.links_t['p1'][link].tolist() for link in nw.links_t.p1.columns}
+    }
+
+    bus_data = {
+        'p': {bus: nw.buses_t['p'][bus].tolist() for bus in nw.buses_t.p.columns}
+    }
+
     return DailyResponse(
         index=timestamps,
         generators=GeneratorData(**generator_data),
         loads=LoadData(**load_data),
-        stores=StoreData(**store_data)
+        stores=StoreData(**store_data),
+        links=LinkData(**link_data),
+        buses=BusData(**bus_data)
     )
 
 # Create handler for AWS Lambda

@@ -1,16 +1,11 @@
 import { Button, Card, LoadingOverlay, Text } from "@mantine/core";
-import { Data, Layout } from "plotly.js";
 import { useState } from "react";
 import Plot from "react-plotly.js";
+import { plotDailyLinkData, plotDailyLoadData } from "../../data/plotly";
+import { sumGasUsage } from "../../data/results";
 import { getDaily } from "../../services/api";
-import { chartColorArray } from "../../styles/colors";
+import { DailyResponse } from "../../types";
 import "./App.css";
-
-type PlotlyData = {
-  data: Data[];
-  layout: Layout;
-};
-
 type LoadState = "initial" | "loading" | "error" | "success";
 
 type GetDailyParams = Parameters<typeof getDaily>;
@@ -18,94 +13,15 @@ type GetDailyParams = Parameters<typeof getDaily>;
 export function IndexPage() {
   const [loadState, setLoadState] = useState<LoadState>("initial");
   const [error, setError] = useState<string>("");
-  const [dailyData, setDailyData] = useState<PlotlyData | null>(null);
-
+  const [dailyResponse, setDailyResponse] = useState<DailyResponse | null>(
+    null
+  );
   const getDailyData = async (...getDailyParams: GetDailyParams) => {
     try {
       setLoadState("loading");
       const { data } = await getDaily(...getDailyParams);
       // Transform the data into plotly format
-      const plotData = {
-        data: Object.entries(data.generators.p)
-          .concat(Object.entries(data.loads.p))
-          .concat(
-            Object.entries(data.stores.e).map(([name, values]) => [
-              `${name} (mwh stored)`,
-              values,
-            ])
-          )
-          .concat(
-            Object.entries(data.stores.p).map(([name, values]) => [
-              `${name} (output)`,
-              values,
-            ])
-          )
-          .map(([name, values], index) => ({
-            type: "scatter",
-            mode: "lines",
-            name: name,
-            x: data.index,
-            y: values,
-            line: {
-              shape: "linear",
-              color: chartColorArray[index % chartColorArray.length], // colorPalette[index % colorPalette.length],
-              width: 3,
-            },
-          })),
-        layout: {
-          title: {
-            text: "Daily Load Profile",
-            font: {
-              family: "Roboto, sans-serif",
-              size: 24,
-              color: "var(--mantine-color-dark-9)",
-            },
-          },
-          font: {
-            family: "Roboto, sans-serif",
-            size: 14,
-            color: "var(--mantine-color-dark-9)",
-          },
-          xaxis: {
-            title: {
-              text: "Time",
-              font: {
-                family: "Roboto, sans-serif",
-                size: 16,
-                color: "var(--mantine-color-dark-9)",
-              },
-            },
-            tickfont: {
-              family: "Roboto, sans-serif",
-              size: 12,
-              color: "var(--mantine-color-dark-7)",
-            },
-          },
-          yaxis: {
-            title: {
-              text: "Power (MW)",
-              font: {
-                family: "Roboto, sans-serif",
-                size: 16,
-                color: "var(--mantine-color-dark-9)",
-              },
-            },
-            tickfont: {
-              family: "Roboto, sans-serif",
-              size: 12,
-              color: "var(--mantine-color-dark-7)",
-            },
-          },
-          legend: {
-            font: {
-              family: "Roboto, sans-serif",
-              size: 12,
-              color: "var(--mantine-color-dark-9)",
-            },
-          },
-        },
-      } as PlotlyData;
-      setDailyData(plotData);
+      setDailyResponse(data);
       setLoadState("success");
     } catch {
       setLoadState("error");
@@ -113,22 +29,39 @@ export function IndexPage() {
     }
   };
 
+  const dailyLoadData = dailyResponse ? plotDailyLoadData(dailyResponse) : null;
+  const dailyLinkData = dailyResponse ? plotDailyLinkData(dailyResponse) : null;
+  const totalGasUsage = dailyResponse ? sumGasUsage(dailyResponse) : null;
+
   return (
     <div className="App">
       <div className="card">
         <Button
           loading={loadState === "loading"}
-          onClick={() => getDailyData({})}
+          onClick={() => getDailyData({ percent_of_evs_in_vpp: 0 })}
         >
-          Fetch daily scenario
+          Fetch daily scenario (no VPP)
+        </Button>
+
+        <Button
+          loading={loadState === "loading"}
+          onClick={() => getDailyData({ percent_of_evs_in_vpp: 1 })}
+        >
+          Fetch daily scenario (all VPP)
         </Button>
 
         {error && <p className="error">{error}</p>}
       </div>
 
       <Card>
-        {dailyData ? (
-          <Plot data={dailyData.data} layout={dailyData.layout} />
+        {dailyLoadData && dailyLinkData ? (
+          <>
+            <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
+            <Plot data={dailyLinkData.data} layout={dailyLinkData.layout} />
+            <Card>
+              <Text>Total gas usage: {totalGasUsage}</Text>
+            </Card>
+          </>
         ) : (
           <Text fs="italic">Your simulation results will appear here...</Text>
         )}

@@ -201,6 +201,7 @@ def get_daily_network(params: DailyParameters):
     initial_battery_soc = params.initial_battery_soc
     home_charger_p_nom_kw = params.home_charger_p_nom_kw
     max_discharge_factor = params.max_discharge_factor
+    actual_max_discharge_factor = max_discharge_factor * (params.percent_of_evs_in_vpp)
 
     # define the load that driving EVs draw from their batteries
     bev_load = hourly_load_per_ev * number_of_evs
@@ -213,7 +214,7 @@ def get_daily_network(params: DailyParameters):
 
     # define the times that the hoem charger is able to charge and discharge the battery
     charger_p_max_pu = pd.Series([1.0] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [1.0] * 5, index)
-    charger_p_min_pu = pd.Series([max_discharge_factor] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [max_discharge_factor] * 5, index)
+    charger_p_min_pu = pd.Series([actual_max_discharge_factor] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [actual_max_discharge_factor] * 5, index)
     network.add(
         "Link",
         "charger",

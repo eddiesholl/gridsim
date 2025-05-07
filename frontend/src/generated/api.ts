@@ -23,6 +23,13 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** BusData */
+    BusData: {
+      /** P */
+      p: {
+        [key: string]: number[];
+      };
+    };
     /** DailyResponse */
     DailyResponse: {
       /** Index */
@@ -30,6 +37,8 @@ export interface components {
       generators: components["schemas"]["GeneratorData"];
       loads: components["schemas"]["LoadData"];
       stores: components["schemas"]["StoreData"];
+      links: components["schemas"]["LinkData"];
+      buses: components["schemas"]["BusData"];
     };
     /** GeneratorData */
     GeneratorData: {
@@ -47,6 +56,17 @@ export interface components {
     HealthResponse: {
       /** Status */
       status: string;
+    };
+    /** LinkData */
+    LinkData: {
+      /** P0 */
+      p0: {
+        [key: string]: number[];
+      };
+      /** P1 */
+      p1: {
+        [key: string]: number[];
+      };
     };
     /** LoadData */
     LoadData: {
@@ -126,6 +146,7 @@ export interface operations {
         initial_battery_soc?: number | null;
         home_charger_p_nom_kw?: number | null;
         max_discharge_factor?: number | null;
+        percent_of_evs_in_vpp?: number | null;
       };
     };
     responses: {
