@@ -29,6 +29,55 @@ export interface components {
       p: {
         [key: string]: number[];
       };
+      /** Marginal Price */
+      marginal_price: {
+        [key: string]: number[];
+      };
+    };
+    /** DailyParameters */
+    DailyParameters: {
+      /**
+       * Number Of Evs
+       * @description Number of electric vehicles
+       * @default 100
+       */
+      number_of_evs?: number | null;
+      /**
+       * Hourly Load Per Ev
+       * @description Hourly load per EV in MWh
+       * @default 0.007
+       */
+      hourly_load_per_ev?: number | null;
+      /**
+       * Ev Battery Size Mwh
+       * @description EV battery size in MWh
+       * @default 0.08
+       */
+      ev_battery_size_mwh?: number | null;
+      /**
+       * Initial Battery Soc
+       * @description Initial battery state of charge (0-1)
+       * @default 0.8
+       */
+      initial_battery_soc?: number | null;
+      /**
+       * Home Charger P Nom Kw
+       * @description Home charger nominal power in kW
+       * @default 0.022
+       */
+      home_charger_p_nom_kw?: number | null;
+      /**
+       * Max Discharge Factor
+       * @description Maximum discharge factor
+       * @default 1
+       */
+      max_discharge_factor?: number | null;
+      /**
+       * Percent Of Evs In Vpp
+       * @description Percentage of EVs in VPP
+       * @default 0.5
+       */
+      percent_of_evs_in_vpp?: number | null;
     };
     /** DailyResponse */
     DailyResponse: {
@@ -39,12 +88,13 @@ export interface components {
       stores: components["schemas"]["StoreData"];
       links: components["schemas"]["LinkData"];
       buses: components["schemas"]["BusData"];
+      params: components["schemas"]["DailyParameters"];
     };
     /** GeneratorData */
     GeneratorData: {
-      /** P */
-      p: {
-        [key: string]: number[];
+      /** Generators */
+      generators: {
+        [key: string]: components["schemas"]["SingleGeneratorData"];
       };
     };
     /** HTTPValidationError */
@@ -79,6 +129,13 @@ export interface components {
     RootResponse: {
       /** Message */
       message: string;
+    };
+    /** SingleGeneratorData */
+    SingleGeneratorData: {
+      /** P */
+      p: number[];
+      /** Carrier */
+      carrier: string;
     };
     /** StoreData */
     StoreData: {

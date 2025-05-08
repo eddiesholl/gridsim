@@ -23,9 +23,12 @@ app.add_middleware(
 )
 
 # Define response models
-class GeneratorData(BaseModel):
-    p: Dict[str, List[float]]
+class SingleGeneratorData(BaseModel):
+    p: List[float]
+    carrier: str
 
+class GeneratorData(BaseModel):
+    generators: Dict[str, SingleGeneratorData]
 class LoadData(BaseModel):
     p: Dict[str, List[float]]
 
@@ -39,6 +42,8 @@ class LinkData(BaseModel):
 
 class BusData(BaseModel):
     p: Dict[str, List[float]]
+    marginal_price: Dict[str, List[float]]
+
 class DailyResponse(BaseModel):
     index: List[str]  # datetime strings
     generators: GeneratorData
@@ -46,7 +51,7 @@ class DailyResponse(BaseModel):
     stores: StoreData
     links: LinkData
     buses: BusData
-
+    params: network.DailyParameters
 class RootResponse(BaseModel):
     message: str
 
@@ -67,21 +72,30 @@ async def health_check():
 async def get_daily(params: network.DailyParameters = Depends()):
     nw = network.get_daily_network(params)
     status, message = nw.optimize()
+
+    # print(status)
+    # print(message)
+    # print(nw.objective)
+    print(nw.generators.carrier['Gas 1'])
+    print(nw.generators_t.p['Gas 1'])
     
     if status == 'warning' and message == 'infeasible':
         raise HTTPException(status_code=400, detail="Optimization problem is infeasible")
     
     # Debug: Print available generator names
-    print("Available links:", nw.links_t.p0)
-    print("Available buses:", nw.buses_t.p)
+    # print("Available links:", nw.links_t.p0)
+    # print("Available buses:", nw.buses_t.p)
 
     # Convert timestamps to strings for JSON serialization
     timestamps = nw.generators_t.p.index.strftime('%Y-%m-%d %H:%M:%S').tolist()
     
     # Convert generator data to a format that can be serialized
     generator_data = {
-        'p': {
-            gen: nw.generators_t['p'][gen].tolist()
+        'generators': {
+            gen: SingleGeneratorData(
+                p=nw.generators_t['p'][gen].tolist(),
+                carrier=nw.generators.carrier[gen]
+            )
             for gen in nw.generators_t.p.columns
         }
     }
@@ -104,7 +118,8 @@ async def get_daily(params: network.DailyParameters = Depends()):
     }
 
     bus_data = {
-        'p': {bus: nw.buses_t['p'][bus].tolist() for bus in nw.buses_t.p.columns}
+        'p': {bus: nw.buses_t['p'][bus].tolist() for bus in nw.buses_t.p.columns},
+        'marginal_price': {bus: nw.buses_t['marginal_price'][bus].tolist() for bus in nw.buses_t.marginal_price.columns}
     }
 
     return DailyResponse(
@@ -113,7 +128,8 @@ async def get_daily(params: network.DailyParameters = Depends()):
         loads=LoadData(**load_data),
         stores=StoreData(**store_data),
         links=LinkData(**link_data),
-        buses=BusData(**bus_data)
+        buses=BusData(**bus_data),
+        params=params
     )
 
 # Create handler for AWS Lambda

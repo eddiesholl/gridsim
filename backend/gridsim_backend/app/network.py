@@ -132,10 +132,10 @@ class DailyParameters(BaseModel):
         description="Home charger nominal power in kW"
     )
     max_discharge_factor: Optional[float] = Field(
-        default=-0.2,
-        le=0,
-        ge=-1,
-        description="Maximum discharge factor (negative value)"
+        default=1,
+        le=1,
+        ge=0,
+        description="Maximum discharge factor"
     )
     percent_of_evs_in_vpp: Optional[float] = Field(
         default=0.5,
@@ -170,19 +170,41 @@ def get_daily_network(params: DailyParameters):
     network.set_snapshots(index)
 
     network.add("Bus", "grid", carrier="AC")
+
     network.add("Generator",
-        "Gas",
+        "Gas 1",
+        carrier="Gas",
+        bus="grid",
+        p_nom_extendable=False,
+        p_nom=2,
+        p_max_pu=1,
+        marginal_cost=100)
+    
+    network.add("Generator",
+        "Gas 2",
+        carrier="Gas",
+        bus="grid",
+        p_nom_extendable=False,
+        p_nom=2,
+        p_max_pu=1,
+        marginal_cost=120)
+    
+    network.add("Generator",
+        "Gas 3",
+        carrier="Gas",
         bus="grid",
         p_nom_extendable=True,
-        p_max_pu=40,
-        marginal_cost=120)
+        p_nom=2,
+        p_max_pu=1,
+        marginal_cost=150)
 
     network.add("Generator",
         "Coal",
+        carrier="Coal",
         bus="grid",
         # p_nom_extendable=True,
-        p_nom=1,
-        p_max_pu=16,
+        p_nom=16,
+        p_max_pu=1,
         marginal_cost=80)
 
     network.add("Generator", "PV", bus="grid", p_nom=1, p_max_pu=solar_pv, marginal_cost=20)
@@ -205,25 +227,38 @@ def get_daily_network(params: DailyParameters):
 
     # define the load that driving EVs draw from their batteries
     bev_load = hourly_load_per_ev * number_of_evs
-    bev_usage = pd.Series([0.0] * 7 + [bev_load] * 2 + [0.0] * 8 + [bev_load] * 2 + [0.0] * 5, index)
+    bev_usage = pd.Series([0.0] * 7 + [bev_load] * 2 + [0.0] * 7 + [bev_load] * 2 + [0.0] * 6, index)
     network.add("Load", "driving", bus="battery", p_set=bev_usage)
 
 
     total_ev_capacity_mwh = number_of_evs * ev_battery_size_mwh
     initial_ev_storage = total_ev_capacity_mwh * initial_battery_soc
 
-    # define the times that the hoem charger is able to charge and discharge the battery
-    charger_p_max_pu = pd.Series([1.0] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [1.0] * 5, index)
-    charger_p_min_pu = pd.Series([actual_max_discharge_factor] * 7 + [0.0] * 2 + [0.0] * 8 + [0.0] * 2 + [actual_max_discharge_factor] * 5, index)
+    # define the times that the home charger is able to charge and discharge the battery
+    g2v_p_max_pu = pd.Series([1.0] * 7 + [0.0] * 2 + [0.0] * 7 + [0.0] * 2 + [1.0] * 6, index)
+    v2g_p_max_pu = pd.Series([actual_max_discharge_factor] * 7 + [0.0] * 2 + [0.0] * 7 + [0.0] * 2 + [actual_max_discharge_factor] * 6, index)
+
     network.add(
         "Link",
-        "charger",
+        "grid to vehicle",
         bus0="home",
         bus1="battery",
-        p_nom=home_charger_p_nom_kw * number_of_evs,  # super-charger with 120 kW
-        p_max_pu=charger_p_max_pu,
-        p_min_pu=charger_p_min_pu,
-        efficiency=0.9
+        p_nom=home_charger_p_nom_kw * number_of_evs,
+        p_max_pu=g2v_p_max_pu,
+        p_min_pu=0,
+        efficiency=1
+    )
+
+    network.add(
+        "Link",
+        "vehicle to grid",
+        bus0="battery",
+        bus1="home",
+        p_nom=home_charger_p_nom_kw * number_of_evs,
+        p_max_pu=v2g_p_max_pu,
+        p_min_pu=0,
+        efficiency=1,
+        marginal_cost=10
     )
 
     # define the minimum state of charge of the battery through the day

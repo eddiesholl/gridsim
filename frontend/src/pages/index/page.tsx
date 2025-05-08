@@ -1,7 +1,12 @@
-import { Button, Card, LoadingOverlay, Text } from "@mantine/core";
+import { Button, Card, Flex, LoadingOverlay, Text } from "@mantine/core";
 import { useState } from "react";
 import Plot from "react-plotly.js";
-import { plotDailyLinkData, plotDailyLoadData } from "../../data/plotly";
+import {
+  plotBatterySocData,
+  plotDailyLinkData,
+  plotDailyLoadData,
+  plotDailyMarginalPriceData,
+} from "../../data/plotly";
 import { sumGasUsage } from "../../data/results";
 import { getDaily } from "../../services/api";
 import { DailyResponse } from "../../types";
@@ -22,6 +27,7 @@ export function IndexPage() {
       const { data } = await getDaily(...getDailyParams);
       // Transform the data into plotly format
       setDailyResponse(data);
+      setError("");
       setLoadState("success");
     } catch {
       setLoadState("error");
@@ -31,33 +37,49 @@ export function IndexPage() {
 
   const dailyLoadData = dailyResponse ? plotDailyLoadData(dailyResponse) : null;
   const dailyLinkData = dailyResponse ? plotDailyLinkData(dailyResponse) : null;
+  const dailyMarginalPriceData = dailyResponse
+    ? plotDailyMarginalPriceData(dailyResponse)
+    : null;
   const totalGasUsage = dailyResponse ? sumGasUsage(dailyResponse) : null;
+  const batterySocData = dailyResponse
+    ? plotBatterySocData(dailyResponse)
+    : null;
 
   return (
     <div className="App">
       <div className="card">
-        <Button
-          loading={loadState === "loading"}
-          onClick={() => getDailyData({ percent_of_evs_in_vpp: 0 })}
-        >
-          Fetch daily scenario (no VPP)
-        </Button>
+        <Flex justify="center" gap="md">
+          <Button
+            loading={loadState === "loading"}
+            onClick={() => getDailyData({ percent_of_evs_in_vpp: 0 })}
+          >
+            Fetch daily scenario (no VPP)
+          </Button>
 
-        <Button
-          loading={loadState === "loading"}
-          onClick={() => getDailyData({ percent_of_evs_in_vpp: 1 })}
-        >
-          Fetch daily scenario (all VPP)
-        </Button>
+          <Button
+            loading={loadState === "loading"}
+            onClick={() => getDailyData({ percent_of_evs_in_vpp: 1 })}
+          >
+            Fetch daily scenario (all VPP)
+          </Button>
 
-        {error && <p className="error">{error}</p>}
+          {error && <p className="error">{error}</p>}
+        </Flex>
       </div>
 
       <Card>
-        {dailyLoadData && dailyLinkData ? (
+        {dailyLoadData &&
+        dailyLinkData &&
+        dailyMarginalPriceData &&
+        batterySocData ? (
           <>
-            <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
+            <Plot data={batterySocData.data} layout={batterySocData.layout} />
             <Plot data={dailyLinkData.data} layout={dailyLinkData.layout} />
+            <Plot
+              data={dailyMarginalPriceData.data}
+              layout={dailyMarginalPriceData.layout}
+            />
+            <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
             <Card>
               <Text>Total gas usage: {totalGasUsage}</Text>
             </Card>
