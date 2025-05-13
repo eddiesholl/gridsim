@@ -76,10 +76,11 @@ async def get_daily(params: network.DailyParameters = Depends()):
     # print(status)
     # print(message)
     # print(nw.objective)
-    print(nw.generators.carrier['Gas 1'])
-    print(nw.generators_t.p['Gas 1'])
+    # print(nw.generators.carrier['Gas 1'])
+    # print(nw.generators_t.p['Gas 1'])
     
     if status == 'warning' and message == 'infeasible':
+        print("Optimization problem is infeasible")
         raise HTTPException(status_code=400, detail="Optimization problem is infeasible")
     
     # Debug: Print available generator names

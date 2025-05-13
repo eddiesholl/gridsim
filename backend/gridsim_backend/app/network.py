@@ -176,7 +176,7 @@ def get_daily_network(params: DailyParameters):
         carrier="Gas",
         bus="grid",
         p_nom_extendable=False,
-        p_nom=2,
+        p_nom=6,
         p_max_pu=1,
         marginal_cost=100)
     
@@ -185,9 +185,9 @@ def get_daily_network(params: DailyParameters):
         carrier="Gas",
         bus="grid",
         p_nom_extendable=False,
-        p_nom=2,
+        p_nom=3,
         p_max_pu=1,
-        marginal_cost=120)
+        marginal_cost=150)
     
     network.add("Generator",
         "Gas 3",
@@ -196,7 +196,7 @@ def get_daily_network(params: DailyParameters):
         p_nom_extendable=True,
         p_nom=2,
         p_max_pu=1,
-        marginal_cost=150)
+        marginal_cost=300)
 
     network.add("Generator",
         "Coal",
@@ -246,7 +246,8 @@ def get_daily_network(params: DailyParameters):
         p_nom=home_charger_p_nom_kw * number_of_evs,
         p_max_pu=g2v_p_max_pu,
         p_min_pu=0,
-        efficiency=1
+        efficiency=0.95,
+        # active=False
     )
 
     network.add(
@@ -257,8 +258,9 @@ def get_daily_network(params: DailyParameters):
         p_nom=home_charger_p_nom_kw * number_of_evs,
         p_max_pu=v2g_p_max_pu,
         p_min_pu=0,
-        efficiency=1,
-        marginal_cost=10
+        efficiency=0.95,
+        marginal_cost=10,
+        # active=False
     )
 
     # define the minimum state of charge of the battery through the day
