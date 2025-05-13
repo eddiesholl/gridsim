@@ -24,6 +24,10 @@ const paths: PathConfig[] = [
     label: "Tools",
   },
   {
+    path: "/scenarios",
+    label: "Scenarios",
+  },
+  {
     path: "/about",
     label: "About",
   },

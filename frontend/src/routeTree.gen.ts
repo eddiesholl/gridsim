@@ -12,14 +12,22 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as ToolsImport } from './routes/tools'
+import { Route as ScenariosImport } from './routes/scenarios'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
+import { Route as ScenariosIntroImport } from './routes/scenarios.intro'
 
 // Create/Update Routes
 
 const ToolsRoute = ToolsImport.update({
   id: '/tools',
   path: '/tools',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ScenariosRoute = ScenariosImport.update({
+  id: '/scenarios',
+  path: '/scenarios',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -33,6 +41,12 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ScenariosIntroRoute = ScenariosIntroImport.update({
+  id: '/intro',
+  path: '/intro',
+  getParentRoute: () => ScenariosRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -53,6 +67,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutImport
       parentRoute: typeof rootRoute
     }
+    '/scenarios': {
+      id: '/scenarios'
+      path: '/scenarios'
+      fullPath: '/scenarios'
+      preLoaderRoute: typeof ScenariosImport
+      parentRoute: typeof rootRoute
+    }
     '/tools': {
       id: '/tools'
       path: '/tools'
@@ -60,48 +81,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsImport
       parentRoute: typeof rootRoute
     }
+    '/scenarios/intro': {
+      id: '/scenarios/intro'
+      path: '/intro'
+      fullPath: '/scenarios/intro'
+      preLoaderRoute: typeof ScenariosIntroImport
+      parentRoute: typeof ScenariosImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface ScenariosRouteChildren {
+  ScenariosIntroRoute: typeof ScenariosIntroRoute
+}
+
+const ScenariosRouteChildren: ScenariosRouteChildren = {
+  ScenariosIntroRoute: ScenariosIntroRoute,
+}
+
+const ScenariosRouteWithChildren = ScenariosRoute._addFileChildren(
+  ScenariosRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/scenarios': typeof ScenariosRouteWithChildren
   '/tools': typeof ToolsRoute
+  '/scenarios/intro': typeof ScenariosIntroRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/scenarios': typeof ScenariosRouteWithChildren
   '/tools': typeof ToolsRoute
+  '/scenarios/intro': typeof ScenariosIntroRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/scenarios': typeof ScenariosRouteWithChildren
   '/tools': typeof ToolsRoute
+  '/scenarios/intro': typeof ScenariosIntroRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/tools'
+  fullPaths: '/' | '/about' | '/scenarios' | '/tools' | '/scenarios/intro'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/tools'
-  id: '__root__' | '/' | '/about' | '/tools'
+  to: '/' | '/about' | '/scenarios' | '/tools' | '/scenarios/intro'
+  id: '__root__' | '/' | '/about' | '/scenarios' | '/tools' | '/scenarios/intro'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  ScenariosRoute: typeof ScenariosRouteWithChildren
   ToolsRoute: typeof ToolsRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  ScenariosRoute: ScenariosRouteWithChildren,
   ToolsRoute: ToolsRoute,
 }
 
@@ -117,6 +165,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/about",
+        "/scenarios",
         "/tools"
       ]
     },
@@ -126,8 +175,18 @@ export const routeTree = rootRoute
     "/about": {
       "filePath": "about.tsx"
     },
+    "/scenarios": {
+      "filePath": "scenarios.tsx",
+      "children": [
+        "/scenarios/intro"
+      ]
+    },
     "/tools": {
       "filePath": "tools.tsx"
+    },
+    "/scenarios/intro": {
+      "filePath": "scenarios.intro.tsx",
+      "parent": "/scenarios"
     }
   }
 }
