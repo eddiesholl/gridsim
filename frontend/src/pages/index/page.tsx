@@ -7,7 +7,7 @@ import {
   plotDailyLoadData,
   plotDailyMarginalPriceData,
 } from "../../data/plotly";
-import { sumGasUsage } from "../../data/results";
+import { averageMarginalPrice, sumGasUsage } from "../../data/results";
 import { getDaily } from "../../services/api";
 import { DailyResponse } from "../../types";
 import "./App.css";
@@ -41,6 +41,9 @@ export function IndexPage() {
     ? plotDailyMarginalPriceData(dailyResponse)
     : null;
   const totalGasUsage = dailyResponse ? sumGasUsage(dailyResponse) : null;
+  const avgMarginalPrice = dailyResponse
+    ? averageMarginalPrice(dailyResponse)
+    : null;
   const batterySocData = dailyResponse
     ? plotBatterySocData(dailyResponse)
     : null;
@@ -73,15 +76,18 @@ export function IndexPage() {
         dailyMarginalPriceData &&
         batterySocData ? (
           <>
+            <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
             <Plot data={batterySocData.data} layout={batterySocData.layout} />
             <Plot data={dailyLinkData.data} layout={dailyLinkData.layout} />
             <Plot
               data={dailyMarginalPriceData.data}
               layout={dailyMarginalPriceData.layout}
             />
-            <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
             <Card>
               <Text>Total gas usage: {totalGasUsage}</Text>
+            </Card>
+            <Card>
+              <Text>Average marginal price: {avgMarginalPrice}</Text>
             </Card>
           </>
         ) : (
