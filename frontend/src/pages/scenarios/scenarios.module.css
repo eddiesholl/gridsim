@@ -1,0 +1,11 @@
+.scenario-nav-item {
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--mantine-color-coral-5);
+  font-weight: 700;
+  /* color: var(--mantine-color-coral-1); */
+}
+
+.scenario-nav-wrapper {
+  /* border: 1px solid var(--mantine-color-black); */
+}

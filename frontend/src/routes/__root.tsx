@@ -20,12 +20,12 @@ const paths: PathConfig[] = [
     label: "Home",
   },
   {
-    path: "/tools",
-    label: "Tools",
+    path: "/scenarios/intro",
+    label: "Scenarios",
   },
   {
-    path: "/scenarios",
-    label: "Scenarios",
+    path: "/tools",
+    label: "Tools",
   },
   {
     path: "/about",

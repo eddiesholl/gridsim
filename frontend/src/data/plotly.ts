@@ -31,6 +31,9 @@ export const plotDailyLoadData = (data: DailyResponse) => {
         },
       })),
     layout: {
+      responsive: true,
+      useResizeHandler: true,
+      autosize: true,
       title: {
         text: "Daily Load Profile",
         font: {
@@ -82,7 +85,7 @@ export const plotDailyLoadData = (data: DailyResponse) => {
         },
       },
     },
-  } as PlotlyData;
+  } as unknown as PlotlyData;
 
   return plotData;
 };

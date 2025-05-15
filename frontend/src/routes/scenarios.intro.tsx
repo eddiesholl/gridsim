@@ -1,22 +1,22 @@
-import { Card, Flex, Text, Title } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
+import { ScenariosIntro } from "../pages/scenarios/introduction";
+import { getDailyQuery } from "../services/api";
 
 export const Route = createFileRoute("/scenarios/intro")({
   component: ScenariosIntro,
+  loader: () => {
+    const dailyData = getDailyQuery({}, {});
+    console.log({ dailyData });
+    return {
+      dailyData,
+    };
+  },
+  onError: ({ error }) => {
+    // Log the error
+    console.error(error);
+  },
+  errorComponent: ({ error }) => {
+    // Render an error message
+    return <div>{error.message}</div>;
+  },
 });
-
-function ScenariosIntro() {
-  return (
-    <Flex direction="column" gap="md">
-      <Card>
-        <Title order={2}>Scenarios Introduction</Title>
-        <Text>
-          <p>
-            Welcome to the scenarios section. Here you can explore different
-            energy scenarios and their impact on the grid.
-          </p>
-        </Text>
-      </Card>
-    </Flex>
-  );
-}

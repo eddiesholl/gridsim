@@ -15,6 +15,7 @@ import { Route as ToolsImport } from './routes/tools'
 import { Route as ScenariosImport } from './routes/scenarios'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
+import { Route as ScenariosV2gImport } from './routes/scenarios.v2g'
 import { Route as ScenariosIntroImport } from './routes/scenarios.intro'
 
 // Create/Update Routes
@@ -41,6 +42,12 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const ScenariosV2gRoute = ScenariosV2gImport.update({
+  id: '/v2g',
+  path: '/v2g',
+  getParentRoute: () => ScenariosRoute,
 } as any)
 
 const ScenariosIntroRoute = ScenariosIntroImport.update({
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ScenariosIntroImport
       parentRoute: typeof ScenariosImport
     }
+    '/scenarios/v2g': {
+      id: '/scenarios/v2g'
+      path: '/v2g'
+      fullPath: '/scenarios/v2g'
+      preLoaderRoute: typeof ScenariosV2gImport
+      parentRoute: typeof ScenariosImport
+    }
   }
 }
 
@@ -95,10 +109,12 @@ declare module '@tanstack/react-router' {
 
 interface ScenariosRouteChildren {
   ScenariosIntroRoute: typeof ScenariosIntroRoute
+  ScenariosV2gRoute: typeof ScenariosV2gRoute
 }
 
 const ScenariosRouteChildren: ScenariosRouteChildren = {
   ScenariosIntroRoute: ScenariosIntroRoute,
+  ScenariosV2gRoute: ScenariosV2gRoute,
 }
 
 const ScenariosRouteWithChildren = ScenariosRoute._addFileChildren(
@@ -111,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/scenarios': typeof ScenariosRouteWithChildren
   '/tools': typeof ToolsRoute
   '/scenarios/intro': typeof ScenariosIntroRoute
+  '/scenarios/v2g': typeof ScenariosV2gRoute
 }
 
 export interface FileRoutesByTo {
@@ -119,6 +136,7 @@ export interface FileRoutesByTo {
   '/scenarios': typeof ScenariosRouteWithChildren
   '/tools': typeof ToolsRoute
   '/scenarios/intro': typeof ScenariosIntroRoute
+  '/scenarios/v2g': typeof ScenariosV2gRoute
 }
 
 export interface FileRoutesById {
@@ -128,14 +146,34 @@ export interface FileRoutesById {
   '/scenarios': typeof ScenariosRouteWithChildren
   '/tools': typeof ToolsRoute
   '/scenarios/intro': typeof ScenariosIntroRoute
+  '/scenarios/v2g': typeof ScenariosV2gRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/scenarios' | '/tools' | '/scenarios/intro'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/scenarios'
+    | '/tools'
+    | '/scenarios/intro'
+    | '/scenarios/v2g'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/scenarios' | '/tools' | '/scenarios/intro'
-  id: '__root__' | '/' | '/about' | '/scenarios' | '/tools' | '/scenarios/intro'
+  to:
+    | '/'
+    | '/about'
+    | '/scenarios'
+    | '/tools'
+    | '/scenarios/intro'
+    | '/scenarios/v2g'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/scenarios'
+    | '/tools'
+    | '/scenarios/intro'
+    | '/scenarios/v2g'
   fileRoutesById: FileRoutesById
 }
 
@@ -178,7 +216,8 @@ export const routeTree = rootRoute
     "/scenarios": {
       "filePath": "scenarios.tsx",
       "children": [
-        "/scenarios/intro"
+        "/scenarios/intro",
+        "/scenarios/v2g"
       ]
     },
     "/tools": {
@@ -186,6 +225,10 @@ export const routeTree = rootRoute
     },
     "/scenarios/intro": {
       "filePath": "scenarios.intro.tsx",
+      "parent": "/scenarios"
+    },
+    "/scenarios/v2g": {
+      "filePath": "scenarios.v2g.tsx",
       "parent": "/scenarios"
     }
   }

@@ -20,6 +20,7 @@
     "@tanstack/react-router-devtools": "^1.119.1",
     "@types/axios": "^0.14.4",
     "axios": "^1.8.4",
+    "clsx": "^2.1.1",
     "openapi-typescript-fetch": "^2.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
