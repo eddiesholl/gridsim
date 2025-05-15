@@ -1,23 +1,39 @@
 import { chartColorArray } from "../styles/colors";
 import { DailyResponse, PlotlyData } from "../types";
 
-export const plotDailyLoadData = (data: DailyResponse) => {
+type DailyDataOptions = {
+  includeStoresE?: boolean;
+  includeStoresP?: boolean;
+  excludeData?: string[];
+};
+
+type DataSet = [string, number[]];
+
+export const plotDailyLoadData = (
+  data: DailyResponse,
+  options: DailyDataOptions = {}
+) => {
+  const storeEData = options.includeStoresE
+    ? Object.entries(data.stores.e).map(
+        ([name, values]) => [`${name} (mwh stored)`, values] as DataSet
+      )
+    : [];
+
+  const storePData = options.includeStoresP
+    ? Object.entries(data.stores.p).map(
+        ([name, values]) => [`${name} (output)`, values] as DataSet
+      )
+    : [];
+
+  const baseDataSets = Object.entries(data.generators.generators)
+    .map(([name, values]) => [name, values.p] as DataSet)
+    .concat(Object.entries(data.loads.p) as DataSet[])
+    .concat(storeEData)
+    .concat(storePData);
+
   const plotData = {
-    data: Object.entries(data.generators.generators)
-      .map(([name, values]) => [name, values.p])
-      .concat(Object.entries(data.loads.p))
-      .concat(
-        Object.entries(data.stores.e).map(([name, values]) => [
-          `${name} (mwh stored)`,
-          values,
-        ])
-      )
-      .concat(
-        Object.entries(data.stores.p).map(([name, values]) => [
-          `${name} (output)`,
-          values,
-        ])
-      )
+    data: baseDataSets
+      .filter(([name]) => !options.excludeData?.includes(name))
       .map(([name, values], index) => ({
         type: "scatter",
         mode: "lines",
@@ -31,6 +47,24 @@ export const plotDailyLoadData = (data: DailyResponse) => {
         },
       })),
     layout: {
+      // paper_bgcolor: "#eee",
+      // plot_bgcolor: "#eee",
+      shapes: [
+        {
+          type: "rect",
+          xref: "x",
+          yref: "paper",
+          x0: "2016-01-01 15:00:00",
+          y0: 0,
+          x1: "2016-01-01 20:00:00",
+          y1: 1,
+          fillcolor: "#ffa3a3",
+          opacity: 0.2,
+          line: {
+            width: 0,
+          },
+        },
+      ],
       responsive: true,
       useResizeHandler: true,
       autosize: true,
@@ -119,10 +153,18 @@ export const plotDailyLinkData = (data: DailyResponse) => {
   return plotData;
 };
 
-export const plotDailyMarginalPriceData = (data: DailyResponse) => {
+type MarginalPriceOptions = {
+  includeBuses?: string[];
+};
+
+export const plotDailyMarginalPriceData = (
+  data: DailyResponse,
+  options: MarginalPriceOptions = {}
+) => {
   const plotData = {
-    data: Object.entries(data.buses.marginal_price).map(
-      ([name, values], index) => ({
+    data: Object.entries(data.buses.marginal_price)
+      .filter(([name]) => options.includeBuses?.includes(name))
+      .map(([name, values], index) => ({
         type: "scatter",
         mode: "lines",
         name: name,
@@ -133,12 +175,15 @@ export const plotDailyMarginalPriceData = (data: DailyResponse) => {
           color: chartColorArray[index % chartColorArray.length],
           width: 3,
         },
-      })
-    ),
-
+      })),
     layout: {
       title: {
-        text: "Bus marginal price",
+        text: "Grid marginal price",
+        font: {
+          family: "Roboto, sans-serif",
+          size: 24,
+          color: "var(--mantine-color-dark-9)",
+        },
       },
     },
   } as PlotlyData;

@@ -8,12 +8,12 @@ import {
   plotDailyMarginalPriceData,
 } from "../../data/plotly";
 import { averageMarginalPrice, sumGasUsage } from "../../data/results";
-import { getDaily } from "../../services/api";
+import { getDailyQuery } from "../../services/api";
 import { DailyResponse } from "../../types";
 import "./App.css";
 type LoadState = "initial" | "loading" | "error" | "success";
 
-type GetDailyParams = Parameters<typeof getDaily>;
+type GetDailyParams = Parameters<typeof getDailyQuery>;
 
 export function IndexPage() {
   const [loadState, setLoadState] = useState<LoadState>("initial");
@@ -24,7 +24,7 @@ export function IndexPage() {
   const getDailyData = async (...getDailyParams: GetDailyParams) => {
     try {
       setLoadState("loading");
-      const { data } = await getDaily(...getDailyParams);
+      const { data } = await getDailyQuery(...getDailyParams);
       // Transform the data into plotly format
       setDailyResponse(data);
       setError("");

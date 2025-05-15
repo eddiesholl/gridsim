@@ -169,30 +169,30 @@ def get_daily_network(params: DailyParameters):
     network = pypsa.Network()
     network.set_snapshots(index)
 
-    network.add("Bus", "grid", carrier="AC")
+    network.add("Bus", "Grid", carrier="AC")
 
     network.add("Generator",
-        "Gas 1",
+        "Gas (cheap)",
         carrier="Gas",
-        bus="grid",
+        bus="Grid",
         p_nom_extendable=False,
-        p_nom=6,
+        p_nom=5,
         p_max_pu=1,
         marginal_cost=100)
     
     network.add("Generator",
-        "Gas 2",
+        "Gas (moderate)",
         carrier="Gas",
-        bus="grid",
+        bus="Grid",
         p_nom_extendable=False,
         p_nom=3,
         p_max_pu=1,
         marginal_cost=150)
     
     network.add("Generator",
-        "Gas 3",
+        "Gas (expensive)",
         carrier="Gas",
-        bus="grid",
+        bus="Grid",
         p_nom_extendable=True,
         p_nom=2,
         p_max_pu=1,
@@ -201,21 +201,21 @@ def get_daily_network(params: DailyParameters):
     network.add("Generator",
         "Coal",
         carrier="Coal",
-        bus="grid",
+        bus="Grid",
         # p_nom_extendable=True,
         p_nom=16,
         p_max_pu=1,
         marginal_cost=80)
 
-    network.add("Generator", "PV", bus="grid", p_nom=1, p_max_pu=solar_pv, marginal_cost=20)
+    network.add("Generator", "Solar", bus="Grid", p_nom=1, p_max_pu=solar_pv, marginal_cost=20)
 
-    network.add("Load", "demand", bus="grid", p_set=demand)
+    network.add("Load", "Grid demand", bus="Grid", p_set=demand)
 
-    network.add("Bus", "home", carrier="AC")
+    network.add("Bus", "Home", carrier="AC")
 
-    network.add("Bus", "battery", carrier="AC")
+    network.add("Bus", "Battery", carrier="AC")
 
-    network.add("Link", "street", p_nom=1 * 100000, bus0="grid", bus1="home", p_min_pu=-1, p_max_pu=1)
+    network.add("Link", "Street", p_nom=1 * 100000, bus0="Grid", bus1="Home", p_min_pu=-1, p_max_pu=1)
 
     number_of_evs = params.number_of_evs
     hourly_load_per_ev = params.hourly_load_per_ev
@@ -228,7 +228,7 @@ def get_daily_network(params: DailyParameters):
     # define the load that driving EVs draw from their batteries
     bev_load = hourly_load_per_ev * number_of_evs
     bev_usage = pd.Series([0.0] * 7 + [bev_load] * 2 + [0.0] * 7 + [bev_load] * 2 + [0.0] * 6, index)
-    network.add("Load", "driving", bus="battery", p_set=bev_usage)
+    network.add("Load", "EV driving", bus="Battery", p_set=bev_usage)
 
 
     total_ev_capacity_mwh = number_of_evs * ev_battery_size_mwh
@@ -241,8 +241,8 @@ def get_daily_network(params: DailyParameters):
     network.add(
         "Link",
         "grid to vehicle",
-        bus0="home",
-        bus1="battery",
+        bus0="Home",
+        bus1="Battery",
         p_nom=home_charger_p_nom_kw * number_of_evs,
         p_max_pu=g2v_p_max_pu,
         p_min_pu=0,
@@ -253,8 +253,8 @@ def get_daily_network(params: DailyParameters):
     network.add(
         "Link",
         "vehicle to grid",
-        bus0="battery",
-        bus1="home",
+        bus0="Battery",
+        bus1="Home",
         p_nom=home_charger_p_nom_kw * number_of_evs,
         p_max_pu=v2g_p_max_pu,
         p_min_pu=0,
@@ -269,8 +269,8 @@ def get_daily_network(params: DailyParameters):
     # implement the actual battery storage
     network.add(
         "Store",
-        "battery storage",
-        bus="battery",
+        "Battery storage",
+        bus="Battery",
         e_cyclic=False,
         e_initial=initial_ev_storage,
         e_nom=total_ev_capacity_mwh,
