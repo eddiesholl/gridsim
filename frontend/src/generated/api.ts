@@ -89,6 +89,7 @@ export interface components {
       links: components["schemas"]["LinkData"];
       buses: components["schemas"]["BusData"];
       params: components["schemas"]["DailyParameters"];
+      marginal_prices: components["schemas"]["MarginalPrices"];
     };
     /** GeneratorData */
     GeneratorData: {
@@ -96,6 +97,13 @@ export interface components {
       generators: {
         [key: string]: components["schemas"]["SingleGeneratorData"];
       };
+    };
+    /** GeneratorMetadata */
+    GeneratorMetadata: {
+      /** Name */
+      name: string;
+      /** Marginal Cost */
+      marginal_cost: number;
     };
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -124,6 +132,14 @@ export interface components {
       p: {
         [key: string]: number[];
       };
+    };
+    /** MarginalPrices */
+    MarginalPrices: {
+      gas_cheap: components["schemas"]["GeneratorMetadata"];
+      gas_moderate: components["schemas"]["GeneratorMetadata"];
+      gas_expensive: components["schemas"]["GeneratorMetadata"];
+      coal: components["schemas"]["GeneratorMetadata"];
+      solar: components["schemas"]["GeneratorMetadata"];
     };
     /** RootResponse */
     RootResponse: {

@@ -74,22 +74,22 @@ export const colorRanges = {
   blush: generateColorShades(baseColors.blush),
 };
 
-const chartColors = {
+export const chartColors = {
   bittersweet: "ff595e",
   tangerine: "ff924c",
   sunglow: "ffca3a",
-  "yellow-green": "8ac926",
-  "steel-blue": "1982c4",
-  "ultra-violet": "6a4c93",
-  "light-blue": "90e0ef",
+  yellowGreen: "8ac926",
+  steelBlue: "1982c4",
+  ultraViolet: "6a4c93",
+  lightBlue: "90e0ef",
 };
 
 export const chartColorArray = [
   chartColors.bittersweet,
   chartColors.tangerine,
   chartColors.sunglow,
-  chartColors["yellow-green"],
-  chartColors["steel-blue"],
-  chartColors["ultra-violet"],
-  chartColors["light-blue"],
+  chartColors.yellowGreen,
+  chartColors.steelBlue,
+  chartColors.ultraViolet,
+  chartColors.lightBlue,
 ];

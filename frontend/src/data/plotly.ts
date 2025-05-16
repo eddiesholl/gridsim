@@ -1,5 +1,5 @@
-import { chartColorArray } from "../styles/colors";
 import { DailyResponse, PlotlyData } from "../types";
+import { getColourForString } from "./chart-colours";
 
 type DailyDataOptions = {
   includeStoresE?: boolean;
@@ -34,7 +34,7 @@ export const plotDailyLoadData = (
   const plotData = {
     data: baseDataSets
       .filter(([name]) => !options.excludeData?.includes(name))
-      .map(([name, values], index) => ({
+      .map(([name, values]) => ({
         type: "scatter",
         mode: "lines",
         name: name,
@@ -42,7 +42,7 @@ export const plotDailyLoadData = (
         y: values,
         line: {
           shape: "linear",
-          color: chartColorArray[index % chartColorArray.length], // colorPalette[index % colorPalette.length],
+          color: getColourForString(name),
           width: 3,
         },
       })),
@@ -126,7 +126,7 @@ export const plotDailyLoadData = (
 
 export const plotDailyLinkData = (data: DailyResponse) => {
   const plotData = {
-    data: Object.entries(data.links.p0).map(([name, values], index) => ({
+    data: Object.entries(data.links.p0).map(([name, values]) => ({
       type: "scatter",
       mode: "lines",
       name: name,
@@ -134,7 +134,7 @@ export const plotDailyLinkData = (data: DailyResponse) => {
       y: values,
       line: {
         shape: "linear",
-        color: chartColorArray[index % chartColorArray.length], // colorPalette[index % colorPalette.length],
+        color: getColourForString(name),
         width: 3,
       },
     })),
@@ -161,27 +161,68 @@ export const plotDailyMarginalPriceData = (
   data: DailyResponse,
   options: MarginalPriceOptions = {}
 ) => {
+  const fixedLines = Object.entries(data.marginal_prices).map(
+    ([, metadata]) => ({
+      type: "scatter",
+      mode: "lines",
+      name: metadata.name,
+      x: [data.index[0], data.index[data.index.length - 1]],
+      y: [metadata.marginal_cost, metadata.marginal_cost],
+      line: {
+        shape: "linear",
+        color: getColourForString(metadata.name),
+        width: 3,
+        dash: "dot",
+      },
+      opacity: 0.8,
+    })
+  );
+
   const plotData = {
     data: Object.entries(data.buses.marginal_price)
       .filter(([name]) => options.includeBuses?.includes(name))
-      .map(([name, values], index) => ({
+      .map(([name, values]) => ({
         type: "scatter",
         mode: "lines",
-        name: name,
+        name: `${name} (marginal price)`,
         x: data.index,
         y: values,
         line: {
           shape: "linear",
-          color: chartColorArray[index % chartColorArray.length],
+          color: getColourForString(name),
           width: 3,
         },
-      })),
+      }))
+      .concat(fixedLines),
     layout: {
       title: {
         text: "Grid marginal price",
         font: {
           family: "Roboto, sans-serif",
           size: 24,
+          color: "var(--mantine-color-dark-9)",
+        },
+      },
+      yaxis: {
+        title: {
+          text: "Price ($/MWh)",
+          font: {
+            family: "Roboto, sans-serif",
+            size: 16,
+            color: "var(--mantine-color-dark-9)",
+          },
+        },
+        rangemode: "tozero",
+        tickfont: {
+          family: "Roboto, sans-serif",
+          size: 12,
+          color: "var(--mantine-color-dark-7)",
+        },
+      },
+      legend: {
+        font: {
+          family: "Roboto, sans-serif",
+          size: 12,
           color: "var(--mantine-color-dark-9)",
         },
       },
@@ -194,7 +235,7 @@ export const plotDailyMarginalPriceData = (
 export const plotBatterySocData = (data: DailyResponse) => {
   const plotData = {
     data: Object.entries(data.stores.e)
-      .map(([name, values], index) => ({
+      .map(([name, values]) => ({
         type: "scatter",
         mode: "lines",
         name: name,
@@ -202,7 +243,7 @@ export const plotBatterySocData = (data: DailyResponse) => {
         y: values,
         line: {
           shape: "linear",
-          color: chartColorArray[index % chartColorArray.length],
+          color: getColourForString(name),
           width: 3,
         },
       }))

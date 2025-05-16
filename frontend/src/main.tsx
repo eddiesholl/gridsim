@@ -9,7 +9,11 @@ import { mantineTheme } from "./styles/theme";
 import { routeTree } from "./routeTree.gen";
 
 // Create a new router instance
-const router = createRouter({ routeTree, defaultPreloadDelay: 2000 });
+const router = createRouter({
+  routeTree,
+  defaultPreloadDelay: 2000,
+  defaultPreloadStaleTime: 30000,
+});
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {

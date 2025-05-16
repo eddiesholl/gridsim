@@ -1,9 +1,8 @@
+from gridsim_backend.app.types import DailyParameters, GeneratorMetadata, MarginalPrices
 import pypsa
 import pandas as pd
 import numpy as np
 from . import indices
-from pydantic import BaseModel, Field   
-from typing import Dict, List, Optional
 
 def get_single_node_network():
     """
@@ -100,52 +99,19 @@ def get_single_node_network():
 
     return network
 
-class DailyParameters(BaseModel):
-    number_of_evs: Optional[int] = Field(
-        default=100,
-        gt=0,
-        le=200,
-        description="Number of electric vehicles"
-    )
-    hourly_load_per_ev: Optional[float] = Field(
-        default=0.007,
-        gt=0,
-        le=0.01,
-        description="Hourly load per EV in MWh"
-    )
-    ev_battery_size_mwh: Optional[float] = Field(
-        default=0.08,
-        gt=0,
-        le=0.1,
-        description="EV battery size in MWh"
-    )
-    initial_battery_soc: Optional[float] = Field(
-        default=0.8,
-        ge=0,
-        le=1,
-        description="Initial battery state of charge (0-1)"
-    )
-    home_charger_p_nom_kw: Optional[float] = Field(
-        default=0.022,
-        gt=0,
-        le=0.1,
-        description="Home charger nominal power in kW"
-    )
-    max_discharge_factor: Optional[float] = Field(
-        default=1,
-        le=1,
-        ge=0,
-        description="Maximum discharge factor"
-    )
-    percent_of_evs_in_vpp: Optional[float] = Field(
-        default=0.5,
-        ge=0,
-        le=1,
-        description="Percentage of EVs in VPP"
-    )
+name_gas_cheap = "Gas (cheap)"
+name_gas_moderate = "Gas (moderate)"
+name_gas_expensive = "Gas (expensive)"
+name_coal = "Coal"
+name_solar = "Solar"
 
-    class Config:
-        from_attributes = True
+marginal_prices = MarginalPrices(
+    gas_cheap=GeneratorMetadata(name=name_gas_cheap, marginal_cost=100),
+    gas_moderate=GeneratorMetadata(name=name_gas_moderate, marginal_cost=150),
+    gas_expensive=GeneratorMetadata(name=name_gas_expensive, marginal_cost=300),
+    coal=GeneratorMetadata(name=name_coal, marginal_cost=80),
+    solar=GeneratorMetadata(name=name_solar, marginal_cost=20)
+)
 
 def get_daily_network(params: DailyParameters):
     index = indices.single_day_hourly
@@ -172,42 +138,47 @@ def get_daily_network(params: DailyParameters):
     network.add("Bus", "Grid", carrier="AC")
 
     network.add("Generator",
-        "Gas (cheap)",
+        name_gas_cheap,
         carrier="Gas",
         bus="Grid",
         p_nom_extendable=False,
         p_nom=5,
         p_max_pu=1,
-        marginal_cost=100)
+        marginal_cost=marginal_prices.gas_cheap.marginal_cost)
     
     network.add("Generator",
-        "Gas (moderate)",
+        name_gas_moderate,
         carrier="Gas",
         bus="Grid",
         p_nom_extendable=False,
         p_nom=3,
         p_max_pu=1,
-        marginal_cost=150)
+        marginal_cost=marginal_prices.gas_moderate.marginal_cost)
     
     network.add("Generator",
-        "Gas (expensive)",
+        name_gas_expensive,
         carrier="Gas",
         bus="Grid",
         p_nom_extendable=True,
         p_nom=2,
         p_max_pu=1,
-        marginal_cost=300)
+        marginal_cost=marginal_prices.gas_expensive.marginal_cost)
 
     network.add("Generator",
-        "Coal",
+        name_coal,
         carrier="Coal",
         bus="Grid",
         # p_nom_extendable=True,
         p_nom=16,
         p_max_pu=1,
-        marginal_cost=80)
+        marginal_cost=marginal_prices.coal.marginal_cost)
 
-    network.add("Generator", "Solar", bus="Grid", p_nom=1, p_max_pu=solar_pv, marginal_cost=20)
+    network.add("Generator",
+        name_solar,
+        bus="Grid",
+        p_nom=1,
+        p_max_pu=solar_pv,
+        marginal_cost=marginal_prices.solar.marginal_cost)
 
     network.add("Load", "Grid demand", bus="Grid", p_set=demand)
 

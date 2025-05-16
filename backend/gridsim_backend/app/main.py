@@ -1,11 +1,10 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from gridsim_backend.app.types import BusData, DailyResponse, GeneratorData, LinkData, LoadData, MarginalPrices, SingleGeneratorData, StoreData
 from mangum import Mangum
 from . import network
 from pydantic import BaseModel
-from typing import Dict, List
-from datetime import datetime
 
 app = FastAPI(title="GridSim API",
               version="0.1.0",
@@ -23,35 +22,8 @@ app.add_middleware(
 )
 
 # Define response models
-class SingleGeneratorData(BaseModel):
-    p: List[float]
-    carrier: str
 
-class GeneratorData(BaseModel):
-    generators: Dict[str, SingleGeneratorData]
-class LoadData(BaseModel):
-    p: Dict[str, List[float]]
 
-class StoreData(BaseModel):
-    p: Dict[str, List[float]]
-    e: Dict[str, List[float]]
-
-class LinkData(BaseModel):
-    p0: Dict[str, List[float]]
-    p1: Dict[str, List[float]]
-
-class BusData(BaseModel):
-    p: Dict[str, List[float]]
-    marginal_price: Dict[str, List[float]]
-
-class DailyResponse(BaseModel):
-    index: List[str]  # datetime strings
-    generators: GeneratorData
-    loads: LoadData
-    stores: StoreData
-    links: LinkData
-    buses: BusData
-    params: network.DailyParameters
 class RootResponse(BaseModel):
     message: str
 
@@ -77,7 +49,6 @@ async def get_daily(params: network.DailyParameters = Depends()):
     # print(message)
     # print(nw.objective)
     # print(nw.generators.carrier['Gas 1'])
-    # print(nw.generators_t.p['Gas 1'])
     
     if status == 'warning' and message == 'infeasible':
         print("Optimization problem is infeasible")
@@ -130,7 +101,8 @@ async def get_daily(params: network.DailyParameters = Depends()):
         stores=StoreData(**store_data),
         links=LinkData(**link_data),
         buses=BusData(**bus_data),
-        params=params
+        params=params,
+        marginal_prices=network.marginal_prices
     )
 
 # Create handler for AWS Lambda
