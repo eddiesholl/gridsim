@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ScenariosIntro } from "../pages/scenarios/introduction";
-import { getDailyQuery } from "../services/api";
+import { ScenariosEvCharging } from "../../pages/scenarios/ev-charging";
+import { getDailyQuery } from "../../services/api";
 
-export const Route = createFileRoute("/scenarios/intro")({
-  component: ScenariosIntro,
+export const Route = createFileRoute("/scenarios/ev-charging")({
+  component: ScenariosEvCharging,
   loader: () => {
     const dailyData = getDailyQuery({}, {});
-    console.log({ dailyData });
     return {
       dailyData,
     };

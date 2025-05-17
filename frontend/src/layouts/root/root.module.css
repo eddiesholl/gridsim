@@ -11,3 +11,8 @@
     );
   }
 }
+
+.link[data-status="active"] {
+  background-color: var(--mantine-color-moonstone-1);
+  font-weight: 700;
+}

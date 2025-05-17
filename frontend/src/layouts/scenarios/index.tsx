@@ -9,6 +9,14 @@ const scenarioNavItems = [
     label: "Introduction",
   },
   {
+    path: "/scenarios/ev-charging",
+    label: "EV charging",
+  },
+  {
+    path: "/scenarios/smart-charging",
+    label: "Smart charging",
+  },
+  {
     path: "/scenarios/v2g",
     label: "Vehicle to Grid",
   },
@@ -20,12 +28,8 @@ export function ScenariosLayout() {
       <Flex direction="column" gap="md">
         <Flex direction="row" justify="flex-end" gap="md">
           {scenarioNavItems.map((item) => (
-            <div className={classes["scenario-nav-wrapper"]}>
-              <MTLink
-                className={classes["scenario-nav-item"]}
-                key={item.path}
-                to={item.path}
-              >
+            <div className={classes["scenario-nav-wrapper"]} key={item.path}>
+              <MTLink className={classes["scenario-nav-item"]} to={item.path}>
                 {item.label}
               </MTLink>
             </div>

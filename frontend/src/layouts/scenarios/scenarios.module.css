@@ -1,9 +1,13 @@
 .scenario-nav-item {
   border-radius: 0.25rem;
   padding: 0.5rem 1rem;
-  background-color: var(--mantine-color-coral-5);
-  font-weight: 700;
+  background-color: var(--mantine-color-coral-1);
+  font-weight: 500;
   /* color: var(--mantine-color-coral-1); */
+  &[data-status="active"] {
+    font-weight: 700;
+    background-color: var(--mantine-color-coral-5);
+  }
 }
 
 .scenario-nav-wrapper {
