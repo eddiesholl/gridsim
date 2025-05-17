@@ -33,7 +33,7 @@ export function ToolsPage() {
   const colors = ["moonstone", "sage", "tan", "coral", "blush"];
 
   return (
-    <div className="App">
+    <Flex direction="column" gap="xl" align="center">
       <h1>Development tools</h1>
       <h3>Useful for debugging and development</h3>
 
@@ -46,7 +46,7 @@ export function ToolsPage() {
 
       {/* <Button color="blush">Click me</Button> */}
 
-      <Card>
+      <Card w="100%">
         <Title order={3} pb="xl">
           Color Shades
         </Title>
@@ -104,6 +104,6 @@ export function ToolsPage() {
           ))}
         </Flex>
       </Card>
-    </div>
+    </Flex>
   );
 }

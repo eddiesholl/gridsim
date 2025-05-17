@@ -16,3 +16,17 @@
   background-color: var(--mantine-color-moonstone-1);
   font-weight: 700;
 }
+
+.main {
+  height: calc(100vh - 60px);
+  overflow: auto;
+  width: 100%;
+}
+
+.header {
+  height: 60px;
+  background-color: var(--mantine-color-moonstone-3);
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--mantine-color-moonstone-8);
+}
