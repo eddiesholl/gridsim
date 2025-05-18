@@ -1,4 +1,4 @@
-import { Flex } from "@mantine/core";
+import { Box, Flex, ScrollArea } from "@mantine/core";
 import { Outlet } from "@tanstack/react-router";
 import { MTLink } from "../../components/Link";
 import classes from "./scenarios.module.css";
@@ -26,7 +26,7 @@ export function ScenariosLayout() {
   return (
     <>
       <Flex direction="column" gap="md">
-        <Flex direction="row" justify="flex-end" gap="md">
+        <Flex direction="row" justify="flex-end" gap="md" h="60px" p="md">
           {scenarioNavItems.map((item) => (
             <div className={classes["scenario-nav-wrapper"]} key={item.path}>
               <MTLink className={classes["scenario-nav-item"]} to={item.path}>
@@ -35,7 +35,13 @@ export function ScenariosLayout() {
             </div>
           ))}
         </Flex>
-        <Outlet />
+        <div className={classes.scrollArea}>
+          <ScrollArea h="100%" type="scroll">
+            <Box w="100%" p="md">
+              <Outlet />
+            </Box>
+          </ScrollArea>
+        </div>
       </Flex>
     </>
   );

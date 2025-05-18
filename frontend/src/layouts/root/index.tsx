@@ -1,4 +1,4 @@
-import { Box, Flex, ScrollArea, Title } from "@mantine/core";
+import { Box, Flex, Title } from "@mantine/core";
 import { FileRouteTypes, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { MTLink } from "../../components/Link";
@@ -43,17 +43,9 @@ export function RootComponent() {
           </Flex>
         </Flex>
         <Flex className={styles.main}>
-          <ScrollArea
-            h="100%"
-            w="100%"
-            // offsetScrollbars="present"
-            type="scroll"
-            // scrollbarSize={4}
-          >
-            <Box p="md">
-              <Outlet />
-            </Box>
-          </ScrollArea>
+          <Box w="100%">
+            <Outlet />
+          </Box>
         </Flex>
       </Flex>
     </>

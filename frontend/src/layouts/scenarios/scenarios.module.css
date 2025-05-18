@@ -13,3 +13,9 @@
 .scenario-nav-wrapper {
   /* border: 1px solid var(--mantine-color-black); */
 }
+
+.scrollArea {
+  height: calc(100vh - 136px);
+  overflow: auto;
+  width: 100%;
+}
