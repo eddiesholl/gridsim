@@ -5,7 +5,7 @@ import { getDailyQuery } from "../../services/api";
 export const Route = createFileRoute("/scenarios/intro")({
   component: ScenariosIntro,
   loader: () => {
-    const dailyData = getDailyQuery({}, {});
+    const dailyData = getDailyQuery({ number_of_evs: 0 }, {});
     return {
       dailyData,
     };

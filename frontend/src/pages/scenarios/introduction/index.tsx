@@ -3,6 +3,7 @@ import { Await, getRouteApi } from "@tanstack/react-router";
 import { LoadingBlock } from "../../../components/LoadingBlock";
 import { Plot } from "../../../components/Plot/Plot";
 import {
+  plotBatterySocData,
   plotDailyLoadData,
   plotDailyMarginalPriceData,
 } from "../../../data/plotly";
@@ -54,12 +55,15 @@ export function ScenariosIntro() {
           const dailyMarginalPriceData = plotDailyMarginalPriceData(data, {
             includeBuses: ["Grid"],
           });
+          const batterySocData = plotBatterySocData(data);
           return (
-            <Plot
-              data={dailyMarginalPriceData.data}
-              layout={dailyMarginalPriceData.layout}
-              rightText="Marginal price"
-            />
+            <>
+              <Plot
+                data={dailyMarginalPriceData.data}
+                layout={dailyMarginalPriceData.layout}
+              />
+              <Plot data={batterySocData.data} layout={batterySocData.layout} />
+            </>
           );
         }}
       </Await>

@@ -3,13 +3,13 @@ from typing import Dict, List, Optional
 
 class DailyParameters(BaseModel):
     number_of_evs: Optional[int] = Field(
-        default=100,
-        gt=0,
-        le=200,
+        default=200,
+        gte=0,
+        le=400,
         description="Number of electric vehicles"
     )
     hourly_load_per_ev: Optional[float] = Field(
-        default=0.007,
+        default=0.005,
         gt=0,
         le=0.01,
         description="Hourly load per EV in MWh"
@@ -21,7 +21,7 @@ class DailyParameters(BaseModel):
         description="EV battery size in MWh"
     )
     initial_battery_soc: Optional[float] = Field(
-        default=0.8,
+        default=1,
         ge=0,
         le=1,
         description="Initial battery state of charge (0-1)"
@@ -43,6 +43,12 @@ class DailyParameters(BaseModel):
         ge=0,
         le=1,
         description="Percentage of EVs in VPP"
+    )
+    evening_recharge_time: Optional[int] = Field(
+        default=24,
+        ge=19,
+        le=24,
+        description="Hour in the evening to complete evening charging (18-24)"
     )
 
     class Config:

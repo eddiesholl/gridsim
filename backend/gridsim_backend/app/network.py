@@ -142,7 +142,7 @@ def get_daily_network(params: DailyParameters):
         carrier="Gas",
         bus="Grid",
         p_nom_extendable=False,
-        p_nom=5,
+        p_nom=6,
         p_max_pu=1,
         marginal_cost=marginal_prices.gas_cheap.marginal_cost)
     
@@ -151,7 +151,7 @@ def get_daily_network(params: DailyParameters):
         carrier="Gas",
         bus="Grid",
         p_nom_extendable=False,
-        p_nom=3,
+        p_nom=5,
         p_max_pu=1,
         marginal_cost=marginal_prices.gas_moderate.marginal_cost)
     
@@ -194,6 +194,7 @@ def get_daily_network(params: DailyParameters):
     initial_battery_soc = params.initial_battery_soc
     home_charger_p_nom_kw = params.home_charger_p_nom_kw
     max_discharge_factor = params.max_discharge_factor
+    evening_recharge_time = params.evening_recharge_time
     actual_max_discharge_factor = max_discharge_factor * (params.percent_of_evs_in_vpp)
 
     # define the load that driving EVs draw from their batteries
@@ -235,7 +236,9 @@ def get_daily_network(params: DailyParameters):
     )
 
     # define the minimum state of charge of the battery through the day
-    battery_e_min_pu = pd.Series([0] * 6 + [0.8] * 1 + [0.2] * 2 + [0.0] * 8 + [0.2] * 2 + [0.2] * 4 + [0.8], index)
+    battery_e_min_pu = pd.Series([0] * 6 + [0.8] * 1 + [0.2] * 2 + [0.0] * 8 + [0.2] * 2 + [0.2] * 5, index)
+    battery_e_min_pu[evening_recharge_time - 1:] = 1.0
+    # battery_e_min_pu = pd.Series([0] * 6 + [0.8] * 1 + [0.2] * 2 + [0.0] * 8 + [0.2] * 2 + [0.2] * 4 + [0.8], index)
 
     # implement the actual battery storage
     network.add(

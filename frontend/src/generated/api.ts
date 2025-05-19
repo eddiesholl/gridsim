@@ -39,13 +39,13 @@ export interface components {
       /**
        * Number Of Evs
        * @description Number of electric vehicles
-       * @default 100
+       * @default 200
        */
       number_of_evs?: number | null;
       /**
        * Hourly Load Per Ev
        * @description Hourly load per EV in MWh
-       * @default 0.007
+       * @default 0.005
        */
       hourly_load_per_ev?: number | null;
       /**
@@ -57,7 +57,7 @@ export interface components {
       /**
        * Initial Battery Soc
        * @description Initial battery state of charge (0-1)
-       * @default 0.8
+       * @default 1
        */
       initial_battery_soc?: number | null;
       /**
@@ -78,6 +78,12 @@ export interface components {
        * @default 0.5
        */
       percent_of_evs_in_vpp?: number | null;
+      /**
+       * Evening Recharge Time
+       * @description Hour in the evening to complete evening charging (18-24)
+       * @default 24
+       */
+      evening_recharge_time?: number | null;
     };
     /** DailyResponse */
     DailyResponse: {
@@ -220,6 +226,7 @@ export interface operations {
         home_charger_p_nom_kw?: number | null;
         max_discharge_factor?: number | null;
         percent_of_evs_in_vpp?: number | null;
+        evening_recharge_time?: number | null;
       };
     };
     responses: {

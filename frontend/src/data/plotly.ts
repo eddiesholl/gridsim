@@ -1,3 +1,4 @@
+import type { Shape } from "plotly.js";
 import { DailyResponse, PlotlyData } from "../types";
 import { getColourForString } from "./chart-colours";
 
@@ -5,9 +6,85 @@ type DailyDataOptions = {
   includeStoresE?: boolean;
   includeStoresP?: boolean;
   excludeData?: string[];
+  extraShapes?: Partial<Shape>[];
 };
 
 type DataSet = [string, number[]];
+
+export const shapeEveningPeak: Partial<Shape> = {
+  type: "rect",
+  xref: "x",
+  yref: "paper",
+  x0: "2016-01-01 15:00:00",
+  y0: 0,
+  x1: "2016-01-01 20:00:00",
+  y1: 1,
+  fillcolor: "#ffa3a3",
+  opacity: 0.2,
+  line: {
+    width: 0,
+  },
+};
+
+export const shapeMorningCommute: Partial<Shape> = {
+  type: "rect",
+  xref: "x",
+  yref: "paper",
+  x0: "2016-01-01 06:00:00",
+  y0: 0,
+  x1: "2016-01-01 08:00:00",
+  y1: 1,
+  fillcolor: "#a3a3ff",
+  opacity: 0.2,
+  line: {
+    width: 0,
+  },
+  label: {
+    text: "Morning commute",
+    font: { size: 12, color: "black" },
+    textposition: "top center",
+  },
+};
+
+export const shapeEveningCommute: Partial<Shape> = {
+  type: "rect",
+  xref: "x",
+  yref: "paper",
+  x0: "2016-01-01 15:00:00",
+  y0: 0,
+  x1: "2016-01-01 17:00:00",
+  y1: 1,
+  fillcolor: "#a3a3ff",
+  opacity: 0.2,
+  line: {
+    width: 0,
+  },
+  label: {
+    text: "Evening commute",
+    font: { size: 12, color: "black" },
+    textposition: "top center",
+  },
+};
+
+export const shapeChargeASAP: Partial<Shape> = {
+  type: "rect",
+  xref: "x",
+  yref: "paper",
+  x0: "2016-01-01 17:00:00",
+  y0: 0,
+  x1: "2016-01-01 19:00:00",
+  y1: 1,
+  fillcolor: "#ffa3a3",
+  opacity: 0.4,
+  line: {
+    width: 0,
+  },
+  label: {
+    text: "Charge by 7pm",
+    font: { size: 12, color: "black" },
+    textposition: "middle center",
+  },
+};
 
 export const plotDailyLoadData = (
   data: DailyResponse,
@@ -15,7 +92,7 @@ export const plotDailyLoadData = (
 ) => {
   const storeEData = options.includeStoresE
     ? Object.entries(data.stores.e).map(
-        ([name, values]) => [`${name} (mwh stored)`, values] as DataSet
+        ([name, values]) => [`${name} (MWh stored)`, values] as DataSet
       )
     : [];
 
@@ -24,6 +101,8 @@ export const plotDailyLoadData = (
         ([name, values]) => [`${name} (output)`, values] as DataSet
       )
     : [];
+
+  const shapes = [shapeEveningPeak, ...(options.extraShapes || [])];
 
   const baseDataSets = Object.entries(data.generators.generators)
     .map(([name, values]) => [name, values.p] as DataSet)
@@ -49,22 +128,7 @@ export const plotDailyLoadData = (
     layout: {
       // paper_bgcolor: "#eee",
       // plot_bgcolor: "#eee",
-      shapes: [
-        {
-          type: "rect",
-          xref: "x",
-          yref: "paper",
-          x0: "2016-01-01 15:00:00",
-          y0: 0,
-          x1: "2016-01-01 20:00:00",
-          y1: 1,
-          fillcolor: "#ffa3a3",
-          opacity: 0.2,
-          line: {
-            width: 0,
-          },
-        },
-      ],
+      shapes,
       responsive: true,
       useResizeHandler: true,
       autosize: true,
@@ -233,6 +297,41 @@ export const plotDailyMarginalPriceData = (
 };
 
 export const plotBatterySocData = (data: DailyResponse) => {
+  const fixedLines = [
+    {
+      type: "scatter",
+      mode: "lines",
+      name: "Max capacity",
+      x: [data.index[0], data.index[data.index.length - 1]],
+      y: [
+        data.params.number_of_evs! * data.params.ev_battery_size_mwh!,
+        data.params.number_of_evs! * data.params.ev_battery_size_mwh!,
+      ],
+      line: {
+        shape: "linear",
+        color: getColourForString("Max capacity"),
+        width: 3,
+        dash: "dot",
+      },
+    },
+    {
+      type: "scatter",
+      mode: "lines",
+      name: "20% capacity",
+      x: [data.index[0], data.index[data.index.length - 1]],
+      y: [
+        data.params.number_of_evs! * data.params.ev_battery_size_mwh! * 0.2,
+        data.params.number_of_evs! * data.params.ev_battery_size_mwh! * 0.2,
+      ],
+      line: {
+        shape: "linear",
+        color: getColourForString("20% capacity"),
+        width: 3,
+        dash: "dot",
+      },
+    },
+  ];
+
   const plotData = {
     data: Object.entries(data.stores.e)
       .map(([name, values]) => ({
@@ -247,26 +346,10 @@ export const plotBatterySocData = (data: DailyResponse) => {
           width: 3,
         },
       }))
-      .concat([
-        {
-          type: "scatter",
-          mode: "lines",
-          name: "Max capacity",
-          x: [data.index[0], data.index[data.index.length - 1]],
-          y: [
-            data.params.number_of_evs! * data.params.ev_battery_size_mwh!,
-            data.params.number_of_evs! * data.params.ev_battery_size_mwh!,
-          ],
-          line: {
-            shape: "linear",
-            color: "var(--mantine-color-dark-9)",
-            width: 3,
-          },
-        },
-      ]),
+      .concat(fixedLines),
     layout: {
       title: {
-        text: "Battery SOC",
+        text: "Battery state of charge (SOC)",
       },
       yaxis: {
         rangemode: "tozero",

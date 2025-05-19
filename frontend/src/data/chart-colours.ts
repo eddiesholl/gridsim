@@ -5,7 +5,9 @@ const fixedChartColors: Record<string, string> = {
   "Gas (moderate)": chartColors.steelBlue,
   "Gas (expensive)": chartColors.ultraViolet,
   Coal: chartColors.bittersweet,
-  Solar: chartColors.lightBlue,
+  Solar: chartColors.sunglow,
+  "Grid demand": chartColors.lightBlue,
+  "Battery storage (MWh stored)": chartColors.tangerine,
 };
 
 export const getColourForString = (str: string) => {

@@ -3,8 +3,12 @@ import { Await, getRouteApi } from "@tanstack/react-router";
 import { LoadingBlock } from "../../../components/LoadingBlock";
 import { Plot } from "../../../components/Plot/Plot";
 import {
+  plotBatterySocData,
   plotDailyLoadData,
   plotDailyMarginalPriceData,
+  shapeChargeASAP,
+  shapeEveningCommute,
+  shapeMorningCommute,
 } from "../../../data/plotly";
 
 export function ScenariosSmartCharging() {
@@ -29,9 +33,14 @@ export function ScenariosSmartCharging() {
       <Await promise={dailyData} fallback={<LoadingBlock />}>
         {({ data }) => {
           const dailyLoadData = plotDailyLoadData(data, {
-            includeStoresE: false,
+            includeStoresE: true,
             includeStoresP: false,
-            excludeData: ["EV driving"],
+            excludeData: ["EV driving", "Coal", "Solar"],
+            extraShapes: [
+              shapeMorningCommute,
+              shapeEveningCommute,
+              shapeChargeASAP,
+            ],
           });
           return (
             <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
@@ -44,12 +53,15 @@ export function ScenariosSmartCharging() {
           const dailyMarginalPriceData = plotDailyMarginalPriceData(data, {
             includeBuses: ["Grid"],
           });
+          const batterySocData = plotBatterySocData(data);
           return (
-            <Plot
-              data={dailyMarginalPriceData.data}
-              layout={dailyMarginalPriceData.layout}
-              rightText="Marginal price"
-            />
+            <>
+              <Plot
+                data={dailyMarginalPriceData.data}
+                layout={dailyMarginalPriceData.layout}
+              />
+              <Plot data={batterySocData.data} layout={batterySocData.layout} />
+            </>
           );
         }}
       </Await>
