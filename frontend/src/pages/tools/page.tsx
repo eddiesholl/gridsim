@@ -79,33 +79,6 @@ export function ToolsPage() {
             ))}
           </Flex>
         </Card>
-
-        <Card p="xl" mt="xl">
-          <h3>Color Shades</h3>
-          <Flex gap="sm">
-            {Array.from({ length: 11 }, (_, i) => (
-              <div
-                key={i}
-                style={{
-                  height: "40px",
-                  flex: 1,
-                  // color: `Moonstone.${i})`,
-                  color: `blush.1`,
-                  backgroundColor: `blush.1`,
-                  // backgroundColor: `blue`,
-                  width: 10,
-                  borderRadius: "4px",
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "0 16px",
-                  // color: i > 5 ? "black" : "white",
-                }}
-              >
-                {/* Moonstone.{i} */}
-              </div>
-            ))}
-          </Flex>
-        </Card>
       </Flex>
     </PageWrapper>
   );
