@@ -13,9 +13,9 @@
 }
 
 .link[data-status="active"] {
-  background-color: var(--mantine-color-moonstone-2);
+  background-color: var(--mantine-color-moonstone-1);
   font-weight: 600;
-  border: 1px solid var(--mantine-color-white);
+  border: 1px solid var(--mantine-color-moonstone-3);
 }
 
 .main {

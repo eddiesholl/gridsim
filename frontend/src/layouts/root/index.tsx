@@ -10,7 +10,7 @@ interface PathConfig {
 
 const paths: PathConfig[] = [
   {
-    path: "/home",
+    path: "/",
     label: "Home",
   },
   {

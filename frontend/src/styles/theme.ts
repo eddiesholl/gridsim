@@ -70,7 +70,7 @@ export const mantineTheme: MantineThemeOverride = createTheme({
     Card: Card.extend({
       defaultProps: {
         p: "xl",
-        shadow: "xl",
+        shadow: "sm",
         radius: "var(--mantine-radius-default)",
         withBorder: true,
       },

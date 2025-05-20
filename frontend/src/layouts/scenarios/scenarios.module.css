@@ -1,17 +1,15 @@
-.scenario-nav-item {
+.navItem {
   border-radius: 0.25rem;
   padding: 0.5rem 1rem;
   background-color: var(--mantine-color-coral-1);
+  border: 1px solid var(--mantine-color-coral-2);
   font-weight: 500;
   /* color: var(--mantine-color-coral-1); */
   &[data-status="active"] {
     font-weight: 700;
     background-color: var(--mantine-color-coral-5);
+    border: 1px solid var(--mantine-color-coral-6);
   }
-}
-
-.scenario-nav-wrapper {
-  /* border: 1px solid var(--mantine-color-black); */
 }
 
 .scrollArea {
