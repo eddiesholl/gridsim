@@ -42,7 +42,7 @@ export const shapeMorningCommute: Partial<Shape> = {
   label: {
     text: "Morning commute",
     font: { size: 12, color: "black" },
-    textposition: "top center",
+    textposition: "top left",
   },
 };
 
@@ -83,6 +83,26 @@ export const shapeChargeASAP: Partial<Shape> = {
     text: "Charge by 7pm",
     font: { size: 12, color: "black" },
     textposition: "middle center",
+  },
+};
+
+export const shapeChargeByMidnight: Partial<Shape> = {
+  type: "rect",
+  xref: "x",
+  yref: "paper",
+  x0: "2016-01-02 04:00:00",
+  y0: 0,
+  x1: "2016-01-02 06:00:00",
+  y1: 1,
+  fillcolor: "#ffa3a3",
+  opacity: 0.4,
+  line: {
+    width: 0,
+  },
+  label: {
+    text: "Charge by 6 am",
+    font: { size: 12, color: "black" },
+    textposition: "middle right",
   },
 };
 
@@ -330,10 +350,27 @@ export const plotBatterySocData = (data: DailyResponse) => {
         dash: "dot",
       },
     },
+    {
+      type: "scatter",
+      mode: "lines",
+      name: "50% capacity",
+      x: [data.index[0], data.index[data.index.length - 1]],
+      y: [
+        data.params.number_of_evs! * data.params.ev_battery_size_mwh! * 0.5,
+        data.params.number_of_evs! * data.params.ev_battery_size_mwh! * 0.5,
+      ],
+      line: {
+        shape: "linear",
+        color: getColourForString("20% capacity"),
+        width: 3,
+        dash: "dot",
+      },
+    },
   ];
 
   const plotData = {
     data: Object.entries(data.stores.e)
+      .concat(Object.entries(data.stores.e_min_pu))
       .map(([name, values]) => ({
         type: "scatter",
         mode: "lines",
@@ -355,6 +392,25 @@ export const plotBatterySocData = (data: DailyResponse) => {
         rangemode: "tozero",
       },
     },
+  } as PlotlyData;
+
+  return plotData;
+};
+
+export const plotDailyGeneratorOutputData = (data: DailyResponse) => {
+  const plotData = {
+    data: Object.entries(data.generators.generators).map(([name, values]) => ({
+      type: "scatter",
+      mode: "lines",
+      name: name,
+      x: data.index,
+      y: values.p,
+      line: {
+        shape: "linear",
+        color: getColourForString(name),
+        width: 3,
+      },
+    })),
   } as PlotlyData;
 
   return plotData;

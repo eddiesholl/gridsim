@@ -169,6 +169,10 @@ export interface components {
       e: {
         [key: string]: number[];
       };
+      /** E Min Pu */
+      e_min_pu: {
+        [key: string]: number[];
+      };
     };
     /** ValidationError */
     ValidationError: {

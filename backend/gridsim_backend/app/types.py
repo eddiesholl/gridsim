@@ -46,7 +46,7 @@ class DailyParameters(BaseModel):
     )
     evening_recharge_time: Optional[int] = Field(
         default=24,
-        ge=19,
+        ge=12,
         le=24,
         description="Hour in the evening to complete evening charging (18-24)"
     )
@@ -66,7 +66,7 @@ class LoadData(BaseModel):
 class StoreData(BaseModel):
     p: Dict[str, List[float]]
     e: Dict[str, List[float]]
-
+    e_min_pu: Dict[str, List[float]]
 class LinkData(BaseModel):
     p0: Dict[str, List[float]]
     p1: Dict[str, List[float]]

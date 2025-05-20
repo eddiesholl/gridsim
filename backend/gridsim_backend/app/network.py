@@ -106,30 +106,30 @@ name_coal = "Coal"
 name_solar = "Solar"
 
 marginal_prices = MarginalPrices(
-    gas_cheap=GeneratorMetadata(name=name_gas_cheap, marginal_cost=100),
-    gas_moderate=GeneratorMetadata(name=name_gas_moderate, marginal_cost=150),
-    gas_expensive=GeneratorMetadata(name=name_gas_expensive, marginal_cost=300),
-    coal=GeneratorMetadata(name=name_coal, marginal_cost=80),
-    solar=GeneratorMetadata(name=name_solar, marginal_cost=20)
+    gas_cheap=GeneratorMetadata(name=name_gas_cheap, marginal_cost=100.0),
+    gas_moderate=GeneratorMetadata(name=name_gas_moderate, marginal_cost=150.0),
+    gas_expensive=GeneratorMetadata(name=name_gas_expensive, marginal_cost=300.0),
+    coal=GeneratorMetadata(name=name_coal, marginal_cost=80.0),
+    solar=GeneratorMetadata(name=name_solar, marginal_cost=20.0)
 )
 
 def get_daily_network(params: DailyParameters):
     index = indices.single_day_hourly
     demand = pd.Series([
-        21, 20, 20, 19,
-        19, 20, 21, 23,
+       21, 23,
         25, 26, 28, 29,
-        29, 29, 29, 29,
-        29, 28, 27, 26,
-        25, 24, 23, 22
-        ], index)
+        28, 30, 29, 29,
+        29, 28, 29, 27.5,
+        24, 23, 23, 22,
+        21, 21, 20, 20, 19,
+        19, 21], index)
 
     solar_pv = pd.Series(
-        [0] * 7 + [1] +
+        [0] * 1 + [1] +
         [6] + [10] + [12] + [14] +
         [15] + [15] + [14] + [12] +
         [10] + [6] + [1] +
-        [0] * 5,
+        [0] * 12,
         index
     )
     network = pypsa.Network()
@@ -142,8 +142,8 @@ def get_daily_network(params: DailyParameters):
         carrier="Gas",
         bus="Grid",
         p_nom_extendable=False,
-        p_nom=6,
-        p_max_pu=1,
+        p_nom=8.0,
+        p_max_pu=1.0,
         marginal_cost=marginal_prices.gas_cheap.marginal_cost)
     
     network.add("Generator",
@@ -151,8 +151,8 @@ def get_daily_network(params: DailyParameters):
         carrier="Gas",
         bus="Grid",
         p_nom_extendable=False,
-        p_nom=5,
-        p_max_pu=1,
+        p_nom=4.0,
+        p_max_pu=1.0,
         marginal_cost=marginal_prices.gas_moderate.marginal_cost)
     
     network.add("Generator",
@@ -160,8 +160,8 @@ def get_daily_network(params: DailyParameters):
         carrier="Gas",
         bus="Grid",
         p_nom_extendable=True,
-        p_nom=2,
-        p_max_pu=1,
+        p_nom=2.0,
+        p_max_pu=1.0,
         marginal_cost=marginal_prices.gas_expensive.marginal_cost)
 
     network.add("Generator",
@@ -169,14 +169,14 @@ def get_daily_network(params: DailyParameters):
         carrier="Coal",
         bus="Grid",
         # p_nom_extendable=True,
-        p_nom=16,
-        p_max_pu=1,
+        p_nom=16.0,
+        p_max_pu=1.0,
         marginal_cost=marginal_prices.coal.marginal_cost)
 
     network.add("Generator",
         name_solar,
         bus="Grid",
-        p_nom=1,
+        p_nom=1.0,
         p_max_pu=solar_pv,
         marginal_cost=marginal_prices.solar.marginal_cost)
 
@@ -199,7 +199,7 @@ def get_daily_network(params: DailyParameters):
 
     # define the load that driving EVs draw from their batteries
     bev_load = hourly_load_per_ev * number_of_evs
-    bev_usage = pd.Series([0.0] * 7 + [bev_load] * 2 + [0.0] * 7 + [bev_load] * 2 + [0.0] * 6, index)
+    bev_usage = pd.Series([0.0] * 1 + [bev_load] * 2 + [0.0] * 7 + [bev_load] * 2 + [0.0] * 13, index)
     network.add("Load", "EV driving", bus="Battery", p_set=bev_usage)
 
 
@@ -207,8 +207,8 @@ def get_daily_network(params: DailyParameters):
     initial_ev_storage = total_ev_capacity_mwh * initial_battery_soc
 
     # define the times that the home charger is able to charge and discharge the battery
-    g2v_p_max_pu = pd.Series([1.0] * 7 + [0.0] * 2 + [0.0] * 7 + [0.0] * 2 + [1.0] * 6, index)
-    v2g_p_max_pu = pd.Series([actual_max_discharge_factor] * 7 + [0.0] * 2 + [0.0] * 7 + [0.0] * 2 + [actual_max_discharge_factor] * 6, index)
+    g2v_p_max_pu = pd.Series([1.0] * 1 + [0.0] * 2 + [0.0] * 7 + [0.0] * 2 + [1.0] * 13, index)
+    v2g_p_max_pu = pd.Series([actual_max_discharge_factor] * 1 + [0.0] * 2 + [0.0] * 7 + [0.0] * 2 + [actual_max_discharge_factor] * 13, index)
 
     network.add(
         "Link",
@@ -231,14 +231,14 @@ def get_daily_network(params: DailyParameters):
         p_max_pu=v2g_p_max_pu,
         p_min_pu=0,
         efficiency=0.95,
-        marginal_cost=10,
+        marginal_cost=10.0,
         # active=False
     )
 
     # define the minimum state of charge of the battery through the day
-    battery_e_min_pu = pd.Series([0] * 6 + [0.8] * 1 + [0.2] * 2 + [0.0] * 8 + [0.2] * 2 + [0.2] * 5, index)
-    battery_e_min_pu[evening_recharge_time - 1:] = 1.0
-    # battery_e_min_pu = pd.Series([0] * 6 + [0.8] * 1 + [0.2] * 2 + [0.0] * 8 + [0.2] * 2 + [0.2] * 4 + [0.8], index)
+    battery_e_min_pu = pd.Series([0.8] * 1 + [0.2] * 2 + [0.0] * 8 + [0.2] * 2 + [0.5] * 6 + [0.5] * 6, index)
+    # battery_e_min_pu[24] = 1.0
+    battery_e_min_pu[evening_recharge_time:] = 1.0
 
     # implement the actual battery storage
     network.add(

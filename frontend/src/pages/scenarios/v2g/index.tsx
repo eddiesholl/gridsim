@@ -1,32 +1,78 @@
-import { Card, Flex, Text, Title } from "@mantine/core";
+import { Card, Flex, Title } from "@mantine/core";
+import { Await, getRouteApi } from "@tanstack/react-router";
+import { LoadingBlock } from "../../../components/LoadingBlock";
+import { Plot } from "../../../components/Plot/Plot";
+import {
+  plotBatterySocData,
+  plotDailyGeneratorOutputData,
+  plotDailyLoadData,
+  plotDailyMarginalPriceData,
+  shapeChargeByMidnight,
+  shapeEveningCommute,
+  shapeMorningCommute,
+} from "../../../data/plotly";
 
 export function ScenariosV2G() {
+  const { dailyData } = getRouteApi("/scenarios/v2g").useLoaderData();
   return (
     <Flex direction="column" gap="md">
       <Card>
         <Title order={2}>What is Vehicle to Grid?</Title>
-        <Text>
-          <p>
-            As an electricity grid transitions from fixed generation to cheap
-            but variable renewables, it becomes a challenge to balance supply
-            and demand. The ability to store energy is one technique to help
-            meet this challenge. Grid scale storage, where dedicated batteries
-            are commissioned and attached directly to the grid is something that
-            is already happening, but all of those batteries are expensive.
-          </p>
-          <p>
-            Most passenger vehicles are only in use a small percentage of the
-            day. As our ground transport fleet transitions to electric vehicles
-            (EVs), we will have a lot of batteries sitting idle when parked and
-            not in use. Vehicle to Grid (V2G) is a technology that allows our
-            EVs to store energy from the grid and discharge it back to the grid
-            when needed. This technology is still in the early stages of
-            development, but it has the potential to revolutionize the way we
-            use electricity. The capacity of the EV fleet is an immensely
-            valuable asset to the rest of our grid.
-          </p>
-        </Text>
+        <p>
+          Large scale storage of electricity, connected to the grid, is ideal to
+          help ease the strain on the grid at times where it is hardest to match
+          supply to demand. Let's leverage the energy stored in the EV fleet to
+          help out here. We will enrol a part of our EV fleet in a V2G program.
+          As well as drawing power from the grid to recharge, they're now also
+          able to return power to the grid.
+        </p>
+        <p>
+          By storing additional energy, then responding at critical times, we
+          can ease the load on the grid even further. This means less capacity
+          is needed from other sources jsut to cover the peak of each day,
+          saving money and avoiding use of gas.
+        </p>
       </Card>
+      <Await promise={dailyData} fallback={<LoadingBlock />}>
+        {({ data }) => {
+          const dailyLoadData = plotDailyLoadData(data, {
+            includeStoresE: true,
+            includeStoresP: false,
+            excludeData: ["EV driving", "Coal", "Solar"],
+            extraShapes: [
+              shapeMorningCommute,
+              shapeEveningCommute,
+              shapeChargeByMidnight,
+            ],
+          });
+          return (
+            <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
+          );
+        }}
+      </Await>
+
+      <Await promise={dailyData} fallback={<LoadingBlock />}>
+        {({ data }) => {
+          const dailyMarginalPriceData = plotDailyMarginalPriceData(data, {
+            includeBuses: ["Grid"],
+          });
+          const batterySocData = plotBatterySocData(data);
+          const generatorOutputData = plotDailyGeneratorOutputData(data);
+          return (
+            <>
+              <Plot
+                data={dailyMarginalPriceData.data}
+                layout={dailyMarginalPriceData.layout}
+              />
+              <Plot data={batterySocData.data} layout={batterySocData.layout} />
+              <Plot
+                data={generatorOutputData.data}
+                layout={generatorOutputData.layout}
+              />
+            </>
+          );
+        }}
+      </Await>
     </Flex>
   );
 }

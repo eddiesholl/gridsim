@@ -6,7 +6,7 @@ import {
   plotBatterySocData,
   plotDailyLoadData,
   plotDailyMarginalPriceData,
-  shapeChargeASAP,
+  shapeChargeByMidnight,
   shapeEveningCommute,
   shapeMorningCommute,
 } from "../../../data/plotly";
@@ -25,6 +25,15 @@ export function ScenariosSmartCharging() {
           recharge?
         </p>
         <p>
+          We'll give the EV and charger enough intelligence to choose when to
+          recharge. Just make sure the battery is ready to go by 6am. The exact
+          constraints could be based on an advanced dynamic signal using the
+          real time wholesale electricity price, maybe part of a Virtual Power
+          Plant (VPP). But it could also be as simple as a default charging time
+          window. Many EVs have offered this feature for several years already.
+          The goal is just to be recharged by midnight.
+        </p>
+        <p>
           This is already a significant improvement, saving consumers and the
           grid as a whole significant amount of money, and investment needed in
           the grid to handle the demand.
@@ -39,7 +48,7 @@ export function ScenariosSmartCharging() {
             extraShapes: [
               shapeMorningCommute,
               shapeEveningCommute,
-              shapeChargeASAP,
+              shapeChargeByMidnight,
             ],
           });
           return (
@@ -54,6 +63,7 @@ export function ScenariosSmartCharging() {
             includeBuses: ["Grid"],
           });
           const batterySocData = plotBatterySocData(data);
+          // const generatorOutputData = plotDailyGeneratorOutputData(data);
           return (
             <>
               <Plot
@@ -61,6 +71,10 @@ export function ScenariosSmartCharging() {
                 layout={dailyMarginalPriceData.layout}
               />
               <Plot data={batterySocData.data} layout={batterySocData.layout} />
+              {/* <Plot
+                data={generatorOutputData.data}
+                layout={generatorOutputData.layout}
+              /> */}
             </>
           );
         }}

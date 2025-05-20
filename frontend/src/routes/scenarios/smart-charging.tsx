@@ -5,7 +5,7 @@ import { getDailyQuery } from "../../services/api";
 export const Route = createFileRoute("/scenarios/smart-charging")({
   component: ScenariosSmartCharging,
   loader: () => {
-    const dailyData = getDailyQuery({}, {});
+    const dailyData = getDailyQuery({ percent_of_evs_in_vpp: 0 }, {});
     return {
       dailyData,
     };

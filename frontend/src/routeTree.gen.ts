@@ -16,7 +16,7 @@ import { Route as AboutImport } from './routes/about'
 import { Route as ScenariosRouteImport } from './routes/scenarios/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as ScenariosIndexImport } from './routes/scenarios/index'
-import { Route as ScenariosV2gImport } from './routes/scenarios.v2g'
+import { Route as ScenariosV2gImport } from './routes/scenarios/v2g'
 import { Route as ScenariosSmartChargingImport } from './routes/scenarios/smart-charging'
 import { Route as ScenariosIntroImport } from './routes/scenarios/intro'
 import { Route as ScenariosEvChargingImport } from './routes/scenarios/ev-charging'
@@ -303,7 +303,7 @@ export const routeTree = rootRoute
       "parent": "/scenarios"
     },
     "/scenarios/v2g": {
-      "filePath": "scenarios.v2g.tsx",
+      "filePath": "scenarios/v2g.tsx",
       "parent": "/scenarios"
     },
     "/scenarios/": {

@@ -81,7 +81,8 @@ async def get_daily(params: network.DailyParameters = Depends()):
 
     store_data = {
         'p': {store: nw.stores_t['p'][store].tolist() for store in nw.stores_t.p.columns},
-        'e': {store: nw.stores_t['e'][store].tolist() for store in nw.stores_t.e.columns}
+        'e': {store: nw.stores_t['e'][store].tolist() for store in nw.stores_t.e.columns},
+        'e_min_pu': {store: nw.stores_t['e_min_pu'][store].tolist() for store in nw.stores_t.e_min_pu.columns}
     }
 
     link_data = {
