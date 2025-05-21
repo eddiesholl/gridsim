@@ -1,21 +1,24 @@
 .control {
   display: block;
-  padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+  padding: 3px var(--mantine-spacing-md);
   border-radius: var(--mantine-radius-md);
   font-weight: 500;
 
-  @mixin hover {
-    background-color: light-dark(
-      var(--mantine-color-gray-0),
-      var(--mantine-color-dark-6)
-    );
+  &:hover:not([data-status="active"]) {
+    background-color: var(--mantine-color-moonstone-2);
   }
 }
 
-.link[data-status="active"] {
-  background-color: var(--mantine-color-moonstone-1);
-  font-weight: 600;
-  border: 1px solid var(--mantine-color-moonstone-3);
+.link {
+  &[data-status="active"] {
+    background-color: var(--mantine-color-moonstone-1);
+    font-weight: 600;
+    border: 1px solid var(--mantine-color-moonstone-3);
+  }
+
+  &:hover:not([data-status="active"]) {
+    background-color: var(--mantine-color-moonstone-2);
+  }
 }
 
 .main {
@@ -35,4 +38,9 @@
   );
   justify-content: space-between;
   align-items: center;
+}
+
+.githubIcon {
+  fill: var(--mantine-color-moonstone-9);
+  padding-top: 4px;
 }

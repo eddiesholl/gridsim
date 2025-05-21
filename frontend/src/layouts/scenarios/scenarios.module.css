@@ -10,6 +10,9 @@
     background-color: var(--mantine-color-coral-5);
     border: 1px solid var(--mantine-color-coral-6);
   }
+  &:hover:not([data-status="active"]) {
+    background-color: var(--mantine-color-coral-2);
+  }
 }
 
 .scrollArea {
