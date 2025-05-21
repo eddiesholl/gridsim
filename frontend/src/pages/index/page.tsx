@@ -36,7 +36,9 @@ export function IndexPage() {
               component="a"
               href="https://github.com/eddiesholl/gridsim"
               target="_blank"
-              rightSection={<GitHubCat width={20} height={"auto"} />}
+              rightSection={
+                <GitHubCat width={28} className={styles.githubIcon} />
+              }
             >
               View on GitHub
             </Button>
