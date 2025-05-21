@@ -34,7 +34,7 @@ export function RootComponent() {
       <Flex direction="column" h="100%">
         <Flex className={styles.header} p="sm">
           <Title order={1}>GridSim</Title>
-          <Flex>
+          <Flex gap="md">
             {paths.map(({ path, label }) => (
               <MTLink key={path} to={path} className={styles.link}>
                 {label}

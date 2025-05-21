@@ -1,6 +1,7 @@
 import { Button, Card, Flex, Space, Text, Title } from "@mantine/core";
 import { PageWrapper } from "../../components";
 import { MTLink } from "../../components/Link";
+import { GitHubCat } from "../../icons/GitHubCat";
 import styles from "./page.module.css";
 
 export function IndexPage() {
@@ -35,6 +36,7 @@ export function IndexPage() {
               component="a"
               href="https://github.com/eddiesholl/gridsim"
               target="_blank"
+              rightSection={<GitHubCat width={20} height={"auto"} />}
             >
               View on GitHub
             </Button>
