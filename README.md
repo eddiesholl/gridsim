@@ -1,6 +1,26 @@
 # GridSim
 
-A full-stack application with FastAPI backend and React frontend, deployed to AWS using CDK.
+Welcome to GridSim, an open source project to help understand the operation and challenges of a modern elctricity grid. The project has kicked off as a personal project to help learn grid modelling concepts, while exploring emerging concepts like Vehicle to Grid, temporal shifting and distributed energy resources. I'm hoping to engage in transparent learning, so others can benefit as I build out my own knowledge. That explains why the app itself is open source, and is presented as a public website.
+
+The core concept of the app is to optimise an electricity grid to satisfy different configurations and constraints. This is all implemented using [PyPSA](https://pypsa.readthedocs.io/en/latest/). The front end is responsible for helping to explain the purpose of each scenario or option, benefits and tradeoffs, and to guide the user in building their understanding.
+
+# Getting involved
+
+If you're interested in raising a suggestion or reporting an issue, feel free to open an issue or start a discussion here.
+
+## Roadmap
+
+You can review upcoming features, enhancements and fixes on the [project page](https://github.com/users/eddiesholl/projects/2).
+
+# Technology
+
+The app is a full-stack application with a python FastAPI backend and React frontend, deployed to AWS using CDK. The core element of the app is running optimisation of an electricity grid model using PyPSA. This is then presented in a way that is easy to navigate and understand via the React front end.
+
+To help keep the front end more strongly typed via TypeScript, we can import types from the backend API using `npm run generate-api-types`. There are types defined on the backend using `pydantic` and `typing`. The built in `FastAPI` support for `OpenAPI` makes it easy to expose types for the REST API responses, which can then be extracted to generate TypeScript types.
+
+The npm package `openapi-typescript-fetch` is in use to create a strongly typed client on top of the extracted types, giving us fully typed REST API responses.
+
+Chart rendering is handled by [plotly](https://plotly.com/javascript/react/) via `react-plotly.js`.
 
 ## Project Structure
 
@@ -51,7 +71,7 @@ gridsim/
 
 5. Run the development server:
    ```bash
-   uvicorn app.main:app --reload
+   uvicorn gridsim_backend.app.main:app  --reload
    ```
 
 ### Frontend
