@@ -370,7 +370,6 @@ export const plotBatterySocData = (data: DailyResponse) => {
 
   const plotData = {
     data: Object.entries(data.stores.e)
-      .concat(Object.entries(data.stores.e_min_pu))
       .map(([name, values]) => ({
         type: "scatter",
         mode: "lines",
