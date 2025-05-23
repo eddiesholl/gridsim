@@ -11,7 +11,7 @@ export const sumGasUsage = (data: DailyResponse) => {
 };
 
 export const averageMarginalPrice = (data: DailyResponse) => {
-  const gridMarginalPrices = data.buses.marginal_price["grid"];
+  const gridMarginalPrices = data.buses.marginal_price["Grid"];
   return (
     gridMarginalPrices.reduce((acc, curr) => acc + curr, 0) /
     gridMarginalPrices.length

@@ -1,6 +1,6 @@
 import { Card, Flex, Text } from "@mantine/core";
 import Plotly from "react-plotly.js";
-
+import styles from "./styles.module.css";
 type PlotProps = {
   data: Plotly.Data[];
   layout: Plotly.Layout;
@@ -9,14 +9,10 @@ type PlotProps = {
 
 export function Plot({ data, layout, rightText }: PlotProps) {
   return (
-    <Flex>
-      <Plotly
-        data={data}
-        layout={layout}
-        style={{ flex: 1, height: "450px" }}
-      />
+    <Flex className={styles.root}>
+      <Plotly data={data} layout={layout} className={styles.plot} />
       {rightText && (
-        <Card withBorder miw={200} mah={450} my="md">
+        <Card withBorder className={styles.right}>
           <Text>{rightText}</Text>
         </Card>
       )}

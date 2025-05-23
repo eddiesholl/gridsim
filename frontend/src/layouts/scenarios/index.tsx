@@ -38,7 +38,9 @@ export function ScenariosLayout() {
         </Flex>
         <div className={styles.scrollArea}>
           <PageWrapper>
-            <Outlet />
+            <Flex direction="column" gap="lg" pt={0}>
+              <Outlet />
+            </Flex>
           </PageWrapper>
         </div>
       </Flex>

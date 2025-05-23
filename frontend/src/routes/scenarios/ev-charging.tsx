@@ -5,9 +5,11 @@ import { getDailyQuery } from "../../services/api";
 export const Route = createFileRoute("/scenarios/ev-charging")({
   component: ScenariosEvCharging,
   loader: () => {
-    const dailyData = getDailyQuery({ evening_recharge_time: 13 }, {});
+    const dailyDataA = getDailyQuery({ number_of_evs: 0 });
+    const dailyDataB = getDailyQuery({ evening_recharge_time: 13 });
     return {
-      dailyData,
+      dailyDataA,
+      dailyDataB,
     };
   },
   onError: ({ error }) => {

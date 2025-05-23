@@ -1,6 +1,7 @@
 import { Card, Flex, Title } from "@mantine/core";
 import { Await, getRouteApi } from "@tanstack/react-router";
 import { LoadingBlock } from "../../../components/LoadingBlock";
+import { MarginalPriceDelta } from "../../../components/MarginalPricedDelta";
 import { Plot } from "../../../components/Plot/Plot";
 import {
   plotBatterySocData,
@@ -12,7 +13,7 @@ import {
 } from "../../../data/plotly";
 
 export function ScenariosSmartCharging() {
-  const { dailyData } = getRouteApi(
+  const { dailyDataA, dailyDataB } = getRouteApi(
     "/scenarios/smart-charging"
   ).useLoaderData();
   return (
@@ -39,7 +40,7 @@ export function ScenariosSmartCharging() {
           the grid to handle the demand.
         </p>
       </Card>
-      <Await promise={dailyData} fallback={<LoadingBlock />}>
+      <Await promise={dailyDataB} fallback={<LoadingBlock />}>
         {({ data }) => {
           const dailyLoadData = plotDailyLoadData(data, {
             includeStoresE: true,
@@ -57,24 +58,36 @@ export function ScenariosSmartCharging() {
         }}
       </Await>
 
-      <Await promise={dailyData} fallback={<LoadingBlock />}>
-        {({ data }) => {
-          const dailyMarginalPriceData = plotDailyMarginalPriceData(data, {
-            includeBuses: ["Grid"],
-          });
-          const batterySocData = plotBatterySocData(data);
+      <Await
+        promise={Promise.all([dailyDataA, dailyDataB])}
+        fallback={<LoadingBlock />}
+      >
+        {([dataA, dataB]) => {
+          const dailyMarginalPriceData = plotDailyMarginalPriceData(
+            dataB.data,
+            {
+              includeBuses: ["Grid"],
+            }
+          );
+          const batterySocData = plotBatterySocData(dataB.data);
           // const generatorOutputData = plotDailyGeneratorOutputData(data);
           return (
             <>
-              <Plot
-                data={dailyMarginalPriceData.data}
-                layout={dailyMarginalPriceData.layout}
-              />
-              <Plot data={batterySocData.data} layout={batterySocData.layout} />
-              {/* <Plot
-                data={generatorOutputData.data}
-                layout={generatorOutputData.layout}
-              /> */}
+              <Card>
+                <Flex>
+                  <Plot
+                    data={dailyMarginalPriceData.data}
+                    layout={dailyMarginalPriceData.layout}
+                  />
+                  <MarginalPriceDelta dataA={dataA.data} dataB={dataB.data} />
+                </Flex>
+              </Card>
+              <Card>
+                <Plot
+                  data={batterySocData.data}
+                  layout={batterySocData.layout}
+                />
+              </Card>
             </>
           );
         }}
