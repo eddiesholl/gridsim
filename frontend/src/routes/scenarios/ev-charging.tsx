@@ -1,15 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ScenariosEvCharging } from "../../pages/scenarios/ev-charging";
-import { getDailyQuery } from "../../services/api";
+import { compareEvCharging } from "../../scenarios/daily";
+import { getDailyComparison } from "../../services/api";
 
 export const Route = createFileRoute("/scenarios/ev-charging")({
   component: ScenariosEvCharging,
   loader: () => {
-    const dailyDataA = getDailyQuery({ number_of_evs: 0 });
-    const dailyDataB = getDailyQuery({ evening_recharge_time: 13 });
+    const compareEvChargingResult = getDailyComparison(compareEvCharging);
     return {
-      dailyDataA,
-      dailyDataB,
+      compareEvChargingResult,
     };
   },
   onError: ({ error }) => {

@@ -12,7 +12,7 @@ import {
   shapeMorningCommute,
 } from "../../../data/plotly";
 export function ScenariosEvCharging() {
-  const { dailyDataA, dailyDataB } = getRouteApi(
+  const { compareEvChargingResult } = getRouteApi(
     "/scenarios/ev-charging"
   ).useLoaderData();
   return (
@@ -40,9 +40,9 @@ export function ScenariosEvCharging() {
           now, as we need to call on more expensive backup generation reserves.
         </p>
       </Card>
-      <Await promise={dailyDataA} fallback={<LoadingBlock />}>
-        {({ data }) => {
-          const dailyLoadData = plotDailyLoadData(data, {
+      <Await promise={compareEvChargingResult} fallback={<LoadingBlock />}>
+        {({ after }) => {
+          const dailyLoadData = plotDailyLoadData(after.response, {
             includeStoresE: true,
             includeStoresP: false,
             excludeData: ["EV driving", "Coal", "Solar"],
@@ -60,18 +60,15 @@ export function ScenariosEvCharging() {
         }}
       </Await>
 
-      <Await
-        promise={Promise.all([dailyDataA, dailyDataB])}
-        fallback={<LoadingBlock />}
-      >
-        {([dataA, dataB]) => {
+      <Await promise={compareEvChargingResult} fallback={<LoadingBlock />}>
+        {(comparison) => {
           const dailyMarginalPriceData = plotDailyMarginalPriceData(
-            dataA.data,
+            comparison.after.response,
             {
               includeBuses: ["Grid"],
             }
           );
-          const batterySocData = plotBatterySocData(dataA.data);
+          const batterySocData = plotBatterySocData(comparison.after.response);
           return (
             <>
               <Card>
@@ -79,8 +76,12 @@ export function ScenariosEvCharging() {
                   <Plot
                     data={dailyMarginalPriceData.data}
                     layout={dailyMarginalPriceData.layout}
+                    style={{ flex: 0 }}
                   />
-                  <MarginalPriceDelta dataA={dataA.data} dataB={dataB.data} />
+                  <Flex direction="column" gap="xs" style={{ flex: 0 }}>
+                    <MarginalPriceDelta comparison={comparison} />
+                    <MarginalPriceDelta comparison={comparison} />
+                  </Flex>
                 </Flex>
               </Card>
               <Card>
