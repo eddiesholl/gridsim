@@ -8,7 +8,8 @@ import {
 } from "../../../data/plotly";
 
 export function ScenariosIntro() {
-  const { dailyData } = getRouteApi("/scenarios/intro").useLoaderData();
+  const { resultOriginalGrid } =
+    getRouteApi("/scenarios/intro").useLoaderData();
   return (
     <Flex direction="column" gap="lg">
       <Card>
@@ -36,9 +37,9 @@ export function ScenariosIntro() {
           the National Electricity Market (NEM) in Australia.
         </p>
       </Card>
-      <Await promise={dailyData} fallback={<LoadingBlock />}>
-        {({ data }) => {
-          const dailyLoadData = plotDailyLoadData(data, {
+      <Await promise={resultOriginalGrid} fallback={<LoadingBlock />}>
+        {({ response }) => {
+          const dailyLoadData = plotDailyLoadData(response, {
             includeStoresE: false,
             includeStoresP: false,
             excludeData: ["EV driving"],
@@ -49,9 +50,9 @@ export function ScenariosIntro() {
         }}
       </Await>
 
-      <Await promise={dailyData} fallback={<LoadingBlock />}>
-        {({ data }) => {
-          const dailyMarginalPriceData = plotDailyMarginalPriceData(data, {
+      <Await promise={resultOriginalGrid} fallback={<LoadingBlock />}>
+        {({ response }) => {
+          const dailyMarginalPriceData = plotDailyMarginalPriceData(response, {
             includeBuses: ["Grid"],
           });
           return (

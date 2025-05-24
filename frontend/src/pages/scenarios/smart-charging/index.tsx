@@ -13,7 +13,7 @@ import {
 } from "../../../data/plotly";
 
 export function ScenariosSmartCharging() {
-  const { dailyDataA, dailyDataB } = getRouteApi(
+  const { compareSmartChargingResult } = getRouteApi(
     "/scenarios/smart-charging"
   ).useLoaderData();
   return (
@@ -40,9 +40,9 @@ export function ScenariosSmartCharging() {
           the grid to handle the demand.
         </p>
       </Card>
-      <Await promise={dailyDataB} fallback={<LoadingBlock />}>
-        {({ data }) => {
-          const dailyLoadData = plotDailyLoadData(data, {
+      <Await promise={compareSmartChargingResult} fallback={<LoadingBlock />}>
+        {({ after }) => {
+          const dailyLoadData = plotDailyLoadData(after.response, {
             includeStoresE: true,
             includeStoresP: false,
             excludeData: ["EV driving", "Coal", "Solar"],
@@ -58,18 +58,15 @@ export function ScenariosSmartCharging() {
         }}
       </Await>
 
-      <Await
-        promise={Promise.all([dailyDataA, dailyDataB])}
-        fallback={<LoadingBlock />}
-      >
-        {([dataA, dataB]) => {
+      <Await promise={compareSmartChargingResult} fallback={<LoadingBlock />}>
+        {(comparison) => {
           const dailyMarginalPriceData = plotDailyMarginalPriceData(
-            dataB.data,
+            comparison.after.response,
             {
               includeBuses: ["Grid"],
             }
           );
-          const batterySocData = plotBatterySocData(dataB.data);
+          const batterySocData = plotBatterySocData(comparison.after.response);
           // const generatorOutputData = plotDailyGeneratorOutputData(data);
           return (
             <>
@@ -79,7 +76,7 @@ export function ScenariosSmartCharging() {
                     data={dailyMarginalPriceData.data}
                     layout={dailyMarginalPriceData.layout}
                   />
-                  <MarginalPriceDelta dataA={dataA.data} dataB={dataB.data} />
+                  <MarginalPriceDelta comparison={comparison} />
                 </Flex>
               </Card>
               <Card>

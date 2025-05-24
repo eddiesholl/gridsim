@@ -12,7 +12,8 @@ export function DeltaPercent({ before, after }: DeltaPercentProps) {
   const increased = delta > 0;
   return (
     <span style={{ fontSize: "1.2rem" }}>
-      {increased ? "+" : "-"}&nbsp;{percentDisplay}%
+      {increased ? "+" : ""}
+      {percentDisplay}%
     </span>
   );
 }

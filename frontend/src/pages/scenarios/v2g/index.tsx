@@ -5,7 +5,6 @@ import { MarginalPriceDelta } from "../../../components/MarginalPricedDelta";
 import { Plot } from "../../../components/Plot/Plot";
 import {
   plotBatterySocData,
-  plotDailyGeneratorOutputData,
   plotDailyLoadData,
   plotDailyMarginalPriceData,
   shapeChargeByMidnight,
@@ -14,8 +13,7 @@ import {
 } from "../../../data/plotly";
 
 export function ScenariosV2G() {
-  const { dailyDataA, dailyDataB } =
-    getRouteApi("/scenarios/v2g").useLoaderData();
+  const { compareV2GResult } = getRouteApi("/scenarios/v2g").useLoaderData();
   return (
     <Flex direction="column" gap="md">
       <Card>
@@ -35,9 +33,9 @@ export function ScenariosV2G() {
           saving money and avoiding use of gas.
         </p>
       </Card>
-      <Await promise={dailyDataB} fallback={<LoadingBlock />}>
-        {({ data }) => {
-          const dailyLoadData = plotDailyLoadData(data, {
+      <Await promise={compareV2GResult} fallback={<LoadingBlock />}>
+        {({ after }) => {
+          const dailyLoadData = plotDailyLoadData(after.response, {
             includeStoresE: true,
             includeStoresP: false,
             excludeData: ["EV driving", "Coal", "Solar"],
@@ -48,24 +46,25 @@ export function ScenariosV2G() {
             ],
           });
           return (
-            <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
+            <Card>
+              <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
+            </Card>
           );
         }}
       </Await>
 
-      <Await
-        promise={Promise.all([dailyDataA, dailyDataB])}
-        fallback={<LoadingBlock />}
-      >
-        {([dataA, dataB]) => {
+      <Await promise={compareV2GResult} fallback={<LoadingBlock />}>
+        {(comparison) => {
           const dailyMarginalPriceData = plotDailyMarginalPriceData(
-            dataB.data,
+            comparison.after.response,
             {
               includeBuses: ["Grid"],
             }
           );
-          const batterySocData = plotBatterySocData(dataB.data);
-          const generatorOutputData = plotDailyGeneratorOutputData(dataB.data);
+          const batterySocData = plotBatterySocData(comparison.after.response);
+          // const generatorOutputData = plotDailyGeneratorOutputData(
+          //   comparison.after.response
+          // );
           return (
             <>
               <Card>
@@ -74,7 +73,7 @@ export function ScenariosV2G() {
                     data={dailyMarginalPriceData.data}
                     layout={dailyMarginalPriceData.layout}
                   />
-                  <MarginalPriceDelta dataA={dataA.data} dataB={dataB.data} />
+                  <MarginalPriceDelta comparison={comparison} />
                 </Flex>
               </Card>
               <Card>
@@ -83,12 +82,12 @@ export function ScenariosV2G() {
                   layout={batterySocData.layout}
                 />
               </Card>
-              <Card>
+              {/* <Card>
                 <Plot
                   data={generatorOutputData.data}
                   layout={generatorOutputData.layout}
                 />
-              </Card>
+              </Card> */}
             </>
           );
         }}

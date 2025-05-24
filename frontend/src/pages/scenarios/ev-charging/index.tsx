@@ -54,7 +54,7 @@ export function ScenariosEvCharging() {
           });
           return (
             <Card>
-              {/* <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} /> */}
+              <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
             </Card>
           );
         }}
@@ -76,7 +76,6 @@ export function ScenariosEvCharging() {
                   <Plot
                     data={dailyMarginalPriceData.data}
                     layout={dailyMarginalPriceData.layout}
-                    style={{ flex: 0 }}
                   />
 
                   <MarginalPriceDelta comparison={comparison} />

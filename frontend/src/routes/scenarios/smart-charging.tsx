@@ -1,19 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ScenariosSmartCharging } from "../../pages/scenarios/smart-charging";
-import {
-  scenarioEvCharging,
-  scenarioSmartCharging,
-} from "../../scenarios/daily";
-import { getDailyQuery } from "../../services/api";
+import { compareSmartCharging } from "../../scenarios/daily";
+import { getDailyComparison } from "../../services/api";
 
 export const Route = createFileRoute("/scenarios/smart-charging")({
   component: ScenariosSmartCharging,
   loader: () => {
-    const resultSmartCharging = getDailyQuery(scenarioSmartCharging);
-    const resultEvCharging = getDailyQuery(scenarioEvCharging);
+    const compareSmartChargingResult = getDailyComparison(compareSmartCharging);
     return {
-      resultSmartCharging,
-      resultEvCharging,
+      compareSmartChargingResult,
     };
   },
   onError: ({ error }) => {
