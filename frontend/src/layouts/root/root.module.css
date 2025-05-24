@@ -26,15 +26,16 @@
   /* overflow: auto; */
   overflow: hidden;
   width: 100%;
+  background-color: var(--mantine-color-sage-1);
 }
 
 .header {
   height: 60px;
   /* background-color: var(--mantine-color-moonstone-3); */
   background-image: linear-gradient(
-    to top,
-    var(--mantine-color-moonstone-3),
-    var(--mantine-color-moonstone-1)
+    to left top,
+    var(--mantine-color-moonstone-1),
+    var(--mantine-color-blush-1)
   );
   justify-content: space-between;
   align-items: center;

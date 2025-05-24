@@ -45,7 +45,9 @@ export function ScenariosIntro() {
             excludeData: ["EV driving"],
           });
           return (
-            <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
+            <Card>
+              <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
+            </Card>
           );
         }}
       </Await>
@@ -56,12 +58,12 @@ export function ScenariosIntro() {
             includeBuses: ["Grid"],
           });
           return (
-            <>
+            <Card>
               <Plot
                 data={dailyMarginalPriceData.data}
                 layout={dailyMarginalPriceData.layout}
               />
-            </>
+            </Card>
           );
         }}
       </Await>
