@@ -1,17 +1,5 @@
-.root {
-  /* flex: 1; */
-  height: 100%;
-  width: 100%;
-}
-
 .plot {
-  /* flex: 1; */
-  /* height: 450px; */
+  flex: 1 !important;
   height: 100%;
   width: 100%;
-}
-
-.right {
-  /* min-width: 200px;
-  max-width: 450px; */
 }

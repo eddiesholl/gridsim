@@ -21,7 +21,7 @@ export function MarginalPriceDelta({ comparison }: MarginalPriceDeltaProps) {
 
   return (
     <Flex
-      style={{ flex: 1, minWidth: "300px" }}
+      style={{ width: "250px" }}
       direction="column"
       gap="xs"
       justify="space-around"
