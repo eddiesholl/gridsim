@@ -1,0 +1,51 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/**"
+
+env:
+  AWS_REGION: ap-southeast-2 # Change this to your AWS region
+
+jobs:
+  backend-checks:
+    uses: ./.github/workflows/steps/backend.yml
+
+  deploy:
+    name: Deploy to AWS
+    needs: backend-checks
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read # Required for checkout
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install Dependencies
+        run: moon run backend:install
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to AWS
+        run: moon run backend:deploy
+        env:
+          AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
