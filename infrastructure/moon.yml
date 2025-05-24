@@ -1,0 +1,17 @@
+language: "typescript"
+
+toolchain:
+  default: "node"
+
+dependsOn:
+  - frontend
+  - backend
+
+tasks:
+  install:
+    command: "npm install"
+
+  deploy:
+    command: "npm run deploy"
+    deps:
+      - frontend:build

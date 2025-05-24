@@ -6,3 +6,7 @@ cdk.out
 dist
 .env
 cdk.context.json
+
+# moon
+.moon/cache
+.moon/docker

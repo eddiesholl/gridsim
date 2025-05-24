@@ -1,0 +1,27 @@
+name: Frontend Steps
+
+jobs:
+  frontend:
+    name: Frontend Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: moon run frontend:install
+
+      - name: Run Type Check
+        run: moon run frontend:typecheck
+
+      - name: Run Lint
+        run: moon run frontend:lint
+
+      - name: Build
+        run: moon run frontend:build
