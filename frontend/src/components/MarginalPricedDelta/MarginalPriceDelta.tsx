@@ -1,7 +1,8 @@
+import { Flex, Text, Title } from "@mantine/core";
 import { averageMarginalPrice } from "../../data/results";
+import { roundTo } from "../../data/tools";
 import { ComparisonResult } from "../../types";
-import { Plot, PlotProps } from "../Plot";
-
+import styles from "./styles.module.css";
 type MarginalPriceDeltaProps = {
   comparison: ComparisonResult;
 };
@@ -14,28 +15,29 @@ export function MarginalPriceDelta({ comparison }: MarginalPriceDeltaProps) {
     comparison.after.response
   );
 
-  const trace1 = {
-    y: [""],
-    x: [averageMarginalPriceBefore],
-    name: comparison.before.name,
-    type: "bar",
-    orientation: "h",
-  } as const;
+  const increased = averageMarginalPriceAfter > averageMarginalPriceBefore;
+  const percent =
+    1 -
+    Math.min(averageMarginalPriceAfter, averageMarginalPriceBefore) /
+      Math.max(averageMarginalPriceAfter, averageMarginalPriceBefore);
 
-  const trace2 = {
-    y: [""],
-    x: [averageMarginalPriceAfter],
-    name: comparison.after.name,
-    type: "bar",
-    orientation: "h",
-  } as const;
+  const percentDisplay = roundTo(percent * 100, 0);
 
-  const layout = { barmode: "group", width: 300 } as const;
-
-  const props: PlotProps = {
-    data: [trace1, trace2],
-    layout,
-  };
-
-  return <Plot {...props} />;
+  return (
+    <Flex
+      style={{ flex: 1, border: "1px solid red", minWidth: "300px" }}
+      direction="column"
+      gap="xs"
+    >
+      <Text style={{ textAlign: "center" }}>
+        <Title order={4}>Daily average</Title>${averageMarginalPriceBefore}{" "}
+        -&gt; ${averageMarginalPriceAfter}
+        <Text className={styles.summaryNumber}>
+          <b>
+            {increased ? "+" : "-"}&nbsp;{percentDisplay}&nbsp;%
+          </b>
+        </Text>
+      </Text>
+    </Flex>
+  );
 }

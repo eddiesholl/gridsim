@@ -17,3 +17,13 @@ export const averageMarginalPrice = (data: DailyResponse) => {
     gridMarginalPrices.length
   );
 };
+
+export const totalDailyPrice = (data: DailyResponse) => {
+  const gridMarginalPrices = data.buses.marginal_price["Grid"];
+  const gridLoad = data.buses.p["Grid"];
+
+  return gridMarginalPrices.reduce(
+    (acc, curr, ix) => acc + curr * gridLoad[ix],
+    0
+  );
+};
