@@ -1,7 +1,8 @@
-import { Flex, Text, Title } from "@mantine/core";
-import { averageMarginalPrice } from "../../data/results";
+import { Card, Flex, Text, Title } from "@mantine/core";
+import { averageMarginalPrice, totalDailyPrice } from "../../data/results";
 import { roundTo } from "../../data/tools";
 import { ComparisonResult } from "../../types";
+import { DeltaPercent } from "../DeltaPercent";
 import styles from "./styles.module.css";
 type MarginalPriceDeltaProps = {
   comparison: ComparisonResult;
@@ -15,29 +16,60 @@ export function MarginalPriceDelta({ comparison }: MarginalPriceDeltaProps) {
     comparison.after.response
   );
 
-  const increased = averageMarginalPriceAfter > averageMarginalPriceBefore;
-  const percent =
-    1 -
-    Math.min(averageMarginalPriceAfter, averageMarginalPriceBefore) /
-      Math.max(averageMarginalPriceAfter, averageMarginalPriceBefore);
-
-  const percentDisplay = roundTo(percent * 100, 0);
+  const totalDailyPriceBefore = totalDailyPrice(comparison.before.response);
+  const totalDailyPriceAfter = totalDailyPrice(comparison.after.response);
 
   return (
     <Flex
-      style={{ flex: 1, border: "1px solid red", minWidth: "300px" }}
+      style={{ flex: 1, minWidth: "300px" }}
       direction="column"
       gap="xs"
+      justify="space-around"
     >
-      <Text style={{ textAlign: "center" }}>
-        <Title order={4}>Daily average</Title>${averageMarginalPriceBefore}{" "}
-        -&gt; ${averageMarginalPriceAfter}
+      <Card
+        style={{
+          flex: 1,
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Title order={4}>Average marginal price</Title>$
+        {roundTo(averageMarginalPriceBefore, 0)} -&gt; $
+        {roundTo(averageMarginalPriceAfter, 0)}
         <Text className={styles.summaryNumber}>
           <b>
-            {increased ? "+" : "-"}&nbsp;{percentDisplay}&nbsp;%
+            <DeltaPercent
+              before={averageMarginalPriceBefore}
+              after={averageMarginalPriceAfter}
+            />
           </b>
         </Text>
-      </Text>
+      </Card>
+      <Card
+        style={{
+          flex: 1,
+          textAlign: "center",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <Text style={{ textAlign: "center" }}>
+          <Title order={4}>Daily total cost</Title>$
+          {roundTo(totalDailyPriceBefore, 0)} -&gt; $
+          {roundTo(totalDailyPriceAfter, 0)}
+          <Text className={styles.summaryNumber}>
+            <b>
+              <DeltaPercent
+                before={totalDailyPriceBefore}
+                after={totalDailyPriceAfter}
+              />
+            </b>
+          </Text>
+        </Text>
+      </Card>
     </Flex>
   );
 }

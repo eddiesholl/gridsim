@@ -20,10 +20,11 @@ export const averageMarginalPrice = (data: DailyResponse) => {
 
 export const totalDailyPrice = (data: DailyResponse) => {
   const gridMarginalPrices = data.buses.marginal_price["Grid"];
-  const gridLoad = data.buses.p["Grid"];
+  const gridLoad = data.loads.p["Grid demand"];
+  const evChargingLoad = data.links.p0["grid to vehicle"];
 
   return gridMarginalPrices.reduce(
-    (acc, curr, ix) => acc + curr * gridLoad[ix],
+    (acc, curr, ix) => acc + curr * (gridLoad[ix] + evChargingLoad[ix]),
     0
   );
 };
