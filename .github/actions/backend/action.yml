@@ -19,4 +19,5 @@ runs:
     - uses: "moonrepo/setup-toolchain@v0"
 
     - name: Install Dependencies
+      shell: bash
       run: moon run backend:install

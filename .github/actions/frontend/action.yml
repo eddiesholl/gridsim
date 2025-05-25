@@ -16,13 +16,13 @@ runs:
     - uses: "moonrepo/setup-toolchain@v0"
 
     - name: Install Dependencies
-      # working-directory: frontend
+      shell: bash
       run: moon run frontend:install
 
     - name: Run Type Check
-      # working-directory: frontend
+      shell: bash
       run: moon run frontend:typecheck
 
     - name: Build
-      # working-directory: frontend
+      shell: bash
       run: moon run frontend:build
