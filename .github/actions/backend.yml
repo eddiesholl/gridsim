@@ -1,31 +1,29 @@
 name: Backend Steps
 
-jobs:
-  backend:
-    name: Backend Checks
-    runs-on: ubuntu-latest
+runs:
+  using: "composite"
 
-    steps:
-      - uses: actions/checkout@v4
+  steps:
+    - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
 
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-      - name: Install Dependencies
-        run: moon run backend:install
+    - name: Install Dependencies
+      run: moon run backend:install
 
-      - name: Run Tests
-        run: moon run backend:test
+    - name: Run Tests
+      run: moon run backend:test
 
-      - name: Run Lint
-        run: moon run backend:lint
+    - name: Run Lint
+      run: moon run backend:lint
 
-      - name: Run Type Check
-        run: moon run backend:typecheck
+    - name: Run Type Check
+      run: moon run backend:typecheck

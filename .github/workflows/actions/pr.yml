@@ -1,0 +1,12 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    uses: ../steps/backend.yml
+
+  frontend:
+    uses: ../steps/frontend.yml
