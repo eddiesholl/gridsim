@@ -1,0 +1,17 @@
+language: "typescript"
+
+toolchain:
+  default: "node"
+
+tasks:
+  dev:
+    command: "npm run dev"
+
+  build:
+    command: "npm run build"
+
+  install:
+    command: "npm install"
+
+  typecheck:
+    command: "npm run check:types"

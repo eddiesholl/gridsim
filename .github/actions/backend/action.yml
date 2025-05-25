@@ -1,0 +1,24 @@
+name: Backend Steps
+
+runs:
+  using: "composite"
+
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install uv
+      shell: bash
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+    - uses: "moonrepo/setup-toolchain@v0"
+
+    - name: Install Dependencies
+      shell: bash
+      run: moon run backend:install

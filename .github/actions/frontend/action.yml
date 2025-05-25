@@ -1,0 +1,28 @@
+name: Frontend Steps
+
+runs:
+  using: "composite"
+
+  steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+        cache: "npm"
+        cache-dependency-path: "frontend/package-lock.json"
+
+    - uses: "moonrepo/setup-toolchain@v0"
+
+    - name: Install Dependencies
+      shell: bash
+      run: moon run frontend:install
+
+    - name: Run Type Check
+      shell: bash
+      run: moon run frontend:typecheck
+
+    - name: Build
+      shell: bash
+      run: moon run frontend:build

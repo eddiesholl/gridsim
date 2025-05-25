@@ -1,0 +1,141 @@
+language: "python"
+type: "application"
+
+# Define file groups for better organization
+fileGroups:
+  python:
+    - "src/**/*"
+    - "tests/**/*"
+    - "pyproject.toml"
+    - "requirements.txt"
+    # - "requirements-dev.txt"
+    # - "setup.py"
+    # - "setup.cfg"
+    - ".env*"
+
+tasks:
+  # Setup virtual environment
+  setup:
+    command: "uv"
+    args:
+      - "venv"
+      - ".venv"
+    outputs:
+      - ".venv/**"
+    # local: true # Run in local environment only
+
+  # Install development dependencies
+  install-dev:
+    command: "uv"
+    args:
+      - "pip"
+      - "install"
+      - "-e"
+      - "."
+      - "-r"
+      - "requirements-dev.txt"
+    deps:
+      - "~:setup"
+    inputs:
+      - "@group(python)"
+    # local: true
+
+  # Install production dependencies (for CI)
+  install:
+    command: "uv"
+    args:
+      - "pip"
+      - "install"
+      - "-e"
+      - "."
+      - "-r"
+      - "requirements.txt"
+    deps:
+      - "~:setup"
+    inputs:
+      - "@group(python)"
+
+  # Generate requirements files
+  requirements:
+    command: "uv"
+    args:
+      - "pip"
+      - "compile"
+      - "pyproject.toml"
+      - "-o"
+      - "requirements.txt"
+    inputs:
+      - "pyproject.toml"
+    outputs:
+      - "requirements.txt"
+
+  requirements-dev:
+    command: "uv"
+    args:
+      - "pip"
+      - "compile"
+      - "pyproject.toml"
+      - "--extra"
+      - "dev"
+      - "-o"
+      - "requirements-dev.txt"
+    inputs:
+      - "pyproject.toml"
+    outputs:
+      - "requirements-dev.txt"
+
+  # Run tests with pytest
+  test:
+    command: "pytest"
+    args:
+      - "--cov=." # Enable coverage reporting
+      - "--cov-report=term-missing" # Show missing lines in coverage
+      - "--cov-report=html" # Generate HTML coverage report
+    deps:
+      - "~:install-dev"
+    inputs:
+      - "@group(python)"
+    outputs:
+      - ".coverage"
+      - "htmlcov/**"
+
+  # Run linting with flake8
+  lint:
+    command: "flake8"
+    args:
+      - "--max-line-length=100"
+      - "--extend-ignore=E203" # Ignore whitespace before ':' (conflicts with black)
+    deps:
+      # - "~:install-dev"
+    inputs:
+      - "@group(python)"
+
+  # Run type checking with mypy
+  typecheck:
+    command: "mypy"
+    args:
+      - "--strict"
+      - "--ignore-missing-imports"
+    deps:
+      # - "~:install-dev"
+    inputs:
+      - "@group(python)"
+
+  # Run all checks
+  check:
+    deps:
+      - "~:lint"
+      - "~:typecheck"
+
+  # Run the development server
+  dev:
+    command: "uvicorn"
+    args:
+      - "src.main:app"
+      - "--reload"
+      - "--port"
+      - "8000"
+    deps:
+      - "~:install-dev"
+    local: true # Run in local environment
+    # persistent: true # Keep running until stopped
