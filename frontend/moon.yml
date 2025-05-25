@@ -12,3 +12,6 @@ tasks:
 
   install:
     command: "npm install"
+
+  typecheck:
+    command: "npm run check:types"

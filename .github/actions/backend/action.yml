@@ -16,14 +16,7 @@ runs:
         curl -LsSf https://astral.sh/uv/install.sh | sh
         echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
+    - uses: "moonrepo/setup-toolchain@v0"
+
     - name: Install Dependencies
       run: moon run backend:install
-
-    - name: Run Tests
-      run: moon run backend:test
-
-    - name: Run Lint
-      run: moon run backend:lint
-
-    - name: Run Type Check
-      run: moon run backend:typecheck

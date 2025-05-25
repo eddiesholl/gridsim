@@ -5,11 +5,13 @@ on:
     branches: [main]
 
 jobs:
-  checkout:
-    uses: actions/checkout@v4
+  build-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  backend:
-    uses: ./.github/actions/backend.yml
+      - name: backend
+        uses: ./.github/actions/backend
 
-  frontend:
-    uses: ./.github/actions/frontend.yml
+      - name: frontend
+        uses: ./.github/actions/frontend

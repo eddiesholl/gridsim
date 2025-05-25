@@ -10,6 +10,7 @@
     "build": "tsc -b && vite build",
     "build:prod": "tsc -b && vite build --mode production",
     "lint": "eslint .",
+    "check:types": "tsc --noEmit",
     "preview": "vite preview",
     "generate-api-types": "openapi-typescript http://127.0.0.1:8000/openapi.json -o src/generated/api.ts"
   },
