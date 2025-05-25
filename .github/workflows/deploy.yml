@@ -31,6 +31,7 @@ jobs:
 
     steps:
       - uses: "moonrepo/setup-toolchain@v0"
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -38,6 +39,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy to AWS
+        shell: bash
         run: moon run backend:deploy
         env:
           AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
