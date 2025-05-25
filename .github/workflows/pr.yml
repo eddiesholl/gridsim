@@ -6,7 +6,7 @@ on:
 
 jobs:
   backend:
-    uses: ./.github/workflows/steps/backend.yml
+    uses: ./.github/actions/backend.yml
 
   frontend:
-    uses: ./.github/workflows/steps/frontend.yml
+    uses: ./.github/actions/frontend.yml
