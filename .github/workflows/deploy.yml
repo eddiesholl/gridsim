@@ -8,12 +8,16 @@ env:
   AWS_REGION: ap-southeast-2 # Change this to your AWS region
 
 jobs:
+  checkout:
+    uses: actions/checkout@v4
+
   backend-checks:
     uses: ./.github/actions/backend.yml
+    needs: checkout
 
   frontend-checks:
     uses: ./.github/actions/frontend.yml
-
+    needs: checkout
   deploy:
     name: Deploy to AWS
     needs:
