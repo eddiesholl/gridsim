@@ -9,6 +9,8 @@ tasks:
 
   build:
     command: "npm run build"
+    deps:
+      - install
 
   install:
     command: "npm install"
