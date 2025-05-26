@@ -30,6 +30,7 @@ jobs:
       contents: read # Required for checkout
 
     steps:
+      - uses: actions/checkout@v4
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
