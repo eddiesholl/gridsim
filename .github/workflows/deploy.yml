@@ -41,6 +41,6 @@ jobs:
 
       - name: Deploy to AWS
         shell: bash
-        run: moon run backend:deploy
+        run: moon run infrastructure:deploy
         env:
           AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
