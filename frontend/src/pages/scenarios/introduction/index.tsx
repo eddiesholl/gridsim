@@ -1,15 +1,74 @@
-import { Card, Flex, Title } from "@mantine/core";
-import { Await, getRouteApi } from "@tanstack/react-router";
+import {
+  Card,
+  Flex,
+  RangeSlider,
+  SegmentedControl,
+  Text,
+  Title,
+} from "@mantine/core";
+import { useMap } from "@mantine/hooks";
+import { Await } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { LoadingBlock } from "../../../components/LoadingBlock";
 import { Plot } from "../../../components/Plot/Plot";
 import {
   plotDailyLoadData,
   plotDailyMarginalPriceData,
 } from "../../../data/plotly";
+import {
+  scenarioEvCharging,
+  scenarioOriginalGrid,
+  scenarioSmartCharging,
+  scenarioV2G,
+} from "../../../scenarios/daily";
+import { getDailyQuery } from "../../../services/api";
+import { DailyScenario, DailyScenarioResult } from "../../../types";
+
+type ScenarioId = 0 | 1 | 2 | 3;
+const isScenarioId = (value: number): value is ScenarioId => {
+  return value >= 0 && value <= 3;
+};
+
+const scenarioNames: Record<ScenarioId, string> = {
+  0: "Introduction",
+  1: "EV charging",
+  2: "Smart charging",
+  3: "Vehicle to Grid",
+};
+
+const scenarioLookup: Record<ScenarioId, DailyScenario> = {
+  0: scenarioOriginalGrid,
+  1: scenarioEvCharging,
+  2: scenarioSmartCharging,
+  3: scenarioV2G,
+};
+
+const useCachedQuery = (scenarioId: ScenarioId) => {
+  const promiseMap = useMap<ScenarioId, Promise<DailyScenarioResult>>();
+  const promise = promiseMap.get(scenarioId);
+  if (promise) {
+    return promise;
+  }
+  const result = getDailyQuery(scenarioLookup[scenarioId]);
+  promiseMap.set(scenarioId, result);
+  return result;
+};
 
 export function ScenariosIntro() {
-  const { resultOriginalGrid } =
-    getRouteApi("/scenarios/intro").useLoaderData();
+  const [scenarioIds, setScenarioIds] = useState<[ScenarioId, ScenarioId]>([
+    0, 1,
+  ]);
+
+  const beforeResult = useCachedQuery(scenarioIds[0]);
+  const afterResult = useCachedQuery(scenarioIds[1]);
+
+  const switcherValues = useMemo(() => {
+    return scenarioIds.map((id) => ({
+      value: id.toString(),
+      label: scenarioNames[id],
+    }));
+  }, [scenarioIds]);
+
   return (
     <Flex direction="column" gap="lg">
       <Card>
@@ -37,7 +96,46 @@ export function ScenariosIntro() {
           the National Electricity Market (NEM) in Australia.
         </p>
       </Card>
-      <Await promise={resultOriginalGrid} fallback={<LoadingBlock />}>
+      <Flex
+        w="100%"
+        justify="space-between"
+        gap="lg"
+        py="md"
+        direction="column"
+      >
+        <Flex style={{ flex: 0.8 }} gap="lg">
+          <Text>Select your scenarios:</Text>
+          <RangeSlider
+            pt={8}
+            style={{ flex: 1 }}
+            color="blue"
+            showLabelOnHover={false}
+            label={(value) => {
+              return isScenarioId(value) ? scenarioNames[value] : "";
+            }}
+            restrictToMarks
+            defaultValue={[0, 1]}
+            min={0}
+            max={3}
+            marks={[
+              { value: 0, label: "Introduction" },
+              { value: 1, label: "EV charging" },
+              { value: 2, label: "Smart charging" },
+              { value: 3, label: "Vehicle to Grid" },
+            ]}
+            onChange={([before, after]) => {
+              if (isScenarioId(before) && isScenarioId(after)) {
+                setScenarioIds([before, after]);
+              }
+            }}
+          />
+        </Flex>
+        <Flex align="center" gap="md">
+          <Text>Now you can jump between them:</Text>
+          <SegmentedControl data={switcherValues} />
+        </Flex>
+      </Flex>
+      <Await promise={beforeResult} fallback={<LoadingBlock />}>
         {({ response }) => {
           const dailyLoadData = plotDailyLoadData(response, {
             includeStoresE: false,
@@ -52,7 +150,7 @@ export function ScenariosIntro() {
         }}
       </Await>
 
-      <Await promise={resultOriginalGrid} fallback={<LoadingBlock />}>
+      <Await promise={beforeResult} fallback={<LoadingBlock />}>
         {({ response }) => {
           const dailyMarginalPriceData = plotDailyMarginalPriceData(response, {
             includeBuses: ["Grid"],
