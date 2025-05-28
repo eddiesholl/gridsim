@@ -63,11 +63,24 @@ export function ScenariosIntro() {
   const afterResult = useCachedQuery(scenarioIds[1]);
 
   const switcherValues = useMemo(() => {
-    return scenarioIds.map((id) => ({
-      value: id.toString(),
-      label: scenarioNames[id],
-    }));
+    return [
+      {
+        value: "before",
+        label: `Before (${scenarioNames[scenarioIds[0]]})`,
+      },
+      {
+        value: "after",
+        label: `After (${scenarioNames[scenarioIds[1]]})`,
+      },
+    ];
   }, [scenarioIds]);
+
+  const [switcherValue, setSwitcherValue] = useState<"before" | "after">(
+    "before"
+  );
+
+  const subjectScenario =
+    switcherValue === "before" ? beforeResult : afterResult;
 
   return (
     <Flex direction="column" gap="lg">
@@ -96,13 +109,7 @@ export function ScenariosIntro() {
           the National Electricity Market (NEM) in Australia.
         </p>
       </Card>
-      <Flex
-        w="100%"
-        justify="space-between"
-        gap="lg"
-        py="md"
-        direction="column"
-      >
+      <Flex w="50%" justify="space-between" gap="xl" py="md" direction="column">
         <Flex style={{ flex: 0.8 }} gap="lg">
           <Text>Select your scenarios:</Text>
           <RangeSlider
@@ -110,9 +117,7 @@ export function ScenariosIntro() {
             style={{ flex: 1 }}
             color="blue"
             showLabelOnHover={false}
-            label={(value) => {
-              return isScenarioId(value) ? scenarioNames[value] : "";
-            }}
+            label={null}
             restrictToMarks
             defaultValue={[0, 1]}
             min={0}
@@ -130,12 +135,21 @@ export function ScenariosIntro() {
             }}
           />
         </Flex>
-        <Flex align="center" gap="md">
+        <Flex align="center" gap="md" w="100%">
           <Text>Now you can jump between them:</Text>
-          <SegmentedControl data={switcherValues} />
+          <SegmentedControl
+            value={switcherValue}
+            onChange={(value) => {
+              if (value === "before" || value === "after") {
+                setSwitcherValue(value);
+              }
+            }}
+            data={switcherValues}
+            style={{ flex: 1 }}
+          />
         </Flex>
       </Flex>
-      <Await promise={beforeResult} fallback={<LoadingBlock />}>
+      <Await promise={subjectScenario} fallback={<LoadingBlock />}>
         {({ response }) => {
           const dailyLoadData = plotDailyLoadData(response, {
             includeStoresE: false,
@@ -150,7 +164,7 @@ export function ScenariosIntro() {
         }}
       </Await>
 
-      <Await promise={beforeResult} fallback={<LoadingBlock />}>
+      <Await promise={subjectScenario} fallback={<LoadingBlock />}>
         {({ response }) => {
           const dailyMarginalPriceData = plotDailyMarginalPriceData(response, {
             includeBuses: ["Grid"],
