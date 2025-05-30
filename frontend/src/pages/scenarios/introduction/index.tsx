@@ -9,8 +9,10 @@ import {
 import { useMap } from "@mantine/hooks";
 import { Await } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { LineChart } from "../../../components/LineChart";
 import { LoadingBlock } from "../../../components/LoadingBlock";
 import { Plot } from "../../../components/Plot/Plot";
+import { nivoDailyLoadData } from "../../../data/nivo";
 import {
   plotDailyLoadData,
   plotDailyMarginalPriceData,
@@ -23,7 +25,6 @@ import {
 } from "../../../scenarios/daily";
 import { getDailyQuery } from "../../../services/api";
 import { DailyScenario, DailyScenarioResult } from "../../../types";
-
 type ScenarioId = 0 | 1 | 2 | 3;
 const isScenarioId = (value: number): value is ScenarioId => {
   return value >= 0 && value <= 3;
@@ -156,9 +157,18 @@ export function ScenariosIntro() {
             includeStoresP: false,
             excludeData: ["EV driving"],
           });
+          const foo = nivoDailyLoadData(response, {
+            includeStoresE: false,
+            includeStoresP: false,
+            excludeData: ["EV driving"],
+          });
+
+          // console.log(dailyLoadData.data);
           return (
             <Card>
-              <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
+              <div style={{ height: 450 }}>
+                <LineChart {...foo} />
+              </div>
             </Card>
           );
         }}

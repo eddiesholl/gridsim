@@ -17,6 +17,7 @@
   "dependencies": {
     "@mantine/core": "^7.17.5",
     "@mantine/hooks": "^7.17.5",
+    "@nivo/line": "^0.99.0",
     "@tanstack/react-router": "^1.119.0",
     "@tanstack/react-router-devtools": "^1.119.1",
     "@types/axios": "^0.14.4",
