@@ -133,12 +133,13 @@ export const plotDailyLoadData = (
   const plotData = {
     data: baseDataSets
       .filter(([name]) => !options.excludeData?.includes(name))
-      .map(([name, values]) => ({
+      .map(([name, values], setId) => ({
         type: "scatter",
         mode: "lines",
         name: name,
         x: data.index,
         y: values,
+        ids: values.map((_v, pointId) => `${setId}-${pointId}`),
         line: {
           shape: "linear",
           color: getColourForString(name),
@@ -148,6 +149,13 @@ export const plotDailyLoadData = (
     layout: {
       // paper_bgcolor: "#eee",
       // plot_bgcolor: "#eee",
+      transition: {
+        duration: 5000,
+        easing: "linear",
+      },
+      frame: {
+        duration: 500,
+      },
       shapes,
       responsive: true,
       useResizeHandler: true,
@@ -204,6 +212,13 @@ export const plotDailyLoadData = (
       },
     },
   } as unknown as PlotlyData;
+
+  // console.log(
+  //   plotData.data.filter((d) => d.name === "Gas (expensive)").map((d) => d.y)
+  // );
+  // console.log(
+  //   plotData.data.filter((d) => d.name === "Gas (expensive)").map((d) => d.ids)
+  // );
 
   return plotData;
 };

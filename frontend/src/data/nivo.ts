@@ -1,7 +1,7 @@
 import { ResponsiveLineCanvas } from "@nivo/line";
 import { ComponentProps } from "react";
-import { DailyResponse, PlotlyData } from "../types";
-import { getColourForString } from "./chart-colours";
+import { nivoTheme } from "../styles/nivo";
+import { DailyResponse } from "../types";
 
 type DailyDataOptions = {
   includeStoresE?: boolean;
@@ -30,121 +30,46 @@ export const nivoDailyLoadData = (
 
   // const shapes = [shapeEveningPeak, ...(options.extraShapes || [])];
 
-  const baseDataSets = Object.entries(data.generators.generators)
-    .map(([name, values]) => [name, values.p] as DataSet)
-    .concat(Object.entries(data.loads.p) as DataSet[])
-    .concat(storeEData)
-    .concat(storePData);
+  const baseDataSets = Object.entries(data.generators.generators).map(
+    ([name, values]) => ({
+      id: name,
+      data: values.p.map((y, i) => ({ x: data.index[i], y })),
+    })
+  );
+  // .concat(Object.entries(data.loads.p) as DataSet[])
+  // .concat(storeEData)
+  // .concat(storePData);
 
-  const plotData = {
-    data: baseDataSets
-      .filter(([name]) => !options.excludeData?.includes(name))
-      .map(([name, values], setId) => ({
-        type: "scatter",
-        mode: "lines",
-        name: name,
-        x: data.index,
-        y: values,
-        ids: values.map((_v, pointId) => `${setId}-${pointId}`),
-        line: {
-          shape: "linear",
-          color: getColourForString(name),
-          width: 3,
-        },
-      })),
-    layout: {
-      // paper_bgcolor: "#eee",
-      // plot_bgcolor: "#eee",
-      transition: {
-        duration: 5000,
-        easing: "linear",
-      },
-      frame: {
-        duration: 500,
-      },
-      // shapes,
-      responsive: true,
-      useResizeHandler: true,
-      autosize: true,
-      title: {
-        text: "Daily Load Profile",
-        font: {
-          family: "Roboto, sans-serif",
-          size: 24,
-          color: "var(--mantine-color-dark-9)",
-        },
-      },
-      font: {
-        family: "Roboto, sans-serif",
-        size: 14,
-        color: "var(--mantine-color-dark-9)",
-      },
-      xaxis: {
-        title: {
-          text: "Time",
-          font: {
-            family: "Roboto, sans-serif",
-            size: 16,
-            color: "var(--mantine-color-dark-9)",
-          },
-        },
-        tickfont: {
-          family: "Roboto, sans-serif",
-          size: 12,
-          color: "var(--mantine-color-dark-7)",
-        },
-      },
-      yaxis: {
-        title: {
-          text: "Power (MW)",
-          font: {
-            family: "Roboto, sans-serif",
-            size: 16,
-            color: "var(--mantine-color-dark-9)",
-          },
-        },
-        tickfont: {
-          family: "Roboto, sans-serif",
-          size: 12,
-          color: "var(--mantine-color-dark-7)",
-        },
-      },
-      legend: {
-        font: {
-          family: "Roboto, sans-serif",
-          size: 12,
-          color: "var(--mantine-color-dark-9)",
-        },
-      },
-    },
-  } as unknown as PlotlyData;
+  console.log(baseDataSets);
 
-  // console.log(
-  //   plotData.data.filter((d) => d.name === "Gas (expensive)").map((d) => d.y)
-  // );
-  // console.log(
-  //   plotData.data.filter((d) => d.name === "Gas (expensive)").map((d) => d.ids)
-  // );
+  //   const plotData = {
+  //     data: baseDataSets
+  //       .filter(([name]) => !options.excludeData?.includes(name))
+  //       .map(([name, values], setId) => ({
+  //         type: "scatter",
+  //         mode: "lines",
+  //         name: name,
+  //         x: data.index,
+  //         y: values,
+  //         ids: values.map((_v, pointId) => `${setId}-${pointId}`),
+  //         line: {
+  //           shape: "linear",
+  //           color: getColourForString(name),
+  //           width: 3,
+  //         },
+  //       })),
+  //   } as unknown as PlotlyData;
 
   const result: NivoLineProps = {
-    data: [
-      {
-        id: "first",
-        data: [
-          {
-            x: "2016-01-01 00:00:00",
-            y: 10,
-          },
-          {
-            x: "2016-01-01 01:00:00",
-            y: 20,
-          },
-        ],
-      },
-    ],
+    data: baseDataSets,
+    theme: nivoTheme,
+    colors: {
+      scheme: "nivo",
+    },
     xScale: {
       type: "time",
       format: "%Y-%m-%d %H:%M:%S",
+      useUTC: false,
       precision: "hour",
     },
     yScale: {
@@ -155,11 +80,16 @@ export const nivoDailyLoadData = (
       legendOffset: 12,
     },
     axisBottom: {
-      format: "%b %d",
-      tickValues: "every 2 days",
+      format: "%-I %p",
+      tickValues: "every 2 hours",
       legend: "time scale",
       legendOffset: -12,
     },
+    lineWidth: 4,
+    tooltip: () => {
+      return null;
+    },
+    // enablePoints: false,
     // enablePointLabel: true,
     pointSize: 16,
     pointBorderWidth: 1,
