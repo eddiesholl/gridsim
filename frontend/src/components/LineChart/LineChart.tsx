@@ -1,8 +1,8 @@
-import { ResponsiveLineCanvas } from "@nivo/line";
+import { ResponsiveLine } from "@nivo/line";
 import { ComponentProps } from "react";
 
-type LineChartProps = ComponentProps<typeof ResponsiveLineCanvas>;
+type LineChartProps = ComponentProps<typeof ResponsiveLine>;
 
 export const LineChart = (props: LineChartProps) => {
-  return <ResponsiveLineCanvas {...props} />;
+  return <ResponsiveLine {...props} />;
 };
