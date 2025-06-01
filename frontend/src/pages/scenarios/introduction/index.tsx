@@ -11,12 +11,10 @@ import { Await } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { LineChart } from "../../../components/LineChart";
 import { LoadingBlock } from "../../../components/LoadingBlock";
-import { Plot } from "../../../components/Plot/Plot";
-import { nivoDailyLoadData } from "../../../data/nivo";
 import {
-  plotDailyLoadData,
-  plotDailyMarginalPriceData,
-} from "../../../data/plotly";
+  nivoDailyLoadData,
+  nivoDailyMarginalPriceData,
+} from "../../../data/nivo";
 import {
   scenarioEvCharging,
   scenarioOriginalGrid,
@@ -152,18 +150,12 @@ export function ScenariosIntro() {
       </Flex>
       <Await promise={subjectScenario} fallback={<LoadingBlock />}>
         {({ response }) => {
-          const dailyLoadData = plotDailyLoadData(response, {
-            includeStoresE: false,
-            includeStoresP: false,
-            excludeData: ["EV driving"],
-          });
           const foo = nivoDailyLoadData(response, {
             includeStoresE: false,
             includeStoresP: false,
             excludeData: ["EV driving"],
           });
 
-          // console.log(dailyLoadData.data);
           return (
             <Card>
               <div style={{ height: 450 }}>
@@ -176,15 +168,14 @@ export function ScenariosIntro() {
 
       <Await promise={subjectScenario} fallback={<LoadingBlock />}>
         {({ response }) => {
-          const dailyMarginalPriceData = plotDailyMarginalPriceData(response, {
+          const dailyMarginalPriceData = nivoDailyMarginalPriceData(response, {
             includeBuses: ["Grid"],
           });
           return (
             <Card>
-              <Plot
-                data={dailyMarginalPriceData.data}
-                layout={dailyMarginalPriceData.layout}
-              />
+              <div style={{ height: 450 }}>
+                <LineChart {...dailyMarginalPriceData} />
+              </div>
             </Card>
           );
         }}
