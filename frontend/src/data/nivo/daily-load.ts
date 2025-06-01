@@ -34,5 +34,8 @@ export const nivoDailyLoadData = (
   // .concat(storeEData)
   // .concat(storePData);
 
-  return createLineProps(baseDataSets, "Power (MW)");
+  return createLineProps({
+    data: baseDataSets,
+    xAxisText: "Power (MW)",
+  });
 };

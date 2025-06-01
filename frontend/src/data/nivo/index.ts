@@ -1,2 +1,2 @@
-export * from './daily-load';
-export * from './daily-marginal';
+export { nivoDailyLoadData } from "./daily-load";
+export { nivoDailyMarginalPriceData } from "./daily-marginal";

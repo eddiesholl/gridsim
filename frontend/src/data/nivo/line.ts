@@ -1,16 +1,23 @@
 import { nivoTheme } from "../../styles/nivo";
 import { NivoLineProps } from "./types";
 
-export function createLineProps(
-  data: NivoLineProps["data"],
-  xAxisText: string
-): NivoLineProps {
+type CreateLinePropsOptions = {
+  data: NivoLineProps["data"];
+  xAxisText: string;
+  markers?: NivoLineProps["markers"];
+};
+
+export function createLineProps({
+  data,
+  xAxisText,
+  markers,
+}: CreateLinePropsOptions): NivoLineProps {
   return {
     data,
     theme: nivoTheme,
-    // layers: [{}],
+    markers,
     colors: {
-      scheme: "nivo",
+      scheme: "category10",
     },
     xScale: {
       type: "time",
