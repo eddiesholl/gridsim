@@ -43,7 +43,7 @@ export function ScenariosIntro() {
         <>
           <Await promise={intro} fallback={<LoadingBlock />}>
             {({ response }) => {
-              const foo = nivoDailyLoadData(response, {
+              const dailyLoadData = nivoDailyLoadData(response, {
                 includeStoresE: false,
                 includeStoresP: false,
                 excludeData: ["EV driving"],
@@ -52,7 +52,7 @@ export function ScenariosIntro() {
               return (
                 <Card>
                   <div style={{ height: 450 }}>
-                    <LineChart {...foo} />
+                    <LineChart {...dailyLoadData} />
                   </div>
                 </Card>
               );
