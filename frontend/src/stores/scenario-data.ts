@@ -48,11 +48,6 @@ export const useScenarioData = create<ScenarioStore>()((set) => ({
       return state;
     });
   },
-  fetchScenarios: () => {
-    set((state) => ({
-      ...state,
-      intro: getDailyQuery(scenarioOriginalGrid),
-    }));
-  },
+
   reset: () => set((state) => ({ ...state, ...initialState })),
 }));
