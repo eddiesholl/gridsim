@@ -1,19 +1,20 @@
 import { Card, Flex, Title } from "@mantine/core";
-import { Await, getRouteApi } from "@tanstack/react-router";
+import { Await } from "@tanstack/react-router";
+import { LineChart } from "../../../components/LineChart";
 import { LoadingBlock } from "../../../components/LoadingBlock";
 import { MarginalPriceDelta } from "../../../components/MarginalPricedDelta";
 import { Plot } from "../../../components/Plot/Plot";
+import { compareResults } from "../../../data/compare";
 import {
-  plotBatterySocData,
-  plotDailyLoadData,
-  plotDailyMarginalPriceData,
-  shapeChargeByMidnight,
-  shapeEveningCommute,
-  shapeMorningCommute,
-} from "../../../data/plotly";
-
+  nivoDailyLoadData,
+  nivoDailyMarginalPriceData,
+} from "../../../data/nivo";
+import { plotBatterySocData } from "../../../data/plotly";
+import { useScenarioData } from "../../../stores/scenario-data";
 export function ScenariosV2G() {
-  const { compareV2GResult } = getRouteApi("/scenarios/v2g").useLoaderData();
+  const { v2g, "smart-charging": smartCharging } = useScenarioData(
+    (state) => state.scenarios
+  );
   return (
     <Flex direction="column" gap="md">
       <Card>
@@ -33,65 +34,78 @@ export function ScenariosV2G() {
           saving money and avoiding use of gas.
         </p>
       </Card>
-      <Await promise={compareV2GResult} fallback={<LoadingBlock />}>
-        {({ after }) => {
-          const dailyLoadData = plotDailyLoadData(after.response, {
-            includeStoresE: true,
-            includeStoresP: false,
-            excludeData: ["EV driving", "Coal", "Solar"],
-            extraShapes: [
-              shapeMorningCommute,
-              shapeEveningCommute,
-              shapeChargeByMidnight,
-            ],
-          });
-          return (
-            <Card>
-              <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
-            </Card>
-          );
-        }}
-      </Await>
+      {v2g && smartCharging && (
+        <>
+          <Await
+            promise={compareResults(smartCharging, v2g)}
+            fallback={<LoadingBlock />}
+          >
+            {({ after }) => {
+              const dailyLoadData = nivoDailyLoadData(after.response, {
+                includeStoresE: true,
+                includeStoresP: false,
+                excludeData: ["EV driving", "Coal", "Solar"],
+                //     extraShapes: [
+                //   shapeMorningCommute,
+                //   shapeEveningCommute,
+                //   shapeChargeByMidnight,
+                // ],
+              });
+              return (
+                <Card>
+                  <div style={{ height: 450 }}>
+                    <LineChart {...dailyLoadData} />
+                  </div>
+                </Card>
+              );
+            }}
+          </Await>
 
-      <Await promise={compareV2GResult} fallback={<LoadingBlock />}>
-        {(comparison) => {
-          const dailyMarginalPriceData = plotDailyMarginalPriceData(
-            comparison.after.response,
-            {
-              includeBuses: ["Grid"],
-            }
-          );
-          const batterySocData = plotBatterySocData(comparison.after.response);
-          // const generatorOutputData = plotDailyGeneratorOutputData(
-          //   comparison.after.response
-          // );
-          return (
-            <>
-              <Card>
-                <Flex>
-                  <Plot
-                    data={dailyMarginalPriceData.data}
-                    layout={dailyMarginalPriceData.layout}
-                  />
-                  <MarginalPriceDelta comparison={comparison} />
-                </Flex>
-              </Card>
-              <Card>
-                <Plot
-                  data={batterySocData.data}
-                  layout={batterySocData.layout}
-                />
-              </Card>
-              {/* <Card>
+          <Await
+            promise={compareResults(smartCharging, v2g)}
+            fallback={<LoadingBlock />}
+          >
+            {(comparison) => {
+              const dailyMarginalPriceData = nivoDailyMarginalPriceData(
+                comparison.after.response,
+                {
+                  includeBuses: ["Grid"],
+                }
+              );
+              const batterySocData = plotBatterySocData(
+                comparison.after.response
+              );
+              // const generatorOutputData = plotDailyGeneratorOutputData(
+              //   comparison.after.response
+              // );
+              return (
+                <>
+                  <Card>
+                    <Flex>
+                      <div style={{ height: 450, width: "100%" }}>
+                        <LineChart {...dailyMarginalPriceData} />
+                      </div>
+                      <MarginalPriceDelta comparison={comparison} />
+                    </Flex>
+                  </Card>
+                  <Card>
+                    <Plot
+                      data={batterySocData.data}
+                      layout={batterySocData.layout}
+                    />
+                  </Card>
+                  {/* <Card>
                 <Plot
                   data={generatorOutputData.data}
                   layout={generatorOutputData.layout}
                 />
               </Card> */}
-            </>
-          );
-        }}
-      </Await>
+                </>
+              );
+            }}
+          </Await>
+        </>
+      )}
     </Flex>
   );
 }
