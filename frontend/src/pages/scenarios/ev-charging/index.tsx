@@ -3,13 +3,12 @@ import { Await } from "@tanstack/react-router";
 import { LineChart } from "../../../components/LineChart";
 import { LoadingBlock } from "../../../components/LoadingBlock";
 import { MarginalPriceDelta } from "../../../components/MarginalPricedDelta";
-import { Plot } from "../../../components/Plot/Plot";
 import { compareResults } from "../../../data/compare";
 import {
   nivoDailyLoadData,
   nivoDailyMarginalPriceData,
 } from "../../../data/nivo";
-import { plotBatterySocData } from "../../../data/plotly";
+import { nivoDailySocData } from "../../../data/nivo/daily-soc";
 import { useScenarioData } from "../../../stores/scenario-data";
 export function ScenariosEvCharging() {
   const { intro, "ev-charging": evCharging } = useScenarioData(
@@ -60,9 +59,7 @@ export function ScenariosEvCharging() {
               });
               return (
                 <Card>
-                  <div style={{ height: 450 }}>
-                    <LineChart {...dailyLoadData} />
-                  </div>
+                  <LineChart {...dailyLoadData} title="Daily load" />
                 </Card>
               );
             }}
@@ -79,7 +76,7 @@ export function ScenariosEvCharging() {
                   includeBuses: ["Grid"],
                 }
               );
-              const batterySocData = plotBatterySocData(
+              const batterySocData = nivoDailySocData(
                 comparison.after.response
               );
               return (
@@ -87,16 +84,19 @@ export function ScenariosEvCharging() {
                   <Card>
                     <Flex>
                       <div style={{ height: 450, width: "100%" }}>
-                        <LineChart {...dailyMarginalPriceData} />
+                        <LineChart
+                          {...dailyMarginalPriceData}
+                          title="Marginal price"
+                        />
                       </div>
 
                       <MarginalPriceDelta comparison={comparison} />
                     </Flex>
                   </Card>
                   <Card>
-                    <Plot
-                      data={batterySocData.data}
-                      layout={batterySocData.layout}
+                    <LineChart
+                      {...batterySocData}
+                      title="Battery state of charge (SOC)"
                     />
                   </Card>
                 </>

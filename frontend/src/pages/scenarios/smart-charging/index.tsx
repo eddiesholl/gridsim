@@ -3,13 +3,12 @@ import { Await } from "@tanstack/react-router";
 import { LineChart } from "../../../components/LineChart";
 import { LoadingBlock } from "../../../components/LoadingBlock";
 import { MarginalPriceDelta } from "../../../components/MarginalPricedDelta";
-import { Plot } from "../../../components/Plot/Plot";
 import { compareResults } from "../../../data/compare";
 import {
   nivoDailyLoadData,
   nivoDailyMarginalPriceData,
 } from "../../../data/nivo";
-import { plotBatterySocData } from "../../../data/plotly";
+import { nivoDailySocData } from "../../../data/nivo/daily-soc";
 import { useScenarioData } from "../../../stores/scenario-data";
 
 export function ScenariosSmartCharging() {
@@ -78,7 +77,7 @@ export function ScenariosSmartCharging() {
                   includeBuses: ["Grid"],
                 }
               );
-              const batterySocData = plotBatterySocData(
+              const batterySocData = nivoDailySocData(
                 comparison.after.response
               );
               // const generatorOutputData = plotDailyGeneratorOutputData(data);
@@ -93,9 +92,9 @@ export function ScenariosSmartCharging() {
                     </Flex>
                   </Card>
                   <Card>
-                    <Plot
-                      data={batterySocData.data}
-                      layout={batterySocData.layout}
+                    <LineChart
+                      {...batterySocData}
+                      title="Battery state of charge (SOC)"
                     />
                   </Card>
                 </>
