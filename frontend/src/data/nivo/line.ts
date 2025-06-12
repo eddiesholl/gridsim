@@ -1,17 +1,40 @@
+import { LineLayerId } from "@nivo/line";
 import { nivoTheme } from "../../styles/nivo";
 import { NivoLineProps } from "./types";
+
+type CustomLayer = Exclude<NivoLineProps["layers"], undefined>[number];
+type CustomLayers = [number, CustomLayer][];
 
 type CreateLinePropsOptions = {
   data: NivoLineProps["data"];
   xAxisText: string;
   markers?: NivoLineProps["markers"];
+  customLayers?: CustomLayers;
 };
 
 export function createLineProps({
   data,
   xAxisText,
   markers,
+  customLayers = [],
 }: CreateLinePropsOptions): NivoLineProps {
+  const defaultLayers: LineLayerId[] = [
+    "axes",
+    "grid",
+    "areas",
+    "lines",
+    "markers",
+    "points",
+    "legends",
+  ];
+  const layers = defaultLayers.reduce((acc, curr, ix) => {
+    const customLayer = customLayers.find(([target]) => ix === target);
+    if (customLayer) {
+      acc.push(customLayer[1]);
+    }
+    acc.push(curr);
+    return acc;
+  }, [] as CustomLayer[]);
   return {
     data,
     theme: nivoTheme,
@@ -39,6 +62,7 @@ export function createLineProps({
       legendOffset: 36,
       //   legendPosition: "end",
     },
+    layers,
     lineWidth: 4,
     tooltip: () => {
       return null;
