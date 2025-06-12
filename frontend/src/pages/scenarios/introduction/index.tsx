@@ -52,7 +52,7 @@ export function ScenariosIntro() {
               return (
                 <Card>
                   <div style={{ height: 450 }}>
-                    <LineChart {...dailyLoadData} />
+                    <LineChart {...dailyLoadData} title="Daily load" />
                   </div>
                 </Card>
               );
@@ -70,7 +70,10 @@ export function ScenariosIntro() {
               return (
                 <Card>
                   <div style={{ height: 450 }}>
-                    <LineChart {...dailyMarginalPriceData} />
+                    <LineChart
+                      {...dailyMarginalPriceData}
+                      title="Marginal price"
+                    />
                   </div>
                 </Card>
               );

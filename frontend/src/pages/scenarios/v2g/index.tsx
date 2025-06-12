@@ -53,7 +53,7 @@ export function ScenariosV2G() {
               return (
                 <Card>
                   <div style={{ height: 450 }}>
-                    <LineChart {...dailyLoadData} />
+                    <LineChart {...dailyLoadData} title="Daily load" />
                   </div>
                 </Card>
               );
@@ -82,7 +82,10 @@ export function ScenariosV2G() {
                   <Card>
                     <Flex>
                       <div style={{ height: 450, width: "100%" }}>
-                        <LineChart {...dailyMarginalPriceData} />
+                        <LineChart
+                          {...dailyMarginalPriceData}
+                          title="Marginal price"
+                        />
                       </div>
                       <MarginalPriceDelta comparison={comparison} />
                     </Flex>
