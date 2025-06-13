@@ -2,11 +2,11 @@ import { schemeCategory10 } from "d3-scale-chromatic";
 import { DailyResponse } from "../../types";
 import { serverToNivoData } from "./common";
 import { createLineProps } from "./line";
-import { MarginalPriceOptions, NivoLineProps } from "./types";
+import { NivoLineProps } from "./types";
 
 export const nivoDailySocData = (
-  data: DailyResponse,
-  options: MarginalPriceOptions = {}
+  data: DailyResponse
+  // options: MarginalPriceOptions = {}
 ) => {
   const baseDataSets = Object.entries(data.stores.e)
     // .filter(([name]) => options.includeBuses?.includes(name))
