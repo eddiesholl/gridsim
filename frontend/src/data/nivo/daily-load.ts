@@ -1,24 +1,25 @@
+import { schemeCategory10 } from "d3-scale-chromatic";
 import { DailyResponse } from "../../types";
-import { AreaLayer } from "./area-layer";
 import { serverToNivoData } from "./common";
 import { createLineProps } from "./line";
-import { DailyDataOptions, NivoLineProps } from "./types";
+import { TimeWindowLayer } from "./time-window-layer";
+import { DailyDataOptions } from "./types";
 
 export const nivoDailyLoadData = (
   data: DailyResponse,
   options: DailyDataOptions = {}
 ) => {
-  const storeEData = options.includeStoresE
-    ? Object.entries(data.stores.e).map(
-        ([name, values]) => [`${name} (MWh stored)`, values] as DataSet
-      )
-    : [];
+  // const storeEData = options.includeStoresE
+  //   ? Object.entries(data.stores.e).map(
+  //       ([name, values]) => [`${name} (MWh stored)`, values] as DataSet
+  //     )
+  //   : [];
 
-  const storePData = options.includeStoresP
-    ? Object.entries(data.stores.p).map(
-        ([name, values]) => [`${name} (output)`, values] as DataSet
-      )
-    : [];
+  // const storePData = options.includeStoresP
+  //   ? Object.entries(data.stores.p).map(
+  //       ([name, values]) => [`${name} (output)`, values] as DataSet
+  //     )
+  //   : [];
 
   // const shapes = [shapeEveningPeak, ...(options.extraShapes || [])];
 
@@ -35,28 +36,6 @@ export const nivoDailyLoadData = (
   // .concat(storeEData)
   // .concat(storePData);
 
-  const markers: NivoLineProps["markers"] = [
-    {
-      legend: "Max capacity",
-      // value: "8 AM", //data.index[0],
-      value: new Date("2016-01-01 15:00:00"), //data.index[0],
-      axis: "x",
-      lineStyle: {
-        stroke: "red",
-        strokeWidth: 2,
-      },
-    },
-    {
-      legend: "Max capacity",
-      value: "2016-01-01 16:00:00", //data.index[0],
-      axis: "x",
-      lineStyle: {
-        stroke: "blue",
-        strokeWidth: 2,
-      },
-    },
-  ];
-
   return createLineProps({
     data: baseDataSets,
     xAxisText: "Power (MW)",
@@ -64,9 +43,21 @@ export const nivoDailyLoadData = (
     customLayers: [
       [
         3,
-        AreaLayer({
-          startHour: "2016-01-01 06:00:00",
-          endHour: "2016-01-01 08:00:00",
+        TimeWindowLayer({
+          timeWindows: [
+            {
+              startHour: "2016-01-01 06:00:00",
+              endHour: "2016-01-01 08:00:00",
+              text: "Morning commute",
+              fillColor: schemeCategory10[8],
+            },
+            {
+              startHour: "2016-01-01 15:00:00",
+              endHour: "2016-01-01 20:00:00",
+              text: "Evening peak",
+              fillColor: schemeCategory10[3],
+            },
+          ],
         }),
       ],
     ],
