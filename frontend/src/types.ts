@@ -8,6 +8,8 @@ export type DailyScenario = {
   parameters: DailyParameters;
 };
 
+export type Scenarios = "intro" | "ev-charging" | "smart-charging" | "v2g";
+
 export type DailyScenarioResult = DailyScenario & {
   response: DailyResponse;
 };

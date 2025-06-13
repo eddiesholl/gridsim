@@ -1,15 +1,16 @@
 import { Card, Flex, Title } from "@mantine/core";
-import { Await, getRouteApi } from "@tanstack/react-router";
+import { Await } from "@tanstack/react-router";
+import { LineChart } from "../../../components/LineChart";
 import { LoadingBlock } from "../../../components/LoadingBlock";
-import { Plot } from "../../../components/Plot/Plot";
 import {
-  plotDailyLoadData,
-  plotDailyMarginalPriceData,
-} from "../../../data/plotly";
+  nivoDailyLoadData,
+  nivoDailyMarginalPriceData,
+} from "../../../data/nivo";
+import { useScenarioData } from "../../../stores/scenario-data";
 
 export function ScenariosIntro() {
-  const { resultOriginalGrid } =
-    getRouteApi("/scenarios/intro").useLoaderData();
+  const { intro } = useScenarioData((state) => state.scenarios);
+
   return (
     <Flex direction="column" gap="lg">
       <Card>
@@ -37,36 +38,49 @@ export function ScenariosIntro() {
           the National Electricity Market (NEM) in Australia.
         </p>
       </Card>
-      <Await promise={resultOriginalGrid} fallback={<LoadingBlock />}>
-        {({ response }) => {
-          const dailyLoadData = plotDailyLoadData(response, {
-            includeStoresE: false,
-            includeStoresP: false,
-            excludeData: ["EV driving"],
-          });
-          return (
-            <Card>
-              <Plot data={dailyLoadData.data} layout={dailyLoadData.layout} />
-            </Card>
-          );
-        }}
-      </Await>
 
-      <Await promise={resultOriginalGrid} fallback={<LoadingBlock />}>
-        {({ response }) => {
-          const dailyMarginalPriceData = plotDailyMarginalPriceData(response, {
-            includeBuses: ["Grid"],
-          });
-          return (
-            <Card>
-              <Plot
-                data={dailyMarginalPriceData.data}
-                layout={dailyMarginalPriceData.layout}
-              />
-            </Card>
-          );
-        }}
-      </Await>
+      {intro && (
+        <>
+          <Await promise={intro} fallback={<LoadingBlock />}>
+            {({ response }) => {
+              const dailyLoadData = nivoDailyLoadData(response, {
+                includeStoresE: false,
+                includeStoresP: false,
+                excludeData: ["EV driving"],
+              });
+
+              return (
+                <Card>
+                  <div style={{ height: 450 }}>
+                    <LineChart {...dailyLoadData} title="Daily load" />
+                  </div>
+                </Card>
+              );
+            }}
+          </Await>
+
+          <Await promise={intro} fallback={<LoadingBlock />}>
+            {({ response }) => {
+              const dailyMarginalPriceData = nivoDailyMarginalPriceData(
+                response,
+                {
+                  includeBuses: ["Grid"],
+                }
+              );
+              return (
+                <Card>
+                  <div style={{ height: 450 }}>
+                    <LineChart
+                      {...dailyMarginalPriceData}
+                      title="Marginal price"
+                    />
+                  </div>
+                </Card>
+              );
+            }}
+          </Await>
+        </>
+      )}
     </Flex>
   );
 }
