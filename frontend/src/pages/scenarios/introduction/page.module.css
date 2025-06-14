@@ -1,0 +1,22 @@
+.navItem {
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--mantine-color-coral-1);
+  border: 1px solid var(--mantine-color-coral-2);
+  font-weight: 500;
+  /* color: var(--mantine-color-coral-1); */
+  &[data-status="active"] {
+    font-weight: 700;
+    background-color: var(--mantine-color-coral-5);
+    border: 1px solid var(--mantine-color-coral-6);
+  }
+  &:hover:not([data-status="active"]) {
+    background-color: var(--mantine-color-coral-2);
+  }
+}
+
+.scrollArea {
+  height: calc(100vh - 136px);
+  overflow: auto;
+  width: 100%;
+}
