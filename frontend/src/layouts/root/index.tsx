@@ -31,7 +31,7 @@ const paths: PathConfig[] = [
 export function RootComponent() {
   return (
     <>
-      <TanStackRouterDevtools />
+      <TanStackRouterDevtools position="top-left" />
       <Flex direction="column" h="100%">
         <Flex className={styles.header} p="sm">
           <Title order={1}>GridSim</Title>

@@ -21,6 +21,13 @@ const CONTAINER_SIZES: Record<string, string> = {
 
 export const mantineTheme: MantineThemeOverride = createTheme({
   /** Put your mantine theme override here */
+  breakpoints: {
+    xs: "24em",
+    sm: "32em",
+    md: "42em",
+    lg: "60em",
+    xl: "70em",
+  },
   colors: colorRanges,
   fontSizes: {
     xs: rem("12px"),

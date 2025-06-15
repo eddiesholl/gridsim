@@ -1,15 +1,14 @@
-import { Button, Card, Flex, Title } from "@mantine/core";
+import { Button, Flex } from "@mantine/core";
 import { useLoaderData } from "@tanstack/react-router";
-import { parseAsStringLiteral, useQueryState } from "nuqs";
+import { useMemo, useState } from "react";
 import { objectEntries } from "../../../common/object";
-import { PageWrapper } from "../../../components";
 import { LineChart } from "../../../components/LineChart";
+import { ResponsiveContent } from "../../../components/ResponsiveContent";
 import {
   nivoDailyLoadData,
   nivoDailyMarginalPriceData,
 } from "../../../data/nivo";
 import { Scenarios } from "../../../types";
-import styles from "./page.module.css";
 
 const scenarios: Scenarios[] = [
   "intro",
@@ -109,9 +108,13 @@ export function ScenariosIntro() {
   const allScenarioData = useLoaderData({ from: "/scenarios/intro" });
   console.log({ allScenarioData });
 
-  const [currentScenario, setCurrentScenario] = useQueryState<Scenarios>(
-    "scenario",
-    parseAsStringLiteral(scenarios).withDefault(scenarios[0])
+  // const [currentScenario, setCurrentScenario] = useQueryState<Scenarios>(
+  //   "scenario",
+  //   parseAsStringLiteral(scenarios).withDefault(scenarios[0])
+  // );
+  // TODO: search param change is triggering a rerender
+  const [currentScenario, setCurrentScenario] = useState<Scenarios>(
+    scenarios[0]
   );
 
   const currentScenarioDetails = scenarioNavs[currentScenario];
@@ -130,8 +133,24 @@ export function ScenariosIntro() {
     }
   );
 
+  const content = useMemo(
+    () => [
+      {
+        key: "dailyLoadData",
+        title: "Daily load",
+        content: <LineChart {...dailyLoadData} />,
+      },
+      {
+        key: "dailyMarginalPriceData",
+        title: "Marginal price",
+        content: <LineChart {...dailyMarginalPriceData} />,
+      },
+    ],
+    [dailyLoadData, dailyMarginalPriceData]
+  );
+
   return (
-    <Flex direction="column" gap="md">
+    <Flex direction="column" gap="md" h="100%">
       <Flex direction="row" justify="flex-end" gap="md" h="60px" p="md">
         {objectEntries(scenarioNavs).map(([key, details]) => (
           <Button
@@ -148,34 +167,13 @@ export function ScenariosIntro() {
           // </div>
         ))}
       </Flex>
-      <div className={styles.scrollArea}>
-        <PageWrapper>
-          <Flex direction="column" gap="lg" pt={0}>
-            <Card>
-              <Title order={2}>{currentScenarioDetails.title}</Title>
-              {currentScenarioDetails.description.map((description, ix) => (
-                <p key={ix}>{description}</p>
-              ))}
-            </Card>
-            <Flex direction="column" gap="lg">
-              <Card>
-                <div style={{ height: 450 }}>
-                  <LineChart {...dailyLoadData} title="Daily load" />
-                </div>
-              </Card>
-
-              <Card>
-                <div style={{ height: 450 }}>
-                  <LineChart
-                    {...dailyMarginalPriceData}
-                    title="Marginal price"
-                  />
-                </div>
-              </Card>
-            </Flex>
-          </Flex>
-        </PageWrapper>
-      </div>
+      {/* <div className={styles.scrollArea}> */}
+      <ResponsiveContent
+        title={currentScenarioDetails.title}
+        text={currentScenarioDetails.description}
+        content={content}
+      />
+      {/* </div> */}
     </Flex>
   );
 }
