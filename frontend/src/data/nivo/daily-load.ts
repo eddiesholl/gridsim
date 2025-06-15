@@ -38,6 +38,7 @@ export const nivoDailyLoadData = (
 
   return createLineProps({
     data: baseDataSets,
+    responsiveMode: options.responsiveMode,
     xAxisText: "Power (MW)",
     // markers,
     customLayers: [

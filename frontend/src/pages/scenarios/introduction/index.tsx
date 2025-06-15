@@ -2,6 +2,7 @@ import { Button, Flex } from "@mantine/core";
 import { useLoaderData } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { objectEntries } from "../../../common/object";
+import { useResponsiveMode } from "../../../common/use-responsive-mode";
 import { LineChart } from "../../../components/LineChart";
 import { ResponsiveContent } from "../../../components/ResponsiveContent";
 import {
@@ -120,16 +121,20 @@ export function ScenariosIntro() {
   const currentScenarioDetails = scenarioNavs[currentScenario];
   const scenarioData = allScenarioData[currentScenario];
 
+  const responsiveMode = useResponsiveMode();
+
   const dailyLoadData = nivoDailyLoadData(scenarioData.response, {
     includeStoresE: false,
     includeStoresP: false,
     excludeData: ["EV driving"],
+    responsiveMode,
   });
 
   const dailyMarginalPriceData = nivoDailyMarginalPriceData(
     scenarioData.response,
     {
       includeBuses: ["Grid"],
+      responsiveMode,
     }
   );
 

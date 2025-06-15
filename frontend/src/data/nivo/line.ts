@@ -1,4 +1,5 @@
 import { LineLayerId } from "@nivo/line";
+import { ResponsiveMode } from "../../common/use-responsive-mode";
 import { nivoTheme } from "../../styles/nivo";
 import { NivoLineProps } from "./types";
 
@@ -10,12 +11,14 @@ type CreateLinePropsOptions = {
   xAxisText: string;
   markers?: NivoLineProps["markers"];
   customLayers?: CustomLayers;
+  responsiveMode?: ResponsiveMode;
 };
 
 export function createLineProps({
   data,
   xAxisText,
   markers,
+  responsiveMode = "desktop",
   customLayers = [],
 }: CreateLinePropsOptions): NivoLineProps {
   const defaultLayers: LineLayerId[] = [
@@ -57,11 +60,14 @@ export function createLineProps({
     },
     axisBottom: {
       format: "%-I %p",
-      tickValues: "every 2 hours",
       legend: "Time of day",
       legendOffset: 36,
+      tickValues:
+        responsiveMode === "mobile" ? "every 4 hours" : "every 2 hours",
+
       //   legendPosition: "end",
     },
+    gridXValues: "every 4 hours",
     layers,
     lineWidth: 4,
     tooltip: () => {
