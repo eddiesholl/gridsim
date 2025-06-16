@@ -14,6 +14,20 @@ type CreateLinePropsOptions = {
   responsiveMode?: ResponsiveMode;
 };
 
+const mobileMargins = {
+  top: 30,
+  right: 30,
+  bottom: 20,
+  left: 30,
+};
+
+const fullMargins = {
+  top: 50,
+  right: 160,
+  bottom: 50,
+  left: 60,
+};
+
 export function createLineProps({
   data,
   xAxisText,
@@ -79,19 +93,22 @@ export function createLineProps({
       from: "color",
       modifiers: [["darker", 0.3]],
     },
-    margin: { top: 50, right: 160, bottom: 50, left: 60 },
-    legends: [
-      {
-        anchor: "bottom-right",
-        direction: "column",
-        translateX: 140,
-        itemsSpacing: 2,
-        itemWidth: 80,
-        itemHeight: 12,
-        symbolSize: 12,
-        symbolShape: "circle",
-      },
-    ],
+    margin: responsiveMode === "mobile" ? mobileMargins : fullMargins,
+    legends:
+      responsiveMode === "mobile"
+        ? []
+        : [
+            {
+              anchor: "bottom-right",
+              direction: "column",
+              translateX: 140,
+              itemsSpacing: 2,
+              itemWidth: 80,
+              itemHeight: 12,
+              symbolSize: 12,
+              symbolShape: "circle",
+            },
+          ],
     pointColor: { theme: "background" },
   };
 }

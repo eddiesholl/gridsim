@@ -19,7 +19,9 @@ export function DesktopContent({
         </Card>
         <Flex direction="column" gap="lg">
           {content.map((c) => (
-            <Card key={c.key}>{c.content}</Card>
+            <Card key={c.key}>
+              <div style={{ height: 450, width: "100%" }}>{c.content}</div>
+            </Card>
           ))}
         </Flex>
       </Flex>

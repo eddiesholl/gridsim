@@ -38,12 +38,8 @@ export const TimeWindowLayer =
         ];
         const fill = fillColor || "#ffa3a3";
         const stroke = darkenColor(fill, 0.1);
-        const textX = Math.max(
-          0,
-          xScale(new Date(startHour)) +
-            (xScale(new Date(endHour)) - xScale(new Date(startHour))) / 2
-        );
-        const textY = -10; //innerHeight / 2;
+        const textX = Math.max(0, xScale(new Date(startHour)));
+        const textY = -5;
         return {
           path: areaGenerator(areaData),
           fill,
@@ -82,7 +78,7 @@ export const TimeWindowLayer =
               strokeOpacity={0.4}
             />
             {text && (
-              <text x={textX} y={textY} textAnchor="middle">
+              <text x={textX} y={textY} textAnchor="left" fontSize={10}>
                 {text}
               </text>
             )}
