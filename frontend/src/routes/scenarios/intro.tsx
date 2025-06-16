@@ -17,14 +17,8 @@ export const Route = createFileRoute("/scenarios/intro")({
     // Render an error message
     return <div>{error.message}</div>;
   },
-  // loader: async ({ context }) => {
-  //   const ensureScenarios = useScenarioData((state) => state.ensureScenarios);
-  //   await scenarios.ensureScenarios();
-  //   return {
-  //     scenarios,
-  //   };
-  // },
   loader: async () => {
+    // TODO: This could be bundled into a single batched request
     const intro = getDailyQuery(scenarioOriginalGrid);
     const evCharging = getDailyQuery(scenarioEvCharging);
     const smartCharging = getDailyQuery(scenarioSmartCharging);
