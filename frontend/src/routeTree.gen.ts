@@ -15,10 +15,7 @@ import { Route as ToolsImport } from './routes/tools'
 import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
 import { Route as ScenariosIndexImport } from './routes/scenarios/index'
-import { Route as ScenariosV2gImport } from './routes/scenarios/v2g'
-import { Route as ScenariosSmartChargingImport } from './routes/scenarios/smart-charging'
 import { Route as ScenariosIntroImport } from './routes/scenarios/intro'
-import { Route as ScenariosEvChargingImport } from './routes/scenarios/ev-charging'
 
 // Create/Update Routes
 
@@ -46,27 +43,9 @@ const ScenariosIndexRoute = ScenariosIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ScenariosV2gRoute = ScenariosV2gImport.update({
-  id: '/scenarios/v2g',
-  path: '/scenarios/v2g',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ScenariosSmartChargingRoute = ScenariosSmartChargingImport.update({
-  id: '/scenarios/smart-charging',
-  path: '/scenarios/smart-charging',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const ScenariosIntroRoute = ScenariosIntroImport.update({
   id: '/scenarios/intro',
   path: '/scenarios/intro',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const ScenariosEvChargingRoute = ScenariosEvChargingImport.update({
-  id: '/scenarios/ev-charging',
-  path: '/scenarios/ev-charging',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -95,32 +74,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToolsImport
       parentRoute: typeof rootRoute
     }
-    '/scenarios/ev-charging': {
-      id: '/scenarios/ev-charging'
-      path: '/scenarios/ev-charging'
-      fullPath: '/scenarios/ev-charging'
-      preLoaderRoute: typeof ScenariosEvChargingImport
-      parentRoute: typeof rootRoute
-    }
     '/scenarios/intro': {
       id: '/scenarios/intro'
       path: '/scenarios/intro'
       fullPath: '/scenarios/intro'
       preLoaderRoute: typeof ScenariosIntroImport
-      parentRoute: typeof rootRoute
-    }
-    '/scenarios/smart-charging': {
-      id: '/scenarios/smart-charging'
-      path: '/scenarios/smart-charging'
-      fullPath: '/scenarios/smart-charging'
-      preLoaderRoute: typeof ScenariosSmartChargingImport
-      parentRoute: typeof rootRoute
-    }
-    '/scenarios/v2g': {
-      id: '/scenarios/v2g'
-      path: '/scenarios/v2g'
-      fullPath: '/scenarios/v2g'
-      preLoaderRoute: typeof ScenariosV2gImport
       parentRoute: typeof rootRoute
     }
     '/scenarios/': {
@@ -139,10 +97,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/tools': typeof ToolsRoute
-  '/scenarios/ev-charging': typeof ScenariosEvChargingRoute
   '/scenarios/intro': typeof ScenariosIntroRoute
-  '/scenarios/smart-charging': typeof ScenariosSmartChargingRoute
-  '/scenarios/v2g': typeof ScenariosV2gRoute
   '/scenarios': typeof ScenariosIndexRoute
 }
 
@@ -150,10 +105,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/tools': typeof ToolsRoute
-  '/scenarios/ev-charging': typeof ScenariosEvChargingRoute
   '/scenarios/intro': typeof ScenariosIntroRoute
-  '/scenarios/smart-charging': typeof ScenariosSmartChargingRoute
-  '/scenarios/v2g': typeof ScenariosV2gRoute
   '/scenarios': typeof ScenariosIndexRoute
 }
 
@@ -162,43 +114,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/tools': typeof ToolsRoute
-  '/scenarios/ev-charging': typeof ScenariosEvChargingRoute
   '/scenarios/intro': typeof ScenariosIntroRoute
-  '/scenarios/smart-charging': typeof ScenariosSmartChargingRoute
-  '/scenarios/v2g': typeof ScenariosV2gRoute
   '/scenarios/': typeof ScenariosIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/about'
-    | '/tools'
-    | '/scenarios/ev-charging'
-    | '/scenarios/intro'
-    | '/scenarios/smart-charging'
-    | '/scenarios/v2g'
-    | '/scenarios'
+  fullPaths: '/' | '/about' | '/tools' | '/scenarios/intro' | '/scenarios'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/about'
-    | '/tools'
-    | '/scenarios/ev-charging'
-    | '/scenarios/intro'
-    | '/scenarios/smart-charging'
-    | '/scenarios/v2g'
-    | '/scenarios'
+  to: '/' | '/about' | '/tools' | '/scenarios/intro' | '/scenarios'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/tools'
-    | '/scenarios/ev-charging'
     | '/scenarios/intro'
-    | '/scenarios/smart-charging'
-    | '/scenarios/v2g'
     | '/scenarios/'
   fileRoutesById: FileRoutesById
 }
@@ -207,10 +137,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ToolsRoute: typeof ToolsRoute
-  ScenariosEvChargingRoute: typeof ScenariosEvChargingRoute
   ScenariosIntroRoute: typeof ScenariosIntroRoute
-  ScenariosSmartChargingRoute: typeof ScenariosSmartChargingRoute
-  ScenariosV2gRoute: typeof ScenariosV2gRoute
   ScenariosIndexRoute: typeof ScenariosIndexRoute
 }
 
@@ -218,10 +145,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ToolsRoute: ToolsRoute,
-  ScenariosEvChargingRoute: ScenariosEvChargingRoute,
   ScenariosIntroRoute: ScenariosIntroRoute,
-  ScenariosSmartChargingRoute: ScenariosSmartChargingRoute,
-  ScenariosV2gRoute: ScenariosV2gRoute,
   ScenariosIndexRoute: ScenariosIndexRoute,
 }
 
@@ -238,10 +162,7 @@ export const routeTree = rootRoute
         "/",
         "/about",
         "/tools",
-        "/scenarios/ev-charging",
         "/scenarios/intro",
-        "/scenarios/smart-charging",
-        "/scenarios/v2g",
         "/scenarios/"
       ]
     },
@@ -254,17 +175,8 @@ export const routeTree = rootRoute
     "/tools": {
       "filePath": "tools.tsx"
     },
-    "/scenarios/ev-charging": {
-      "filePath": "scenarios/ev-charging.tsx"
-    },
     "/scenarios/intro": {
       "filePath": "scenarios/intro.tsx"
-    },
-    "/scenarios/smart-charging": {
-      "filePath": "scenarios/smart-charging.tsx"
-    },
-    "/scenarios/v2g": {
-      "filePath": "scenarios/v2g.tsx"
     },
     "/scenarios/": {
       "filePath": "scenarios/index.tsx"
