@@ -1,11 +1,9 @@
 import { Flex } from "@mantine/core";
 import { Outlet } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { PageWrapper } from "../../components";
 import { MTLink } from "../../components/Link";
-import { useScenarioData } from "../../stores/scenario-data";
 import styles from "./scenarios.module.css";
-// Define scenario navigation items
+
 const scenarioNavItems = [
   {
     path: "/scenarios/intro",
@@ -26,11 +24,6 @@ const scenarioNavItems = [
 ];
 
 export function ScenariosLayout() {
-  const { ensureScenarios } = useScenarioData();
-  useEffect(() => {
-    ensureScenarios();
-  }, [ensureScenarios]);
-
   return (
     <>
       <Flex direction="column" gap="md">

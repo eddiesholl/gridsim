@@ -23,10 +23,12 @@
     "@types/axios": "^0.14.4",
     "axios": "^1.8.4",
     "clsx": "^2.1.1",
+    "nuqs": "^2.4.3",
     "openapi-typescript-fetch": "^2.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-plotly.js": "^2.6.0",
+    "type-fest": "^4.41.0",
     "typescript": "~5.7.2",
     "zustand": "^5.0.5"
   },

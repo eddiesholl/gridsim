@@ -6,8 +6,8 @@ import ReactDOM from "react-dom/client";
 import "@mantine/core/styles.css";
 import { mantineTheme } from "./styles/theme";
 // Import the generated route tree
+import { NuqsAdapter } from "nuqs/adapters/react";
 import { routeTree } from "./routeTree.gen";
-
 // Create a new router instance
 const router = createRouter({
   routeTree,
@@ -29,7 +29,9 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <MantineProvider theme={mantineTheme} withGlobalClasses>
-        <RouterProvider router={router} />
+        <NuqsAdapter>
+          <RouterProvider router={router} />
+        </NuqsAdapter>
       </MantineProvider>
     </StrictMode>
   );

@@ -1,0 +1,22 @@
+.indicator {
+  width: 12px;
+  height: 8px;
+  transition: width 250ms ease;
+  background-color: var(--mantine-color-blush-7);
+
+  &[data-active] {
+    width: 40px;
+  }
+}
+
+.card {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: var(--mantine-color-white);
+}
+
+.root {
+  background-color: var(--mantine-color-white);
+}

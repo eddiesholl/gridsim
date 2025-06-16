@@ -5,6 +5,7 @@ from gridsim_backend.app.types import BusData, DailyResponse, GeneratorData, Lin
 from mangum import Mangum
 from . import network
 from pydantic import BaseModel
+import os
 
 app = FastAPI(title="GridSim API",
               version="0.1.0",
@@ -13,9 +14,15 @@ app = FastAPI(title="GridSim API",
               redoc_url="/redoc")
 
 # Configure CORS
+DEFAULT_ALLOW_ORIGINS = ["http://localhost:5173", "https://gridsim.eddit.io"]
+ALLOW_ORIGINS = (
+    [origin.strip() for origin in os.getenv("ALLOW_ORIGINS", "").split(",") if origin.strip()]
+    or DEFAULT_ALLOW_ORIGINS
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "https://gridsim.eddit.io"],
+    allow_origins=ALLOW_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

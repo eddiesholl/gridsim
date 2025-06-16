@@ -1,0 +1,5 @@
+.tabTitle {
+  font-weight: 500;
+  font-size: 1.25rem;
+  color: var(--mantine-color-gray-7);
+}

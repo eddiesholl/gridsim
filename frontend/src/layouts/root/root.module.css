@@ -45,3 +45,7 @@
   fill: var(--mantine-color-moonstone-9);
   padding-top: 4px;
 }
+
+.root {
+  overflow: hidden;
+}
