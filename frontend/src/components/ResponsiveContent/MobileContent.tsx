@@ -1,4 +1,5 @@
-import { Flex, Title } from "@mantine/core";
+import { Card, Flex, Tabs, Text, Title } from "@mantine/core";
+import styles from "./styles.module.css";
 import { ResponsiveContentProps } from "./types";
 
 export function MobileContent({
@@ -7,14 +8,36 @@ export function MobileContent({
   content,
 }: ResponsiveContentProps) {
   return (
-    <Flex direction="column" gap="sm">
-      <Title order={2}>{`${title} - mobile`}</Title>
-      {text.map((t, ix) => (
-        <p key={ix}>{t}</p>
-      ))}
-      {content.map((c, ix) => (
-        <div key={ix}>{c.content}</div>
-      ))}
+    <Flex
+      direction="column"
+      gap="sm"
+      justify="space-between"
+      h="100%"
+      p="sm"
+      pt={0}
+    >
+      <Card style={{ flex: 1 }}>
+        <Title order={2}>{`${title} - mobile`}</Title>
+        {text.map((t, ix) => (
+          <p key={ix}>{t}</p>
+        ))}
+      </Card>
+      <Card>
+        <Tabs defaultValue={content[0]?.key} variant="outline">
+          <Tabs.List>
+            {content.map((c, ix) => (
+              <Tabs.Tab key={ix} value={c.key}>
+                <Text className={styles.tabTitle}>{c.title}</Text>
+              </Tabs.Tab>
+            ))}
+          </Tabs.List>
+          {content.map((c, ix) => (
+            <Tabs.Panel key={ix} value={c.key}>
+              {c.content}
+            </Tabs.Panel>
+          ))}
+        </Tabs>
+      </Card>
     </Flex>
   );
 }

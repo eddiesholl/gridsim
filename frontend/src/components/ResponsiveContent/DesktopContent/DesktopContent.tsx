@@ -1,6 +1,7 @@
 import { Card, Flex, Title } from "@mantine/core";
-import { PageWrapper } from "..";
-import { ResponsiveContentProps } from "./types";
+import { PageWrapper } from "../../PageWrapper";
+import { ResponsiveContentProps } from "../types";
+import styles from "./styles.module.css";
 
 export function DesktopContent({
   title,
@@ -10,7 +11,7 @@ export function DesktopContent({
   return (
     <PageWrapper>
       <Flex direction="column" gap="lg" pt={0}>
-        <Card>
+        <Card className={styles.text}>
           <Title order={2}>{`${title} - desktop`}</Title>
           {text.map((t, ix) => (
             <p key={ix}>{t}</p>
