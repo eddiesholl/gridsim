@@ -118,6 +118,13 @@ gridsim/
 - Frontend development server runs on http://localhost:5173
 - API documentation available at http://localhost:8000/docs
 
+### Accessing the dev server from an external device
+
+You might want to try out the mobile or tablet with real hardware, running against a local dev server. You can achieve this with:
+
+- `VITE_API_URL=http://192.168.0.1:8000 p dev` - where the IP address is how your device will access the machine with the dev server
+- `ALLOW_ORIGINS=* uvicorn gridsim_backend.app.main:app --reload --host 0.0.0.0 --port 8000`
+
 ## Deployment
 
 The application is designed to be deployed to AWS:
