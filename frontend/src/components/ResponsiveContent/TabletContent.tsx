@@ -33,7 +33,9 @@ export function TabletContent({
           </Tabs.List>
           {content.map((c, ix) => (
             <Tabs.Panel key={ix} value={c.key}>
-              <div style={{ height: 450, width: "100%" }}>{c.content}</div>
+              <div style={{ height: 450, width: "100%", paddingTop: "16px" }}>
+                {c.content}
+              </div>
             </Tabs.Panel>
           ))}
         </Tabs>

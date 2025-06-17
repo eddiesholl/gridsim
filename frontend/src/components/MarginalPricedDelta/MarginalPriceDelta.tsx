@@ -33,6 +33,7 @@ export function MarginalPriceDelta({ comparison }: MarginalPriceDeltaProps) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
+          borderColor: "var(--mantine-color-gray-5)",
         }}
       >
         <Title order={4}>Average marginal price</Title>$
@@ -54,6 +55,7 @@ export function MarginalPriceDelta({ comparison }: MarginalPriceDeltaProps) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
+          borderColor: "var(--mantine-color-gray-5)",
         }}
       >
         <Text style={{ textAlign: "center" }}>

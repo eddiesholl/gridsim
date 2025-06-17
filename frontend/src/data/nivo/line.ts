@@ -38,9 +38,9 @@ export function createLineProps({
   const defaultLayers: LineLayerId[] = [
     "grid",
     "areas",
+    "markers",
     "lines",
     "axes",
-    "markers",
     "points",
     "legends",
   ];

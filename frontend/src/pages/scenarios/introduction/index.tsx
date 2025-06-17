@@ -3,6 +3,7 @@ import { useLoaderData } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { objectEntries } from "../../../common/object";
 import { useResponsiveMode } from "../../../common/use-responsive-mode";
+import { MarginalChart } from "../../../components/charts/MarginalChart";
 import { LineChart } from "../../../components/LineChart";
 import { ResponsiveContent } from "../../../components/ResponsiveContent";
 import {
@@ -24,6 +25,7 @@ type ScenarioDetails = {
   title: string;
   description: string[];
   dailyOptions?: Partial<DailyDataOptions>;
+  compareTo?: Scenarios;
 };
 const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
   intro: {
@@ -77,6 +79,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       includeStoresP: true,
       excludeData: ["EV driving"],
     },
+    compareTo: "intro",
   },
   smartCharging: {
     label: "Smart charging",
@@ -101,6 +104,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       includeStoresP: true,
       excludeData: ["EV driving"],
     },
+    compareTo: "evCharging",
   },
   v2g: {
     label: "Vehicle to Grid",
@@ -123,6 +127,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       includeStoresP: true,
       excludeData: ["EV driving"],
     },
+    compareTo: "smartCharging",
   },
 };
 
@@ -150,9 +155,18 @@ export function ScenariosIntro() {
       responsiveMode,
     }
   );
+  const compareTo = currentScenarioDetails.compareTo
+    ? allScenarioData[currentScenarioDetails.compareTo]
+    : undefined;
 
-  const content = useMemo(
-    () => [
+  const content = useMemo(() => {
+    const comparison = compareTo
+      ? {
+          before: compareTo,
+          after: scenarioData,
+        }
+      : undefined;
+    return [
       {
         key: "dailyLoadData",
         title: "Daily load",
@@ -161,11 +175,15 @@ export function ScenariosIntro() {
       {
         key: "dailyMarginalPriceData",
         title: "Marginal price",
-        content: <LineChart {...dailyMarginalPriceData} />,
+        content: (
+          <MarginalChart
+            comparison={comparison}
+            lineProps={dailyMarginalPriceData}
+          />
+        ),
       },
-    ],
-    [dailyLoadData, dailyMarginalPriceData]
-  );
+    ];
+  }, [dailyLoadData, dailyMarginalPriceData, compareTo, scenarioData]);
 
   return (
     <Flex direction="column" gap="md" h="100%">
