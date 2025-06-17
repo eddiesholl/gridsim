@@ -9,6 +9,7 @@ import {
   nivoDailyLoadData,
   nivoDailyMarginalPriceData,
 } from "../../../data/nivo";
+import { DailyDataOptions } from "../../../data/nivo/types";
 import { Scenarios } from "../../../types";
 
 const scenarios: Scenarios[] = [
@@ -22,6 +23,7 @@ type ScenarioDetails = {
   label: string;
   title: string;
   description: string[];
+  dailyOptions?: Partial<DailyDataOptions>;
 };
 const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
   intro: {
@@ -45,6 +47,9 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       `The grid you see modelled here is simplified, but is roughly
                   based on the National Electricity Market (NEM) in Australia.`,
     ],
+    dailyOptions: {
+      excludeData: ["EV driving"],
+    },
   },
   evCharging: {
     label: "EV charging",
@@ -58,7 +63,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
           start charging as soon as drivers return home and plug them in.
         `,
       `We can now see the total energy stored in the batteries of all 200 EVs
-          in the chart, called 'Battery storage (MWh stored)'. We'll treat it as
+          in the chart, called 'Batteries (MWh stored)'. We'll treat it as
           one large single battery. You can see the state drop during the
           morning and evening commute. Then when everyone plugs in when they get
           home, the cars just start charging straight away back to full.
@@ -67,6 +72,11 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
           when the grid is least able to handle it. The marginal price is higher
           now, as we need to call on more expensive backup generation reserves.`,
     ],
+    dailyOptions: {
+      includeStoresE: true,
+      includeStoresP: true,
+      excludeData: ["EV driving"],
+    },
   },
   smartCharging: {
     label: "Smart charging",
@@ -74,18 +84,23 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
     description: [
       `Obviously we don't want to increase demand when the grid is least able
           to handle it. Can we make a smarter choice about when we choose to
-          recharge?`,
+          recharge all the batteries?`,
       `We'll give the EV and charger enough intelligence to choose when to
           recharge. Just make sure the battery is ready to go by 6am. The exact
           constraints could be based on an advanced dynamic signal using the
           real time wholesale electricity price, maybe part of a Virtual Power
           Plant (VPP). But it could also be as simple as a default charging time
           window. Many EVs have offered this feature for several years already.
-          The goal is just to be recharged by midnight.`,
-      `This is already a significant improvement, saving consumers and the
-          grid as a whole significant amount of money, and investment needed in
+          In this simulation the constraint is to be recharged by 6 am.`,
+      `This small delay in charging is already a significant improvement, saving consumers, and the
+          grid as a whole, significant amounts of money, and investment needed in
           the grid to handle the demand.`,
     ],
+    dailyOptions: {
+      includeStoresE: true,
+      includeStoresP: true,
+      excludeData: ["EV driving"],
+    },
   },
   v2g: {
     label: "Vehicle to Grid",
@@ -100,20 +115,20 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       `By storing additional energy, then responding at critical times, we
           can ease the load on the grid even further. This means less capacity
           is needed from other sources just to cover the peak of each day,
-          saving money and avoiding use of gas.`,
+          saving money and avoiding use of the most expensive disaptchable generation, like gas.`,
+      `Some additional capacity sitting in all the EV batteries is now supplied to support the grid during the evening peak, and some additional charging is now taking place early in the morning, when the grid is much less congested. Consumers see no inconvenience, and grid costs are lowered significantly.`,
     ],
+    dailyOptions: {
+      includeStoresE: true,
+      includeStoresP: true,
+      excludeData: ["EV driving"],
+    },
   },
 };
 
 export function ScenariosIntro() {
   const allScenarioData = useLoaderData({ from: "/scenarios/intro" });
-  console.log({ allScenarioData });
 
-  // const [currentScenario, setCurrentScenario] = useQueryState<Scenarios>(
-  //   "scenario",
-  //   parseAsStringLiteral(scenarios).withDefault(scenarios[0])
-  // );
-  // TODO: search param change is triggering a rerender
   const [currentScenario, setCurrentScenario] = useState<Scenarios>(
     scenarios[0]
   );
@@ -124,9 +139,7 @@ export function ScenariosIntro() {
   const responsiveMode = useResponsiveMode();
 
   const dailyLoadData = nivoDailyLoadData(scenarioData.response, {
-    includeStoresE: false,
-    includeStoresP: false,
-    excludeData: ["EV driving"],
+    ...currentScenarioDetails.dailyOptions,
     responsiveMode,
   });
 
