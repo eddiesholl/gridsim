@@ -1,4 +1,4 @@
-import { Button, Flex } from "@mantine/core";
+import { Flex } from "@mantine/core";
 import { useLoaderData } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { objectEntries } from "../../../common/object";
@@ -6,6 +6,7 @@ import { useResponsiveMode } from "../../../common/use-responsive-mode";
 import { MarginalChart } from "../../../components/charts/MarginalChart";
 import { LineChart } from "../../../components/LineChart";
 import { ResponsiveContent } from "../../../components/ResponsiveContent";
+import { ScenarioChooser } from "../../../components/ScenarioChooser";
 import {
   nivoDailyLoadData,
   nivoDailyMarginalPriceData,
@@ -23,6 +24,7 @@ const scenarios: Scenarios[] = [
 
 type ScenarioDetails = {
   label: string;
+  labelCompact: string;
   title: string;
   description: string[];
   dailyOptions?: Partial<DailyDataOptions>;
@@ -32,6 +34,7 @@ type ScenarioDetails = {
 const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
   intro: {
     label: "Introduction",
+    labelCompact: "Intro",
     title: "Introduction to our electricity grid",
     description: [
       `The modern electricity grid has evolved from a fairly dull
@@ -57,6 +60,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
   },
   evCharging: {
     label: "EV charging",
+    labelCompact: "Add EVs",
     title: "EV charging",
     description: [
       `First, we'll introduce a fleet of 200 electric vehicles (EVs) to our
@@ -86,6 +90,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
   },
   smartCharging: {
     label: "Smart charging",
+    labelCompact: "Smart charge",
     title: "Smart charging",
     description: [
       `Obviously we don't want to increase demand when the grid is least able
@@ -112,6 +117,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
   },
   v2g: {
     label: "Vehicle to Grid",
+    labelCompact: "V2G",
     title: "Vehicle to Grid",
     description: [
       `Large scale storage of electricity, connected to the grid, is ideal to
@@ -135,6 +141,11 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
     showBatteryStorage: true,
   },
 };
+
+const scenarioOptions = objectEntries(scenarioNavs).map(([key, details]) => ({
+  label: details.label,
+  value: key,
+}));
 
 export function ScenariosIntro() {
   const allScenarioData = useLoaderData({ from: "/scenarios/intro" });
@@ -211,23 +222,13 @@ export function ScenariosIntro() {
 
   return (
     <Flex direction="column" gap="md" h="100%">
-      <Flex direction="row" justify="flex-end" gap="md" h="60px" p="md">
-        {objectEntries(scenarioNavs).map(([key, details]) => (
-          <Button
-            key={key}
-            variant={key === currentScenario ? "filled" : "default"}
-            onClick={() => setCurrentScenario(key)}
-          >
-            {details.label}
-          </Button>
-          // <div key={key}>
-          //   <MTLink className={styles.navItem} to={item.path}>
-          //     {item.label}
-          //   </MTLink>
-          // </div>
-        ))}
+      <Flex direction="row" justify="flex-end" gap="md" h="60px">
+        <ScenarioChooser
+          data={scenarioOptions}
+          value={currentScenario}
+          onChange={(value) => setCurrentScenario(value as Scenarios)}
+        />
       </Flex>
-      {/* <div className={styles.scrollArea}> */}
       <ResponsiveContent
         title={currentScenarioDetails.title}
         text={currentScenarioDetails.description}
