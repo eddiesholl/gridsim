@@ -1,15 +1,17 @@
-import { Button, Flex } from "@mantine/core";
+import { Flex } from "@mantine/core";
 import { useLoaderData } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { objectEntries } from "../../../common/object";
 import { useResponsiveMode } from "../../../common/use-responsive-mode";
+import { MarginalChart } from "../../../components/charts/MarginalChart";
 import { LineChart } from "../../../components/LineChart";
 import { ResponsiveContent } from "../../../components/ResponsiveContent";
+import { ScenarioChooser } from "../../../components/ScenarioChooser";
 import {
   nivoDailyLoadData,
   nivoDailyMarginalPriceData,
 } from "../../../data/nivo";
-import { Scenarios } from "../../../types";
+import { nivoDailySocData } from "../../../data/nivo/daily-soc";
+import { ScenarioDetails, Scenarios } from "../../../types";
 
 const scenarios: Scenarios[] = [
   "intro",
@@ -18,14 +20,11 @@ const scenarios: Scenarios[] = [
   "v2g",
 ] as const;
 
-type ScenarioDetails = {
-  label: string;
-  title: string;
-  description: string[];
-};
 const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
   intro: {
+    value: "intro",
     label: "Introduction",
+    labelCompact: "Intro",
     title: "Introduction to our electricity grid",
     description: [
       `The modern electricity grid has evolved from a fairly dull
@@ -45,9 +44,14 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       `The grid you see modelled here is simplified, but is roughly
                   based on the National Electricity Market (NEM) in Australia.`,
     ],
+    dailyOptions: {
+      excludeData: ["EV driving"],
+    },
   },
   evCharging: {
+    value: "evCharging",
     label: "EV charging",
+    labelCompact: "Add EVs",
     title: "EV charging",
     description: [
       `First, we'll introduce a fleet of 200 electric vehicles (EVs) to our
@@ -58,7 +62,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
           start charging as soon as drivers return home and plug them in.
         `,
       `We can now see the total energy stored in the batteries of all 200 EVs
-          in the chart, called 'Battery storage (MWh stored)'. We'll treat it as
+          in the chart, called 'Batteries (MWh stored)'. We'll treat it as
           one large single battery. You can see the state drop during the
           morning and evening commute. Then when everyone plugs in when they get
           home, the cars just start charging straight away back to full.
@@ -67,28 +71,46 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
           when the grid is least able to handle it. The marginal price is higher
           now, as we need to call on more expensive backup generation reserves.`,
     ],
+    dailyOptions: {
+      includeStoresE: true,
+      includeStoresP: true,
+      excludeData: ["EV driving"],
+    },
+    compareTo: "intro",
+    showBatteryStorage: true,
   },
   smartCharging: {
+    value: "smartCharging",
     label: "Smart charging",
+    labelCompact: "Smart charge",
     title: "Smart charging",
     description: [
       `Obviously we don't want to increase demand when the grid is least able
           to handle it. Can we make a smarter choice about when we choose to
-          recharge?`,
+          recharge all the batteries?`,
       `We'll give the EV and charger enough intelligence to choose when to
           recharge. Just make sure the battery is ready to go by 6am. The exact
           constraints could be based on an advanced dynamic signal using the
           real time wholesale electricity price, maybe part of a Virtual Power
           Plant (VPP). But it could also be as simple as a default charging time
           window. Many EVs have offered this feature for several years already.
-          The goal is just to be recharged by midnight.`,
-      `This is already a significant improvement, saving consumers and the
-          grid as a whole significant amount of money, and investment needed in
+          In this simulation the constraint is to be recharged by 6 am.`,
+      `This small delay in charging is already a significant improvement, saving consumers, and the
+          grid as a whole, significant amounts of money, and investment needed in
           the grid to handle the demand.`,
     ],
+    dailyOptions: {
+      includeStoresE: true,
+      includeStoresP: true,
+      excludeData: ["EV driving"],
+    },
+    compareTo: "evCharging",
+    showBatteryStorage: true,
   },
   v2g: {
+    value: "v2g",
     label: "Vehicle to Grid",
+    labelCompact: "V2G",
     title: "Vehicle to Grid",
     description: [
       `Large scale storage of electricity, connected to the grid, is ideal to
@@ -100,20 +122,22 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       `By storing additional energy, then responding at critical times, we
           can ease the load on the grid even further. This means less capacity
           is needed from other sources just to cover the peak of each day,
-          saving money and avoiding use of gas.`,
+          saving money and avoiding use of the most expensive disaptchable generation, like gas.`,
+      `Some additional capacity sitting in all the EV batteries is now supplied to support the grid during the evening peak, and some additional charging is now taking place early in the morning, when the grid is much less congested. Consumers see no inconvenience, and grid costs are lowered significantly.`,
     ],
+    dailyOptions: {
+      includeStoresE: true,
+      includeStoresP: true,
+      excludeData: ["EV driving"],
+    },
+    compareTo: "smartCharging",
+    showBatteryStorage: true,
   },
 };
 
 export function ScenariosIntro() {
   const allScenarioData = useLoaderData({ from: "/scenarios/intro" });
-  console.log({ allScenarioData });
 
-  // const [currentScenario, setCurrentScenario] = useQueryState<Scenarios>(
-  //   "scenario",
-  //   parseAsStringLiteral(scenarios).withDefault(scenarios[0])
-  // );
-  // TODO: search param change is triggering a rerender
   const [currentScenario, setCurrentScenario] = useState<Scenarios>(
     scenarios[0]
   );
@@ -124,9 +148,7 @@ export function ScenariosIntro() {
   const responsiveMode = useResponsiveMode();
 
   const dailyLoadData = nivoDailyLoadData(scenarioData.response, {
-    includeStoresE: false,
-    includeStoresP: false,
-    excludeData: ["EV driving"],
+    ...currentScenarioDetails.dailyOptions,
     responsiveMode,
   });
 
@@ -138,8 +160,20 @@ export function ScenariosIntro() {
     }
   );
 
-  const content = useMemo(
-    () => [
+  const dailyBatterySocData = nivoDailySocData(scenarioData.response);
+
+  const compareTo = currentScenarioDetails.compareTo
+    ? allScenarioData[currentScenarioDetails.compareTo]
+    : undefined;
+
+  const content = useMemo(() => {
+    const comparison = compareTo
+      ? {
+          before: compareTo,
+          after: scenarioData,
+        }
+      : undefined;
+    return [
       {
         key: "dailyLoadData",
         title: "Daily load",
@@ -148,31 +182,39 @@ export function ScenariosIntro() {
       {
         key: "dailyMarginalPriceData",
         title: "Marginal price",
-        content: <LineChart {...dailyMarginalPriceData} />,
+        content: (
+          <MarginalChart
+            comparison={comparison}
+            lineProps={dailyMarginalPriceData}
+          />
+        ),
       },
-    ],
-    [dailyLoadData, dailyMarginalPriceData]
-  );
+      ...(currentScenarioDetails.showBatteryStorage
+        ? [
+            {
+              key: "batteryStorage",
+              title: "Battery storage",
+              content: <LineChart {...dailyBatterySocData} />,
+            },
+          ]
+        : []),
+    ];
+  }, [
+    compareTo,
+    scenarioData,
+    dailyLoadData,
+    dailyMarginalPriceData,
+    currentScenarioDetails.showBatteryStorage,
+    dailyBatterySocData,
+  ]);
 
   return (
-    <Flex direction="column" gap="md" h="100%">
-      <Flex direction="row" justify="flex-end" gap="md" h="60px" p="md">
-        {objectEntries(scenarioNavs).map(([key, details]) => (
-          <Button
-            key={key}
-            variant={key === currentScenario ? "filled" : "default"}
-            onClick={() => setCurrentScenario(key)}
-          >
-            {details.label}
-          </Button>
-          // <div key={key}>
-          //   <MTLink className={styles.navItem} to={item.path}>
-          //     {item.label}
-          //   </MTLink>
-          // </div>
-        ))}
-      </Flex>
-      {/* <div className={styles.scrollArea}> */}
+    <Flex direction="column" h="100%">
+      <ScenarioChooser
+        scenarios={Object.values(scenarioNavs)}
+        value={currentScenario}
+        onChange={(value) => setCurrentScenario(value as Scenarios)}
+      />
       <ResponsiveContent
         title={currentScenarioDetails.title}
         text={currentScenarioDetails.description}

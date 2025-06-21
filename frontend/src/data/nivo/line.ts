@@ -17,7 +17,7 @@ type CreateLinePropsOptions = {
 const mobileMargins = {
   top: 30,
   right: 30,
-  bottom: 20,
+  bottom: 50,
   left: 30,
 };
 
@@ -36,11 +36,11 @@ export function createLineProps({
   customLayers = [],
 }: CreateLinePropsOptions): NivoLineProps {
   const defaultLayers: LineLayerId[] = [
-    "axes",
     "grid",
     "areas",
-    "lines",
     "markers",
+    "lines",
+    "axes",
     "points",
     "legends",
   ];
@@ -71,11 +71,13 @@ export function createLineProps({
     axisLeft: {
       legend: xAxisText,
       legendOffset: -36,
+      legendPosition: "end",
     },
     axisBottom: {
       format: "%-I %p",
       legend: "Time of day",
       legendOffset: 36,
+      legendPosition: "end",
       tickValues:
         responsiveMode === "mobile" ? "every 4 hours" : "every 2 hours",
 
@@ -83,11 +85,12 @@ export function createLineProps({
     },
     gridXValues: "every 4 hours",
     layers,
-    lineWidth: 4,
+    enableTouchCrosshair: true,
+    lineWidth: 3,
     tooltip: () => {
       return null;
     },
-    pointSize: 16,
+    pointSize: 5,
     pointBorderWidth: 1,
     pointBorderColor: {
       from: "color",
@@ -101,7 +104,7 @@ export function createLineProps({
             {
               anchor: "bottom-right",
               direction: "column",
-              translateX: 140,
+              translateX: 100,
               itemsSpacing: 2,
               itemWidth: 80,
               itemHeight: 12,
@@ -109,6 +112,11 @@ export function createLineProps({
               symbolShape: "circle",
             },
           ],
-    pointColor: { theme: "background" },
+    curve: "monotoneX",
+    motionConfig: {
+      bounce: 0.1,
+      clamp: false,
+      friction: 5,
+    },
   };
 }

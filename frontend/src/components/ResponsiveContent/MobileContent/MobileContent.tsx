@@ -23,8 +23,8 @@ export function MobileContent({
           {title}
         </Title>
         <ScrollArea type="auto" pr="md">
-          {text.map((t) => (
-            <p>{t}</p>
+          {text.map((t, ix) => (
+            <p key={ix}>{t}</p>
           ))}
         </ScrollArea>
       </div>
@@ -40,7 +40,7 @@ export function MobileContent({
           </Tabs.List>
           {content.map((c, ix) => (
             <Tabs.Panel key={ix} value={c.key}>
-              <div style={{ height: 250, width: "100%" }}>{c.content}</div>
+              <div style={{ height: 300, width: "100%" }}>{c.content}</div>
             </Tabs.Panel>
           ))}
         </Tabs>

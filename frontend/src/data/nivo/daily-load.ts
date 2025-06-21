@@ -9,17 +9,19 @@ export const nivoDailyLoadData = (
   data: DailyResponse,
   options: DailyDataOptions = {}
 ) => {
-  // const storeEData = options.includeStoresE
-  //   ? Object.entries(data.stores.e).map(
-  //       ([name, values]) => [`${name} (MWh stored)`, values] as DataSet
-  //     )
-  //   : [];
+  const storeEData = options.includeStoresE
+    ? Object.entries(data.stores.e).map(
+        ([name, values]) =>
+          [`${name} (MWh stored)`, values] as [string, number[]]
+      )
+    : [];
 
-  // const storePData = options.includeStoresP
-  //   ? Object.entries(data.stores.p).map(
-  //       ([name, values]) => [`${name} (output)`, values] as DataSet
-  //     )
-  //   : [];
+  const storePData = options.includeStoresP
+    ? (Object.entries(data.stores.p).map(([name, values]) => [
+        `${name} (output)`,
+        values,
+      ]) as [string, number[]][])
+    : [];
 
   // const shapes = [shapeEveningPeak, ...(options.extraShapes || [])];
 
@@ -30,11 +32,10 @@ export const nivoDailyLoadData = (
 
   const baseDataSets = generatorData
     .concat(loadData)
+    .concat(storeEData)
+    .concat(storePData)
     .filter(([name]) => !options.excludeData?.includes(name))
     .map(([name, values]) => serverToNivoData(name, values, data.index));
-  // .concat(Object.entries(data.loads.p) as DataSet[])
-  // .concat(storeEData)
-  // .concat(storePData);
 
   return createLineProps({
     data: baseDataSets,
