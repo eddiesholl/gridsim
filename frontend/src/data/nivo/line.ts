@@ -17,7 +17,7 @@ type CreateLinePropsOptions = {
 const mobileMargins = {
   top: 30,
   right: 30,
-  bottom: 20,
+  bottom: 50,
   left: 30,
 };
 
@@ -85,6 +85,7 @@ export function createLineProps({
     },
     gridXValues: "every 4 hours",
     layers,
+    enableTouchCrosshair: true,
     lineWidth: 3,
     tooltip: () => {
       return null;
@@ -112,5 +113,10 @@ export function createLineProps({
             },
           ],
     curve: "monotoneX",
+    motionConfig: {
+      bounce: 0.1,
+      clamp: false,
+      friction: 5,
+    },
   };
 }

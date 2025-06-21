@@ -10,6 +10,7 @@ import {
   nivoDailyLoadData,
   nivoDailyMarginalPriceData,
 } from "../../../data/nivo";
+import { nivoDailySocData } from "../../../data/nivo/daily-soc";
 import { DailyDataOptions } from "../../../data/nivo/types";
 import { Scenarios } from "../../../types";
 
@@ -26,6 +27,7 @@ type ScenarioDetails = {
   description: string[];
   dailyOptions?: Partial<DailyDataOptions>;
   compareTo?: Scenarios;
+  showBatteryStorage?: boolean;
 };
 const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
   intro: {
@@ -80,6 +82,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       excludeData: ["EV driving"],
     },
     compareTo: "intro",
+    showBatteryStorage: true,
   },
   smartCharging: {
     label: "Smart charging",
@@ -105,6 +108,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       excludeData: ["EV driving"],
     },
     compareTo: "evCharging",
+    showBatteryStorage: true,
   },
   v2g: {
     label: "Vehicle to Grid",
@@ -128,6 +132,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
       excludeData: ["EV driving"],
     },
     compareTo: "smartCharging",
+    showBatteryStorage: true,
   },
 };
 
@@ -155,6 +160,9 @@ export function ScenariosIntro() {
       responsiveMode,
     }
   );
+
+  const dailyBatterySocData = nivoDailySocData(scenarioData.response);
+
   const compareTo = currentScenarioDetails.compareTo
     ? allScenarioData[currentScenarioDetails.compareTo]
     : undefined;
@@ -182,8 +190,24 @@ export function ScenariosIntro() {
           />
         ),
       },
+      ...(currentScenarioDetails.showBatteryStorage
+        ? [
+            {
+              key: "batteryStorage",
+              title: "Battery storage",
+              content: <LineChart {...dailyBatterySocData} />,
+            },
+          ]
+        : []),
     ];
-  }, [dailyLoadData, dailyMarginalPriceData, compareTo, scenarioData]);
+  }, [
+    compareTo,
+    scenarioData,
+    dailyLoadData,
+    dailyMarginalPriceData,
+    currentScenarioDetails.showBatteryStorage,
+    dailyBatterySocData,
+  ]);
 
   return (
     <Flex direction="column" gap="md" h="100%">
