@@ -17,7 +17,7 @@ export function TabletContent({
       pt={0}
     >
       <Card style={{ flex: 1 }}>
-        <Title order={2}>{`${title} - tablet`}</Title>
+        <Title order={2}>{title}</Title>
         {text.map((t, ix) => (
           <p key={ix}>{t}</p>
         ))}

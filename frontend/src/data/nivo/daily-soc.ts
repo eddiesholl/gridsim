@@ -4,15 +4,10 @@ import { serverToNivoData } from "./common";
 import { createLineProps } from "./line";
 import { NivoLineProps } from "./types";
 
-export const nivoDailySocData = (
-  data: DailyResponse
-  // options: MarginalPriceOptions = {}
-) => {
-  const baseDataSets = Object.entries(data.stores.e)
-    // .filter(([name]) => options.includeBuses?.includes(name))
-    .map(([name, values]) =>
-      serverToNivoData(`${name} (price)`, values, data.index)
-    );
+export const nivoDailySocData = (data: DailyResponse) => {
+  const baseDataSets = Object.entries(data.stores.e).map(([name, values]) =>
+    serverToNivoData(`${name} (MWh stored)`, values, data.index)
+  );
 
   const markers: NivoLineProps["markers"] = [
     {
