@@ -1,7 +1,6 @@
 import { Flex } from "@mantine/core";
 import { useLoaderData } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { objectEntries } from "../../../common/object";
 import { useResponsiveMode } from "../../../common/use-responsive-mode";
 import { MarginalChart } from "../../../components/charts/MarginalChart";
 import { LineChart } from "../../../components/LineChart";
@@ -12,8 +11,7 @@ import {
   nivoDailyMarginalPriceData,
 } from "../../../data/nivo";
 import { nivoDailySocData } from "../../../data/nivo/daily-soc";
-import { DailyDataOptions } from "../../../data/nivo/types";
-import { Scenarios } from "../../../types";
+import { ScenarioDetails, Scenarios } from "../../../types";
 
 const scenarios: Scenarios[] = [
   "intro",
@@ -22,17 +20,9 @@ const scenarios: Scenarios[] = [
   "v2g",
 ] as const;
 
-type ScenarioDetails = {
-  label: string;
-  labelCompact: string;
-  title: string;
-  description: string[];
-  dailyOptions?: Partial<DailyDataOptions>;
-  compareTo?: Scenarios;
-  showBatteryStorage?: boolean;
-};
 const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
   intro: {
+    value: "intro",
     label: "Introduction",
     labelCompact: "Intro",
     title: "Introduction to our electricity grid",
@@ -59,6 +49,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
     },
   },
   evCharging: {
+    value: "evCharging",
     label: "EV charging",
     labelCompact: "Add EVs",
     title: "EV charging",
@@ -89,6 +80,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
     showBatteryStorage: true,
   },
   smartCharging: {
+    value: "smartCharging",
     label: "Smart charging",
     labelCompact: "Smart charge",
     title: "Smart charging",
@@ -116,6 +108,7 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
     showBatteryStorage: true,
   },
   v2g: {
+    value: "v2g",
     label: "Vehicle to Grid",
     labelCompact: "V2G",
     title: "Vehicle to Grid",
@@ -141,11 +134,6 @@ const scenarioNavs: Record<Scenarios, ScenarioDetails> = {
     showBatteryStorage: true,
   },
 };
-
-const scenarioOptions = objectEntries(scenarioNavs).map(([key, details]) => ({
-  label: details.label,
-  value: key,
-}));
 
 export function ScenariosIntro() {
   const allScenarioData = useLoaderData({ from: "/scenarios/intro" });
@@ -221,14 +209,12 @@ export function ScenariosIntro() {
   ]);
 
   return (
-    <Flex direction="column" gap="md" h="100%">
-      <Flex direction="row" justify="flex-end" gap="md" h="60px">
-        <ScenarioChooser
-          data={scenarioOptions}
-          value={currentScenario}
-          onChange={(value) => setCurrentScenario(value as Scenarios)}
-        />
-      </Flex>
+    <Flex direction="column" h="100%">
+      <ScenarioChooser
+        scenarios={Object.values(scenarioNavs)}
+        value={currentScenario}
+        onChange={(value) => setCurrentScenario(value as Scenarios)}
+      />
       <ResponsiveContent
         title={currentScenarioDetails.title}
         text={currentScenarioDetails.description}
