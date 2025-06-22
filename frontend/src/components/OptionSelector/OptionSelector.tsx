@@ -1,25 +1,30 @@
 import { Button, Flex } from "@mantine/core";
 import { useResponsiveMode } from "../../common/use-responsive-mode";
-import { ScenarioDetails } from "../../types";
 import styles from "./styles.module.css";
 
-type ScenarioChooserProps = {
-  scenarios: ScenarioDetails[];
-  value: string;
-  onChange: (value: string) => void;
+type SelectableOption<T extends string> = {
+  label: string;
+  labelCompact: string;
+  value: T;
 };
 
-export function ScenarioChooser({
-  scenarios,
+type OptionSelectorProps<T extends string> = {
+  options: SelectableOption<T>[];
+  value: T;
+  onChange: (value: T) => void;
+};
+
+export function OptionSelector<T extends string>({
+  options,
   value,
   onChange,
-}: ScenarioChooserProps) {
+}: OptionSelectorProps<T>) {
   const isMobile = useResponsiveMode() === "mobile";
 
   if (isMobile) {
     return (
       <Flex direction="row" justify="space-between" w="100%">
-        {scenarios.map((item) => (
+        {options.map((item) => (
           <Button
             className={styles.button}
             key={item.label}
@@ -38,7 +43,7 @@ export function ScenarioChooser({
 
   return (
     <Flex direction="row" justify="flex-end" w="100%" gap="md" p="sm">
-      {scenarios.map((item) => (
+      {options.map((item) => (
         <Button
           key={item.label}
           variant={value === item.value ? "filled" : "default"}

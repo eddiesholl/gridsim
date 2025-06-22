@@ -41,12 +41,14 @@ const paths: PathConfig[] = [
   },
 ];
 
+const devToolsEnabled = false;
+
 export function RootComponent() {
   const isMobile = useResponsiveMode() === "mobile";
   const [opened, { toggle }] = useDisclosure(false);
   return (
     <>
-      <TanStackRouterDevtools position="bottom-left" />
+      {devToolsEnabled && <TanStackRouterDevtools position="bottom-left" />}
       <Flex direction="column" h="100%" className={styles.root}>
         <Flex className={styles.header} p="sm">
           <Title order={1}>GridSim</Title>
