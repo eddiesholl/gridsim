@@ -1,12 +1,11 @@
-import {
-  Box,
-  Burger,
-  Drawer,
-  Flex,
-  Title,
-  UnstyledButton,
-} from "@mantine/core";
+import { Box, Burger, Flex, Menu, Title, UnstyledButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import {
+  IconChartLine,
+  IconHome,
+  IconQuestionMark,
+  IconTool,
+} from "@tabler/icons-react";
 import { FileRouteTypes, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { useResponsiveMode } from "../../common/use-responsive-mode";
@@ -16,24 +15,29 @@ import styles from "./root.module.css";
 interface PathConfig {
   path: FileRouteTypes["to"];
   label: string;
+  icon?: React.ReactNode;
 }
 
 const paths: PathConfig[] = [
   {
     path: "/",
     label: "Home",
+    icon: <IconHome />,
   },
   {
     path: "/scenarios",
     label: "Scenarios",
+    icon: <IconChartLine />,
   },
   {
     path: "/tools",
     label: "Tools",
+    icon: <IconTool />,
   },
   {
     path: "/about",
     label: "About",
+    icon: <IconQuestionMark />,
   },
 ];
 
@@ -48,21 +52,18 @@ export function RootComponent() {
           <Title order={1}>GridSim</Title>
           <Flex gap="md" align="center">
             {isMobile && (
-              <>
-                <Burger
-                  opened={opened}
-                  onClick={toggle}
-                  hiddenFrom="sm"
-                  size="sm"
-                />
-                <Drawer opened={opened} onClose={toggle} title="Menu">
-                  {paths.map(({ path, label }) => (
-                    <MTLink key={path} to={path} className={styles.link}>
-                      {label}
-                    </MTLink>
+              <Menu>
+                <Menu.Target>
+                  <Burger opened={opened} onClick={toggle} />
+                </Menu.Target>
+                <Menu.Dropdown>
+                  {paths.map(({ path, label, icon }) => (
+                    <Menu.Item key={path} leftSection={icon}>
+                      <MTLink to={path}>{label}</MTLink>
+                    </Menu.Item>
                   ))}
-                </Drawer>
-              </>
+                </Menu.Dropdown>
+              </Menu>
             )}
             {!isMobile &&
               paths.map(({ path, label }) => (
