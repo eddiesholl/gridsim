@@ -243,7 +243,7 @@ def get_daily_network(params: DailyParameters):
     # implement the actual battery storage
     network.add(
         "Store",
-        "Battery storage",
+        "Batteries",
         bus="Battery",
         e_cyclic=False,
         e_initial=initial_ev_storage,

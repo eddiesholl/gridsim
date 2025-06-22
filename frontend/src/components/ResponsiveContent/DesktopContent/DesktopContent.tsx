@@ -12,7 +12,7 @@ export function DesktopContent({
     <PageWrapper>
       <Flex direction="column" gap="lg" pt={0}>
         <Card className={styles.text}>
-          <Title order={2}>{`${title} - desktop`}</Title>
+          <Title order={2}>{title}</Title>
           {text.map((t, ix) => (
             <p key={ix}>{t}</p>
           ))}
