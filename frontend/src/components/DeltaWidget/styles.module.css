@@ -1,0 +1,25 @@
+.summaryNumber {
+  color: var(--mantine-color-blush-6);
+}
+
+.root {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-color: var(--mantine-color-gray-5);
+  @media (max-width: 768px) {
+    margin: 15px;
+    padding: 5px;
+    border-radius: 10px;
+    background-color: var(--mantine-color-tan-1);
+    border: 1px solid var(--mantine-color-gray-5);
+  }
+  @media (min-width: 768px) {
+    margin: 10px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: var(--mantine-color-gray-0);
+    border: 1px solid var(--mantine-color-gray-5);
+  }
+}
