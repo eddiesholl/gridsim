@@ -13,10 +13,20 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   background-color: var(--mantine-color-white);
 }
 
 .root {
   background-color: var(--mantine-color-white);
+}
+
+.topSection {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--mantine-color-white);
+  flex: 1;
+  padding-left: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
 }

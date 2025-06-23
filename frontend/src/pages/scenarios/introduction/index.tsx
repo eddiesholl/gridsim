@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 import { useResponsiveMode } from "../../../common/use-responsive-mode";
 import { MarginalChart } from "../../../components/charts/MarginalChart";
 import { LineChart } from "../../../components/LineChart";
+import { OptionSelector } from "../../../components/OptionSelector";
 import { ResponsiveContent } from "../../../components/ResponsiveContent";
-import { ScenarioChooser } from "../../../components/ScenarioChooser";
 import {
   nivoDailyLoadData,
   nivoDailyMarginalPriceData,
@@ -210,10 +210,10 @@ export function ScenariosIntro() {
 
   return (
     <Flex direction="column" h="100%">
-      <ScenarioChooser
-        scenarios={Object.values(scenarioNavs)}
+      <OptionSelector
+        options={Object.values(scenarioNavs)}
         value={currentScenario}
-        onChange={(value) => setCurrentScenario(value as Scenarios)}
+        onChange={(value) => setCurrentScenario(value)}
       />
       <ResponsiveContent
         title={currentScenarioDetails.title}
