@@ -54,7 +54,7 @@ export function RootComponent() {
           <Title order={1}>GridSim</Title>
           <Flex gap="md" align="center">
             {isMobile && (
-              <Menu>
+              <Menu onClose={() => toggle()}>
                 <Menu.Target>
                   <Burger opened={opened} onClick={toggle} />
                 </Menu.Target>

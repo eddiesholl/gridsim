@@ -39,9 +39,9 @@
   padding: 0 10px;
   /* background-color: var(--mantine-color-moonstone-3); */
   background-image: linear-gradient(
-    to left top,
+    to right bottom,
     var(--mantine-color-moonstone-1),
-    var(--mantine-color-blush-1)
+    var(--mantine-color-moonstone-5) /* var(--mantine-color-tan-7) */
   );
   justify-content: space-between;
   align-items: center;

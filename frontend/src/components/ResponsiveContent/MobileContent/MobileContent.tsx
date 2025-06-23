@@ -1,5 +1,5 @@
 import { Flex, ScrollArea, Title } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OptionSelector } from "../../OptionSelector";
 import { ResponsiveContentProps } from "../types";
 import styles from "./styles.module.css";
@@ -13,6 +13,13 @@ export function MobileContent({
     content[0]?.key
   );
   const selectedContent = content.find((c) => c.key === selectedContentKey);
+
+  useEffect(() => {
+    if (selectedContent === undefined) {
+      setSelectedContentKey(content[0]?.key);
+    }
+  }, [selectedContent, content]);
+
   return (
     <Flex
       direction="column"
@@ -38,6 +45,7 @@ export function MobileContent({
           }))}
           value={selectedContentKey}
           onChange={setSelectedContentKey}
+          color="moonstone.6"
         />
 
         <div style={{ height: 250, width: "100%" }}>

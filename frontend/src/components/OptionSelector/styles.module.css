@@ -1,7 +1,11 @@
 .button {
   border: 0;
   border-radius: 0;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--mantine-color-gray-5);
   border-left: none;
   flex-grow: 1;
+
+  &[data-variant="default"] {
+    background-color: var(--mantine-color-gray-1);
+  }
 }

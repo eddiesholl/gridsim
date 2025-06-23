@@ -9,6 +9,7 @@ type SelectableOption<T extends string> = {
 };
 
 type OptionSelectorProps<T extends string> = {
+  color?: string;
   options: SelectableOption<T>[];
   value: T;
   onChange: (value: T) => void;
@@ -18,6 +19,7 @@ export function OptionSelector<T extends string>({
   options,
   value,
   onChange,
+  color,
 }: OptionSelectorProps<T>) {
   const isMobile = useResponsiveMode() === "mobile";
 
@@ -33,6 +35,7 @@ export function OptionSelector<T extends string>({
             px="sm"
             fz="sm"
             h="40px"
+            color={color}
           >
             {item.labelCompact}
           </Button>
