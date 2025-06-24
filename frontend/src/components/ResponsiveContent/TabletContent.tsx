@@ -16,7 +16,7 @@ export function TabletContent({
       p="sm"
       pt={0}
     >
-      <Card style={{ flex: 1 }}>
+      <Card className={styles.flex1}>
         <Title order={2}>{title}</Title>
         {text.map((t, ix) => (
           <p key={ix}>{t}</p>
@@ -33,9 +33,7 @@ export function TabletContent({
           </Tabs.List>
           {content.map((c, ix) => (
             <Tabs.Panel key={ix} value={c.key}>
-              <div style={{ height: 450, width: "100%", paddingTop: "16px" }}>
-                {c.content}
-              </div>
+              <div className={styles.chartContainerLg}>{c.content}</div>
             </Tabs.Panel>
           ))}
         </Tabs>

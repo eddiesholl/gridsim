@@ -32,5 +32,8 @@ export const nivoDailyMarginalPriceData = (
     xAxisText: "Price ($/MWh)",
     markers,
     responsiveMode: options.responsiveMode,
+    yScale: {
+      max: 300,
+    },
   });
 };

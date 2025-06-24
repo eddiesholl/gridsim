@@ -1,6 +1,8 @@
 import { LineLayerId } from "@nivo/line";
+import { ScaleLinearSpec } from "@nivo/scales";
 import { ResponsiveMode } from "../../common/use-responsive-mode";
 import { nivoTheme } from "../../styles/nivo";
+import { NivoTooltip } from "./tooltip";
 import { NivoLineProps } from "./types";
 
 type CustomLayer = Exclude<NivoLineProps["layers"], undefined>[number];
@@ -12,6 +14,7 @@ type CreateLinePropsOptions = {
   markers?: NivoLineProps["markers"];
   customLayers?: CustomLayers;
   responsiveMode?: ResponsiveMode;
+  yScale?: Partial<ScaleLinearSpec>;
 };
 
 const mobileMargins = {
@@ -34,6 +37,7 @@ export function createLineProps({
   markers,
   responsiveMode = "desktop",
   customLayers = [],
+  yScale,
 }: CreateLinePropsOptions): NivoLineProps {
   const defaultLayers: LineLayerId[] = [
     "grid",
@@ -43,6 +47,9 @@ export function createLineProps({
     "axes",
     "points",
     "legends",
+    "crosshair",
+    "slices",
+    "mesh",
   ];
   const layers = defaultLayers.reduce((acc, curr, ix) => {
     const customLayer = customLayers.find(([target]) => ix === target);
@@ -67,6 +74,7 @@ export function createLineProps({
     },
     yScale: {
       type: "linear",
+      ...yScale,
     },
     axisLeft: {
       legend: xAxisText,
@@ -85,11 +93,14 @@ export function createLineProps({
     },
     gridXValues: "every 4 hours",
     layers,
+    isInteractive: true,
+    enableSlices: false,
+    useMesh: true,
+
+    enableCrosshair: true,
     enableTouchCrosshair: true,
     lineWidth: 3,
-    tooltip: () => {
-      return null;
-    },
+    tooltip: NivoTooltip,
     pointSize: 5,
     pointBorderWidth: 1,
     pointBorderColor: {

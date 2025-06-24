@@ -1,4 +1,5 @@
 import { roundTo } from "../../data/tools";
+import styles from "./styles.module.css";
 
 export type DeltaPercentProps = {
   before: number;
@@ -11,7 +12,7 @@ export function DeltaPercent({ before, after }: DeltaPercentProps) {
   const percentDisplay = roundTo(percent, 0);
   const increased = delta > 0;
   return (
-    <span style={{ fontSize: "1.2rem" }}>
+    <span className={styles.deltaPercent}>
       {increased ? "+" : ""}
       {percentDisplay}%
     </span>
