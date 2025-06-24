@@ -2,6 +2,7 @@ import { Flex } from "@mantine/core";
 import { ComparisonResult } from "../../types";
 import { LineChart, LineChartProps } from "../LineChart";
 import { MarginalPriceDelta } from "../MarginalPricedDelta";
+import styles from "./styles.module.css";
 
 type MarginalChartProps = {
   comparison?: ComparisonResult;
@@ -11,7 +12,7 @@ type MarginalChartProps = {
 export function MarginalChart({ comparison, lineProps }: MarginalChartProps) {
   return (
     <Flex h="100%">
-      <div style={{ flex: 1, width: "100%", height: "100%" }}>
+      <div className={styles.fullSize}>
         <LineChart {...lineProps} />
       </div>
       {comparison && <MarginalPriceDelta comparison={comparison} />}

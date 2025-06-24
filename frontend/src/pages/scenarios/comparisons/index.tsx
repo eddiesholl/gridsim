@@ -23,6 +23,8 @@ import {
 } from "../../../scenarios/daily";
 import { getDailyQuery } from "../../../services/api";
 import { DailyScenario, DailyScenarioResult } from "../../../types";
+import styles from "./styles.module.css";
+
 type ScenarioId = 0 | 1 | 2 | 3;
 const isScenarioId = (value: number): value is ScenarioId => {
   return value >= 0 && value <= 3;
@@ -109,11 +111,11 @@ export function ScenariosIntro() {
         </p>
       </Card>
       <Flex w="50%" justify="space-between" gap="xl" py="md" direction="column">
-        <Flex style={{ flex: 0.8 }} gap="lg">
+        <Flex className={styles.flex08} gap="lg">
           <Text>Select your scenarios:</Text>
           <RangeSlider
             pt={8}
-            style={{ flex: 1 }}
+            className={styles.flex1}
             color="blue"
             showLabelOnHover={false}
             label={null}
@@ -144,7 +146,7 @@ export function ScenariosIntro() {
               }
             }}
             data={switcherValues}
-            style={{ flex: 1 }}
+            className={styles.flex1}
           />
         </Flex>
       </Flex>
@@ -158,7 +160,7 @@ export function ScenariosIntro() {
 
           return (
             <Card>
-              <div style={{ height: 450 }}>
+              <div className={styles.chartContainerLg}>
                 <LineChart {...foo} />
               </div>
             </Card>
@@ -173,7 +175,7 @@ export function ScenariosIntro() {
           });
           return (
             <Card>
-              <div style={{ height: 450 }}>
+              <div className={styles.chartContainerLg}>
                 <LineChart {...dailyMarginalPriceData} />
               </div>
             </Card>

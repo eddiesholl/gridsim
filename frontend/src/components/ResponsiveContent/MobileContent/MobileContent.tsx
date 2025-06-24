@@ -25,7 +25,6 @@ export function MobileContent({
       direction="column"
       justify="space-between"
       h="100%"
-      style={{ overflow: "hidden" }}
       className={styles.root}
     >
       <div className={styles.topSection}>
@@ -48,7 +47,7 @@ export function MobileContent({
           color="moonstone.6"
         />
 
-        <div style={{ height: 250, width: "100%" }}>
+        <div className={styles.chartContainerSm}>
           {selectedContent?.content}
         </div>
       </div>

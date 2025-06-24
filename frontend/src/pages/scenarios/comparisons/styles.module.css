@@ -1,5 +1,9 @@
-.text {
-  min-height: 400px;
+.flex08 {
+  flex: 0.8;
+}
+
+.flex1 {
+  flex: 1;
 }
 
 .chartContainerLg {

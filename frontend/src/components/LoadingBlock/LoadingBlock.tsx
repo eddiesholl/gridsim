@@ -7,7 +7,7 @@ type LoadingBlockProps = {
 
 export function LoadingBlock({ height = "300px" }: LoadingBlockProps) {
   return (
-    <Flex className={styles.wrapper} style={{ height }}>
+    <Flex className={styles.wrapper} h={height}>
       <Loader type="bars" color="var(--mantine-color-coral-5)" />
     </Flex>
   );

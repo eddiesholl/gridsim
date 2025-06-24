@@ -3,3 +3,17 @@
   font-size: 1.25rem;
   color: var(--mantine-color-gray-7);
 }
+
+.flex1 {
+  flex: 1;
+}
+
+.flex08 {
+  flex: 0.8;
+}
+
+.chartContainerLg {
+  height: 450px;
+  width: 100%;
+  padding-top: 16px;
+}
