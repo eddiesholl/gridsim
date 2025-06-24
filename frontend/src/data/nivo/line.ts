@@ -2,6 +2,7 @@ import { LineLayerId } from "@nivo/line";
 import { ScaleLinearSpec } from "@nivo/scales";
 import { ResponsiveMode } from "../../common/use-responsive-mode";
 import { nivoTheme } from "../../styles/nivo";
+import { NivoTooltip } from "./tooltip";
 import { NivoLineProps } from "./types";
 
 type CustomLayer = Exclude<NivoLineProps["layers"], undefined>[number];
@@ -46,6 +47,9 @@ export function createLineProps({
     "axes",
     "points",
     "legends",
+    "crosshair",
+    "slices",
+    "mesh",
   ];
   const layers = defaultLayers.reduce((acc, curr, ix) => {
     const customLayer = customLayers.find(([target]) => ix === target);
@@ -89,11 +93,18 @@ export function createLineProps({
     },
     gridXValues: "every 4 hours",
     layers,
+    isInteractive: true,
+    enableSlices: false,
+    useMesh: true,
+
+    enableCrosshair: true,
     enableTouchCrosshair: true,
-    lineWidth: 3,
-    tooltip: () => {
+    sliceTooltip: (event) => {
+      console.log(event);
       return null;
     },
+    lineWidth: 3,
+    tooltip: NivoTooltip,
     pointSize: 5,
     pointBorderWidth: 1,
     pointBorderColor: {
