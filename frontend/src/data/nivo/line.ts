@@ -1,4 +1,5 @@
 import { LineLayerId } from "@nivo/line";
+import { ScaleLinearSpec } from "@nivo/scales";
 import { ResponsiveMode } from "../../common/use-responsive-mode";
 import { nivoTheme } from "../../styles/nivo";
 import { NivoLineProps } from "./types";
@@ -12,6 +13,7 @@ type CreateLinePropsOptions = {
   markers?: NivoLineProps["markers"];
   customLayers?: CustomLayers;
   responsiveMode?: ResponsiveMode;
+  yScale?: Partial<ScaleLinearSpec>;
 };
 
 const mobileMargins = {
@@ -34,6 +36,7 @@ export function createLineProps({
   markers,
   responsiveMode = "desktop",
   customLayers = [],
+  yScale,
 }: CreateLinePropsOptions): NivoLineProps {
   const defaultLayers: LineLayerId[] = [
     "grid",
@@ -67,6 +70,7 @@ export function createLineProps({
     },
     yScale: {
       type: "linear",
+      ...yScale,
     },
     axisLeft: {
       legend: xAxisText,
