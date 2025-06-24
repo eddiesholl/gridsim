@@ -99,10 +99,6 @@ export function createLineProps({
 
     enableCrosshair: true,
     enableTouchCrosshair: true,
-    sliceTooltip: (event) => {
-      console.log(event);
-      return null;
-    },
     lineWidth: 3,
     tooltip: NivoTooltip,
     pointSize: 5,

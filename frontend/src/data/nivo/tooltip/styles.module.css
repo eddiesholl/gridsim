@@ -1,0 +1,8 @@
+.wrapper {
+  font-size: 12px;
+  background-color: var(--mantine-color-tan-1);
+  border-radius: 2px;
+  border: 1px solid var(--mantine-color-tan-6);
+  width: 150px;
+  padding: 4px;
+}
